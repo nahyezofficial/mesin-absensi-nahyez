@@ -147,6 +147,18 @@
 
 let sudahScan = false;
 
+// ==========================================
+// URL WEB APP APPS SCRIPT
+// ==========================================
+
+const API_URL =
+  'https://script.google.com/macros/s/AKfycbyrDQpUcEfVCuXtZBfCJdCsJfBIje0ohA82T6a3CtHXflH-e4drjyNdbLAVlPy5-6DnGw/exec';
+
+
+// ==========================================
+// SAAT QR BERHASIL DIBACA
+// ==========================================
+
 function onScanSuccess(decodedText, decodedResult) {
 
   if (sudahScan) {
@@ -158,18 +170,147 @@ function onScanSuccess(decodedText, decodedResult) {
   console.log("QR berhasil dibaca:", decodedText);
 
   document.getElementById("status").innerText =
-    "QR berhasil dibaca.";
+    "QR berhasil dibaca. Memeriksa data karyawan...";
 
   document.getElementById("token").innerText =
     decodedText;
 
   document.getElementById("result").style.display =
     "block";
+
+  // Cek token ke Apps Script
+  cekKaryawan(decodedText);
 }
 
-function onScanFailure(error) {
-  // Kesalahan pembacaan sementara diabaikan.
+
+// ==========================================
+// HUBUNGKAN KE APPS SCRIPT
+// ==========================================
+
+function cekKaryawan(token) {
+
+  const callbackName =
+    "nahyezCallback_" + Date.now();
+
+  const script = document.createElement("script");
+
+  const url =
+    API_URL +
+    "?action=cekQR" +
+    "&token=" + encodeURIComponent(token) +
+    "&prefix=" + callbackName;
+
+  window[callbackName] = function(data) {
+
+    console.log("Data dari server:", data);
+
+    // Hapus callback
+    delete window[callbackName];
+
+    // Hapus script
+    script.remove();
+
+    if (!data.success) {
+
+      document.getElementById("status").innerText =
+        "❌ QR tidak valid";
+
+      document.getElementById("result").innerHTML = `
+        <div class="result-title" style="color:#dc3545;">
+          ❌ QR Tidak Valid
+        </div>
+
+        <div>
+          ${data.message}
+        </div>
+      `;
+
+      return;
+    }
+
+
+    // ======================================
+    // KARYAWAN DITEMUKAN
+    // ======================================
+
+    document.getElementById("status").innerText =
+      "Karyawan berhasil ditemukan.";
+
+    document.getElementById("result").innerHTML = `
+
+      <div class="result-title">
+        ✅ Karyawan Ditemukan
+      </div>
+
+      <div style="
+        text-align:left;
+        margin-top:15px;
+        line-height:1.8;
+      ">
+
+        <b>ID Karyawan</b><br>
+        ${data.id}
+
+        <br><br>
+
+        <b>Nama</b><br>
+        ${data.nama}
+
+        <br><br>
+
+        <b>Outlet</b><br>
+        ${data.outlet}
+
+        <br><br>
+
+        <b>QR Token</b><br>
+        <span class="token">
+          ${data.qrToken || token}
+        </span>
+
+      </div>
+
+    `;
+
+  };
+
+
+  // Jika terjadi kesalahan
+  window.setTimeout(function() {
+
+    if (window[callbackName]) {
+
+      delete window[callbackName];
+
+      script.remove();
+
+      document.getElementById("status").innerText =
+        "❌ Tidak dapat menghubungi server.";
+
+    }
+
+  }, 15000);
+
+
+  // Jalankan request
+  script.src = url;
+
+  document.body.appendChild(script);
 }
+
+
+// ==========================================
+// ERROR PEMBACAAN QR
+// ==========================================
+
+function onScanFailure(error) {
+  // Error sementara diabaikan.
+}
+
+
+// ==========================================
+// QR SCANNER
+// ==========================================
 
 const scanner = new Html5QrcodeScanner(
   "reader",
@@ -189,6 +330,7 @@ const scanner = new Html5QrcodeScanner(
   },
   false
 );
+
 
 scanner.render(
   onScanSuccess,
