@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Mesin Absensi Nahyez</title>
+
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #fff4df, #ffe0b2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 450px;
+      background: white;
+      border-radius: 24px;
+      padding: 25px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 30px;
+      font-weight: bold;
+      color: #ed7612;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    .scanner-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    #reader {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 12px;
+      background: #f7f7f7;
+      color: #555;
+      min-height: 50px;
+    }
+
+    .result {
+      margin-top: 15px;
+      padding: 18px;
+      border-radius: 15px;
+      background: #fff4df;
+      display: none;
+    }
+
+    .result-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #198754;
+      margin-bottom: 10px;
+    }
+
+    .token {
+      font-weight: bold;
+      word-break: break-all;
+      color: #333;
+    }
+
+    .note {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #888;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="logo">
+      Nahyez Baby Meal
+    </div>
+
+    <div class="subtitle">
+      Mesin Absensi Karyawan
+    </div>
+
+    <div class="scanner-title">
+      📷 Scan QR Karyawan
+    </div>
+
+    <div id="reader"></div>
+
+    <div class="status" id="status">
+      Menunggu kamera...
+    </div>
+
+    <div class="result" id="result">
+
+      <div class="result-title">
+        ✅ QR Berhasil Dibaca
+      </div>
+
+      <div>
+        QR Token:
+      </div>
+
+      <div class="token" id="token">
+      </div>
+
+    </div>
+
+    <div class="note">
+      Izinkan akses kamera ketika browser memintanya.
+      <br>
+      QR akan dibaca langsung melalui kamera.
+    </div>
+
+  </div>
+
+<script>
+
+let sudahScan = false;
+
+function onScanSuccess(decodedText, decodedResult) {
+
+  if (sudahScan) {
+    return;
+  }
+
+  sudahScan = true;
+
+  console.log("QR berhasil dibaca:", decodedText);
+
+  document.getElementById("status").innerText =
+    "QR berhasil dibaca.";
+
+  document.getElementById("token").innerText =
+    decodedText;
+
+  document.getElementById("result").style.display =
+    "block";
+}
+
+function onScanFailure(error) {
+  // Kesalahan pembacaan sementara diabaikan.
+}
+
+const scanner = new Html5QrcodeScanner(
+  "reader",
+  {
+    fps: 10,
+
+    qrbox: {
+      width: 250,
+      height: 250
+    },
+
+    rememberLastUsedCamera: true,
+
+    supportedScanTypes: [
+      Html5QrcodeScanType.SCAN_TYPE_CAMERA
+    ]
+  },
+  false
+);
+
+scanner.render(
+  onScanSuccess,
+  onScanFailure
+);
+
+</script>
+
+</body>
+</html>
