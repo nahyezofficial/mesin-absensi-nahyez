@@ -147,17 +147,13 @@
 
 let sudahScan = false;
 
-// ==========================================
-// URL WEB APP APPS SCRIPT
-// ==========================================
-
 const API_URL =
   'https://script.google.com/macros/s/AKfycbyrDQpUcEfVCuXtZBfCJdCsJfBIje0ohA82T6a3CtHXflH-e4drjyNdbLAVlPy5-6DnGw/exec';
 
 
-// ==========================================
-// SAAT QR BERHASIL DIBACA
-// ==========================================
+// ==================================================
+// QR BERHASIL DIBACA
+// ==================================================
 
 function onScanSuccess(decodedText, decodedResult) {
 
@@ -178,14 +174,13 @@ function onScanSuccess(decodedText, decodedResult) {
   document.getElementById("result").style.display =
     "block";
 
-  // Cek token ke Apps Script
   cekKaryawan(decodedText);
 }
 
 
-// ==========================================
-// HUBUNGKAN KE APPS SCRIPT
-// ==========================================
+// ==================================================
+// CEK KARYAWAN KE APPS SCRIPT
+// ==================================================
 
 function cekKaryawan(token) {
 
@@ -200,41 +195,49 @@ function cekKaryawan(token) {
     "&token=" + encodeURIComponent(token) +
     "&prefix=" + callbackName;
 
+
   window[callbackName] = function(data) {
 
-    console.log("Data dari server:", data);
+    console.log("Data karyawan:", data);
 
-    // Hapus callback
     delete window[callbackName];
 
-    // Hapus script
     script.remove();
+
+
+    // ==============================================
+    // QR TIDAK VALID
+    // ==============================================
 
     if (!data.success) {
 
       document.getElementById("status").innerText =
-        "❌ QR tidak valid";
+        "❌ QR tidak valid.";
 
       document.getElementById("result").innerHTML = `
-        <div class="result-title" style="color:#dc3545;">
+
+        <div class="result-title"
+             style="color:#dc3545;">
           ❌ QR Tidak Valid
         </div>
 
         <div>
           ${data.message}
         </div>
+
       `;
 
       return;
     }
 
 
-    // ======================================
+    // ==============================================
     // KARYAWAN DITEMUKAN
-    // ======================================
+    // ==============================================
 
     document.getElementById("status").innerText =
-      "Karyawan berhasil ditemukan.";
+      "Karyawan ditemukan. Memeriksa lokasi...";
+
 
     document.getElementById("result").innerHTML = `
 
@@ -268,14 +271,30 @@ function cekKaryawan(token) {
           ${data.qrToken || token}
         </span>
 
+        <br><br>
+
+        <div id="gpsStatus">
+          📍 Meminta lokasi HP...
+        </div>
+
       </div>
 
     `;
 
+
+    // ==============================================
+    // MULAI CEK GPS
+    // ==============================================
+
+    cekGPS(token);
+
   };
 
 
-  // Jika terjadi kesalahan
+  // ==============================================
+  // TIMEOUT
+  // ==============================================
+
   window.setTimeout(function() {
 
     if (window[callbackName]) {
@@ -292,44 +311,323 @@ function cekKaryawan(token) {
   }, 15000);
 
 
-  // Jalankan request
   script.src = url;
 
   document.body.appendChild(script);
 }
 
 
-// ==========================================
-// ERROR PEMBACAAN QR
-// ==========================================
+// ==================================================
+// AMBIL GPS HP
+// ==================================================
+
+function cekGPS(token) {
+
+  const gpsStatus =
+    document.getElementById("gpsStatus");
+
+
+  if (!navigator.geolocation) {
+
+    gpsStatus.innerHTML =
+      "❌ Browser tidak mendukung GPS.";
+
+    document.getElementById("status").innerText =
+      "❌ GPS tidak tersedia.";
+
+    return;
+  }
+
+
+  gpsStatus.innerHTML =
+    "📍 Meminta izin lokasi...";
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position) {
+
+      const latitude =
+        position.coords.latitude;
+
+      const longitude =
+        position.coords.longitude;
+
+      const accuracy =
+        position.coords.accuracy;
+
+
+      console.log("Latitude:", latitude);
+      console.log("Longitude:", longitude);
+      console.log("Akurasi:", accuracy);
+
+
+      gpsStatus.innerHTML =
+        "📍 Lokasi diperoleh.<br>" +
+        "Akurasi GPS: " +
+        Math.round(accuracy) +
+        " meter.<br>" +
+        "Memeriksa jarak ke outlet...";
+
+
+      validasiLokasi(
+        token,
+        latitude,
+        longitude
+      );
+
+    },
+
+    function(error) {
+
+      console.error(
+        "GPS error:",
+        error
+      );
+
+
+      let pesan =
+        "❌ Lokasi tidak dapat diperoleh.";
+
+
+      if (error.code === 1) {
+        pesan =
+          "❌ Izin lokasi ditolak. Silakan izinkan lokasi.";
+      }
+
+      else if (error.code === 2) {
+        pesan =
+          "❌ Lokasi tidak tersedia.";
+      }
+
+      else if (error.code === 3) {
+        pesan =
+          "❌ Waktu mendapatkan lokasi habis.";
+      }
+
+
+      gpsStatus.innerHTML =
+        pesan;
+
+      document.getElementById("status").innerText =
+        "❌ Validasi lokasi gagal.";
+
+    },
+
+    {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0
+    }
+
+  );
+
+}
+
+
+// ==================================================
+// VALIDASI GPS KE SERVER
+// ==================================================
+
+function validasiLokasi(
+  token,
+  latitude,
+  longitude
+) {
+
+  const callbackName =
+    "nahyezGPS_" + Date.now();
+
+  const script =
+    document.createElement("script");
+
+
+  const url =
+    API_URL +
+    "?action=validasiLokasi" +
+    "&token=" +
+    encodeURIComponent(token) +
+    "&latitude=" +
+    encodeURIComponent(latitude) +
+    "&longitude=" +
+    encodeURIComponent(longitude) +
+    "&prefix=" +
+    callbackName;
+
+
+  window[callbackName] =
+    function(data) {
+
+      console.log(
+        "Hasil validasi lokasi:",
+        data
+      );
+
+
+      delete window[callbackName];
+
+      script.remove();
+
+
+      const gpsStatus =
+        document.getElementById("gpsStatus");
+
+
+      // ==========================================
+      // SERVER ERROR
+      // ==========================================
+
+      if (!data.success) {
+
+        gpsStatus.innerHTML = `
+          ❌ ${data.message}
+        `;
+
+        document.getElementById("status").innerText =
+          "❌ Validasi lokasi gagal.";
+
+        return;
+      }
+
+
+      // ==========================================
+      // DALAM AREA
+      // ==========================================
+
+      if (data.dalamArea) {
+
+        gpsStatus.innerHTML = `
+
+          <div style="
+            margin-top:10px;
+            padding:12px;
+            border-radius:12px;
+            background:#e8f7ee;
+            color:#198754;
+          ">
+
+            <b>✅ Lokasi Sesuai</b>
+
+            <br><br>
+
+            Jarak dari outlet:
+            <b>${data.jarak} meter</b>
+
+            <br>
+
+            Radius diizinkan:
+            <b>${data.radius} meter</b>
+
+          </div>
+
+        `;
+
+
+        document.getElementById("status").innerText =
+          "✅ Lokasi sesuai. Karyawan boleh melanjutkan absensi.";
+
+      }
+
+
+      // ==========================================
+      // DI LUAR AREA
+      // ==========================================
+
+      else {
+
+        gpsStatus.innerHTML = `
+
+          <div style="
+            margin-top:10px;
+            padding:12px;
+            border-radius:12px;
+            background:#fff0f0;
+            color:#dc3545;
+          ">
+
+            <b>❌ Lokasi Di Luar Area</b>
+
+            <br><br>
+
+            Jarak dari outlet:
+            <b>${data.jarak} meter</b>
+
+            <br>
+
+            Radius diizinkan:
+            <b>${data.radius} meter</b>
+
+          </div>
+
+        `;
+
+
+        document.getElementById("status").innerText =
+          "❌ Karyawan berada di luar area outlet.";
+
+      }
+
+    };
+
+
+  // ==============================================
+  // TIMEOUT GPS API
+  // ==============================================
+
+  window.setTimeout(function() {
+
+    if (window[callbackName]) {
+
+      delete window[callbackName];
+
+      script.remove();
+
+      document.getElementById("status").innerText =
+        "❌ Server tidak merespons.";
+
+    }
+
+  }, 15000);
+
+
+  script.src = url;
+
+  document.body.appendChild(script);
+}
+
+
+// ==================================================
+// ERROR SCANNER
+// ==================================================
 
 function onScanFailure(error) {
   // Error sementara diabaikan.
 }
 
 
-// ==========================================
+// ==================================================
 // QR SCANNER
-// ==========================================
+// ==================================================
 
-const scanner = new Html5QrcodeScanner(
-  "reader",
-  {
-    fps: 10,
+const scanner =
+  new Html5QrcodeScanner(
+    "reader",
+    {
+      fps: 10,
 
-    qrbox: {
-      width: 250,
-      height: 250
+      qrbox: {
+        width: 250,
+        height: 250
+      },
+
+      rememberLastUsedCamera: true,
+
+      supportedScanTypes: [
+        Html5QrcodeScanType.SCAN_TYPE_CAMERA
+      ]
     },
-
-    rememberLastUsedCamera: true,
-
-    supportedScanTypes: [
-      Html5QrcodeScanType.SCAN_TYPE_CAMERA
-    ]
-  },
-  false
-);
+    false
+  );
 
 
 scanner.render(
