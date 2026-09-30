@@ -143,6 +143,69 @@
 
   </div>
 
+  <div id="cameraSection" style="
+  display:none;
+  margin-top:20px;
+  text-align:center;
+">
+
+  <div style="
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:12px;
+    color:#333;
+  ">
+    📸 Foto Kesiapan Booth
+  </div>
+
+  <div style="
+    color:#666;
+    font-size:14px;
+    margin-bottom:12px;
+    line-height:1.5;
+  ">
+    Pastikan produk dan area booth sudah
+    tertata rapi sebelum mengambil foto.
+  </div>
+
+  <video
+    id="cameraPreview"
+    autoplay
+    playsinline
+    muted
+    style="
+      width:100%;
+      border-radius:16px;
+      background:#111;
+      display:block;
+    ">
+  </video>
+
+  <canvas
+    id="photoCanvas"
+    style="display:none;">
+  </canvas>
+
+  <button
+    id="takePhotoButton"
+    onclick="ambilFotoBooth()"
+    style="
+      width:100%;
+      margin-top:15px;
+      padding:15px;
+      border:none;
+      border-radius:14px;
+      background:#ed7612;
+      color:white;
+      font-size:17px;
+      font-weight:bold;
+      cursor:pointer;
+    ">
+    📸 AMBIL FOTO BOOTH
+  </button>
+
+</div>
+  
 <script>
 
 let sudahScan = false;
@@ -456,7 +519,7 @@ function validasiLokasi(
 
 
   window[callbackName] =
-    function(data) {
+    async function(data) {
 
       console.log(
         "Hasil validasi lokasi:",
@@ -526,6 +589,16 @@ function validasiLokasi(
         document.getElementById("status").innerText =
           "✅ Lokasi sesuai. Karyawan boleh melanjutkan absensi.";
 
+        // Hentikan scanner QR
+        try {
+          await scanner.clear();
+        } catch (error) {
+          console.log("Scanner sudah berhenti.");
+        }
+
+        // Buka kamera belakang untuk foto booth
+        bukaKameraBooth();
+        
       }
 
 
@@ -596,6 +669,333 @@ function validasiLokasi(
 }
 
 
+  // ==================================================
+// KAMERA BOOTH
+// ==================================================
+
+let cameraStream = null;
+
+
+// ==================================================
+// BUKA KAMERA BELAKANG
+// ==================================================
+
+async function bukaKameraBooth() {
+
+  const cameraSection =
+    document.getElementById("cameraSection");
+
+  const video =
+    document.getElementById("cameraPreview");
+
+  cameraSection.style.display = "block";
+
+  document.getElementById("status").innerText =
+    "📸 Membuka kamera belakang...";
+
+  try {
+
+    cameraStream =
+      await navigator.mediaDevices.getUserMedia({
+
+        video: {
+          facingMode: {
+            ideal: "environment"
+          },
+
+          width: {
+            ideal: 1920
+          },
+
+          height: {
+            ideal: 1080
+          }
+        },
+
+        audio: false
+
+      });
+
+
+    video.srcObject = cameraStream;
+
+    await video.play();
+
+
+    document.getElementById("status").innerText =
+      "📸 Kamera siap. Foto kesiapan booth.";
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Kamera error:",
+      error
+    );
+
+    document.getElementById("status").innerText =
+      "❌ Kamera belakang tidak dapat dibuka.";
+
+    cameraSection.innerHTML = `
+
+      <div style="
+        padding:15px;
+        border-radius:12px;
+        background:#fff0f0;
+        color:#dc3545;
+      ">
+
+        <b>❌ Kamera tidak dapat digunakan</b>
+
+        <br><br>
+
+        Pastikan izin kamera diberikan
+        kepada browser.
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+// ==================================================
+// AMBIL FOTO BOOTH
+// ==================================================
+
+function ambilFotoBooth() {
+
+  const video =
+    document.getElementById("cameraPreview");
+
+  const canvas =
+    document.getElementById("photoCanvas");
+
+  if (
+    !video.videoWidth ||
+    !video.videoHeight
+  ) {
+
+    alert(
+      "Kamera belum siap. Tunggu beberapa detik."
+    );
+
+    return;
+  }
+
+
+  canvas.width =
+    video.videoWidth;
+
+  canvas.height =
+    video.videoHeight;
+
+
+  const context =
+    canvas.getContext("2d");
+
+
+  context.drawImage(
+    video,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  // Matikan kamera setelah foto
+  matikanKameraBooth();
+
+
+  // Tampilkan hasil foto
+  const imageData =
+    canvas.toDataURL(
+      "image/jpeg",
+      0.90
+    );
+
+
+  document.getElementById("cameraSection").innerHTML = `
+
+    <div style="
+      font-size:20px;
+      font-weight:bold;
+      margin-bottom:12px;
+      color:#333;
+    ">
+      📸 Preview Foto Booth
+    </div>
+
+    <img
+      src="${imageData}"
+      style="
+        width:100%;
+        border-radius:16px;
+        display:block;
+      "
+    >
+
+    <button
+      onclick="ambilUlangFoto()"
+      style="
+        width:100%;
+        margin-top:12px;
+        padding:14px;
+        border:none;
+        border-radius:14px;
+        background:#777;
+        color:white;
+        font-size:16px;
+        font-weight:bold;
+      ">
+      🔄 AMBIL ULANG
+    </button>
+
+    <button
+      onclick="gunakanFoto()"
+      style="
+        width:100%;
+        margin-top:10px;
+        padding:14px;
+        border:none;
+        border-radius:14px;
+        background:#198754;
+        color:white;
+        font-size:16px;
+        font-weight:bold;
+      ">
+      ✅ GUNAKAN FOTO
+    </button>
+
+  `;
+
+
+  // Simpan sementara untuk tahap berikutnya
+  window.fotoBoothBase64 =
+    imageData;
+
+
+  document.getElementById("status").innerText =
+    "📸 Foto berhasil diambil. Periksa hasilnya.";
+}
+
+
+// ==================================================
+// MATIKAN KAMERA
+// ==================================================
+
+function matikanKameraBooth() {
+
+  if (cameraStream) {
+
+    cameraStream
+      .getTracks()
+      .forEach(function(track) {
+
+        track.stop();
+
+      });
+
+    cameraStream = null;
+  }
+
+}
+
+
+// ==================================================
+// AMBIL ULANG FOTO
+// ==================================================
+
+function ambilUlangFoto() {
+
+  document.getElementById(
+    "cameraSection"
+  ).innerHTML = `
+
+    <div style="
+      font-size:20px;
+      font-weight:bold;
+      margin-bottom:12px;
+      color:#333;
+    ">
+      📸 Foto Kesiapan Booth
+    </div>
+
+    <div style="
+      color:#666;
+      font-size:14px;
+      margin-bottom:12px;
+    ">
+      Pastikan booth dan produk sudah
+      tertata rapi.
+    </div>
+
+    <video
+      id="cameraPreview"
+      autoplay
+      playsinline
+      muted
+      style="
+        width:100%;
+        border-radius:16px;
+        background:#111;
+        display:block;
+      ">
+    </video>
+
+    <canvas
+      id="photoCanvas"
+      style="display:none;">
+    </canvas>
+
+    <button
+      id="takePhotoButton"
+      onclick="ambilFotoBooth()"
+      style="
+        width:100%;
+        margin-top:15px;
+        padding:15px;
+        border:none;
+        border-radius:14px;
+        background:#ed7612;
+        color:white;
+        font-size:17px;
+        font-weight:bold;
+      ">
+      📸 AMBIL FOTO BOOTH
+    </button>
+
+  `;
+
+  bukaKameraBooth();
+}
+
+
+// ==================================================
+// FOTO DIPILIH UNTUK ABSENSI
+// ==================================================
+
+function gunakanFoto() {
+
+  document.getElementById("status").innerText =
+    "✅ Foto booth siap digunakan.";
+
+  console.log(
+    "Foto booth siap dikirim:",
+    window.fotoBoothBase64
+  );
+
+  // BELUM DIKIRIM KE SERVER.
+  // Tahap berikutnya kita sambungkan
+  // ke Google Drive + Sheet Absensi.
+
+}
+
+  
 // ==================================================
 // ERROR SCANNER
 // ==================================================
