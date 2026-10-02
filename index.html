@@ -95,11 +95,313 @@
       color: #888;
       line-height: 1.5;
     }
+
+    /* =========================================
+   MODE FOTO BOOTH
+========================================= */
+
+#boothCameraPage {
+
+  display: none;
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  background: #fff4df;
+
+  padding: 18px;
+
+  overflow-y: auto;
+
+}
+
+
+/* Header kamera */
+
+.camera-header {
+
+  text-align: center;
+
+  margin-bottom: 15px;
+
+}
+
+
+.camera-brand {
+
+  font-size: 24px;
+
+  font-weight: bold;
+
+  color: #ed7612;
+
+}
+
+
+.camera-title {
+
+  font-size: 21px;
+
+  font-weight: bold;
+
+  color: #333;
+
+  margin-top: 8px;
+
+}
+
+
+#boothEmployee {
+
+  margin-top: 6px;
+
+  font-size: 14px;
+
+  color: #666;
+
+}
+
+
+/* Area video */
+
+.camera-preview-wrapper {
+
+  width: 100%;
+
+  background: #111;
+
+  border-radius: 20px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 8px 25px rgba(0,0,0,0.18);
+
+}
+
+
+/* Kamera */
+
+#cameraPreview {
+
+  width: 100%;
+
+  height: auto;
+
+  min-height: 350px;
+
+  max-height: 65vh;
+
+  object-fit: cover;
+
+  display: block;
+
+}
+
+
+/* Instruksi */
+
+.camera-instruction {
+
+  margin-top: 15px;
+
+  padding: 12px;
+
+  border-radius: 12px;
+
+  background: #fff;
+
+  color: #666;
+
+  font-size: 14px;
+
+  text-align: center;
+
+  line-height: 1.5;
+
+}
+
+
+/* Tombol foto */
+
+.btn-take-photo {
+
+  width: 100%;
+
+  margin-top: 15px;
+
+  padding: 16px;
+
+  border: none;
+
+  border-radius: 15px;
+
+  background: #ed7612;
+
+  color: white;
+
+  font-size: 18px;
+
+  font-weight: bold;
+
+  box-shadow:
+    0 5px 15px rgba(0,0,0,0.15);
+
+}
+
+
+/* Mode preview foto */
+
+#boothPhotoPage {
+
+  display: none;
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 10000;
+
+  background: #fff4df;
+
+  padding: 18px;
+
+  overflow-y: auto;
+
+}
+
+
+.photo-title {
+
+  text-align: center;
+
+  font-size: 21px;
+
+  font-weight: bold;
+
+  color: #333;
+
+  margin-bottom: 15px;
+
+}
+
+
+#boothPhotoPreview {
+
+  width: 100%;
+
+  border-radius: 18px;
+
+  display: block;
+
+  background: #111;
+
+}
+
+
+.photo-button {
+
+  width: 100%;
+
+  padding: 15px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  margin-top: 12px;
+
+  font-size: 17px;
+
+  font-weight: bold;
+
+}
+
+
+.btn-retake {
+
+  background: #777;
+
+  color: white;
+
+}
+
+
+.btn-use-photo {
+
+  background: #198754;
+
+  color: white;
+
+}
   </style>
 </head>
 
 <body>
 
+  <!-- =========================================
+     MODE FOTO BOOTH
+========================================= -->
+
+<div id="boothCameraPage">
+
+  <div class="camera-header">
+
+    <div class="camera-brand">
+      Nahyez Baby Meal
+    </div>
+
+    <div class="camera-title">
+      📸 Foto Kesiapan Booth
+    </div>
+
+    <div id="boothEmployee">
+      Pastikan booth sudah siap melayani pelanggan
+    </div>
+
+  </div>
+
+
+  <div class="camera-preview-wrapper">
+
+    <video
+      id="cameraPreview"
+      autoplay
+      playsinline
+      muted>
+    </video>
+
+  </div>
+
+
+  <div class="camera-instruction">
+
+    Pastikan produk, meja, dan area booth
+    terlihat jelas serta tertata rapi.
+
+  </div>
+
+
+  <button
+    id="takePhotoButton"
+    onclick="ambilFotoBooth()"
+    class="btn-take-photo">
+
+    📸 AMBIL FOTO BOOTH
+
+  </button>
+
+
+  <canvas
+    id="photoCanvas"
+    style="display:none;">
+  </canvas>
+
+</div>
+  
   <div class="container">
 
     <div class="logo">
@@ -202,6 +504,59 @@
       cursor:pointer;
     ">
     📸 AMBIL FOTO BOOTH
+  </button>
+
+</div>
+  
+<!-- =========================================
+     PREVIEW FOTO BOOTH
+========================================= -->
+
+<div id="boothPhotoPage">
+
+  <div class="photo-title">
+
+    📸 Periksa Foto Booth
+
+  </div>
+
+
+  <img
+    id="boothPhotoPreview"
+    src="">
+
+
+  <div style="
+    margin-top:12px;
+    padding:12px;
+    background:white;
+    border-radius:12px;
+    text-align:center;
+    color:#666;
+    font-size:14px;
+  ">
+
+    Pastikan seluruh area booth dan
+    produk terlihat dengan jelas.
+
+  </div>
+
+
+  <button
+    onclick="ambilUlangFoto()"
+    class="photo-button btn-retake">
+
+    🔄 AMBIL ULANG
+
+  </button>
+
+
+  <button
+    onclick="gunakanFoto()"
+    class="photo-button btn-use-photo">
+
+    ✅ GUNAKAN FOTO
+
   </button>
 
 </div>
@@ -596,6 +951,14 @@ function validasiLokasi(
           console.log("Scanner sudah berhenti.");
         }
 
+        document.getElementById(
+          "boothEmployee"
+        ).innerHTML = `
+          <b>${data.nama}</b>
+           &nbsp;•&nbsp;
+           ${data.outlet}
+         `;
+
         // Buka kamera belakang untuk foto booth
         bukaKameraBooth();
         
@@ -682,16 +1045,20 @@ let cameraStream = null;
 
 async function bukaKameraBooth() {
 
-  const cameraSection =
-    document.getElementById("cameraSection");
+  const cameraPage =
+    document.getElementById("boothCameraPage");
 
   const video =
     document.getElementById("cameraPreview");
 
-  cameraSection.style.display = "block";
+
+  // Tampilkan halaman kamera
+  cameraPage.style.display = "block";
+
 
   document.getElementById("status").innerText =
     "📸 Membuka kamera belakang...";
+
 
   try {
 
@@ -699,6 +1066,7 @@ async function bukaKameraBooth() {
       await navigator.mediaDevices.getUserMedia({
 
         video: {
+
           facingMode: {
             ideal: "environment"
           },
@@ -710,6 +1078,7 @@ async function bukaKameraBooth() {
           height: {
             ideal: 1080
           }
+
         },
 
         audio: false
@@ -717,13 +1086,15 @@ async function bukaKameraBooth() {
       });
 
 
-    video.srcObject = cameraStream;
+    video.srcObject =
+      cameraStream;
+
 
     await video.play();
 
 
     document.getElementById("status").innerText =
-      "📸 Kamera siap. Foto kesiapan booth.";
+      "📸 Kamera siap. Foto booth Anda.";
 
   }
 
@@ -734,24 +1105,20 @@ async function bukaKameraBooth() {
       error
     );
 
-    document.getElementById("status").innerText =
-      "❌ Kamera belakang tidak dapat dibuka.";
 
-    cameraSection.innerHTML = `
+    cameraPage.innerHTML = `
 
       <div style="
-        padding:15px;
-        border-radius:12px;
-        background:#fff0f0;
-        color:#dc3545;
+        text-align:center;
+        padding:30px;
       ">
 
-        <b>❌ Kamera tidak dapat digunakan</b>
+        <h2>❌ Kamera Tidak Dapat Dibuka</h2>
 
-        <br><br>
-
-        Pastikan izin kamera diberikan
-        kepada browser.
+        <p>
+          Pastikan izin kamera diberikan
+          kepada browser.
+        </p>
 
       </div>
 
@@ -774,6 +1141,7 @@ function ambilFotoBooth() {
   const canvas =
     document.getElementById("photoCanvas");
 
+
   if (
     !video.videoWidth ||
     !video.videoHeight
@@ -784,6 +1152,7 @@ function ambilFotoBooth() {
     );
 
     return;
+
   }
 
 
@@ -807,11 +1176,6 @@ function ambilFotoBooth() {
   );
 
 
-  // Matikan kamera setelah foto
-  matikanKameraBooth();
-
-
-  // Tampilkan hasil foto
   const imageData =
     canvas.toDataURL(
       "image/jpeg",
@@ -819,68 +1183,34 @@ function ambilFotoBooth() {
     );
 
 
-  document.getElementById("cameraSection").innerHTML = `
-
-    <div style="
-      font-size:20px;
-      font-weight:bold;
-      margin-bottom:12px;
-      color:#333;
-    ">
-      📸 Preview Foto Booth
-    </div>
-
-    <img
-      src="${imageData}"
-      style="
-        width:100%;
-        border-radius:16px;
-        display:block;
-      "
-    >
-
-    <button
-      onclick="ambilUlangFoto()"
-      style="
-        width:100%;
-        margin-top:12px;
-        padding:14px;
-        border:none;
-        border-radius:14px;
-        background:#777;
-        color:white;
-        font-size:16px;
-        font-weight:bold;
-      ">
-      🔄 AMBIL ULANG
-    </button>
-
-    <button
-      onclick="gunakanFoto()"
-      style="
-        width:100%;
-        margin-top:10px;
-        padding:14px;
-        border:none;
-        border-radius:14px;
-        background:#198754;
-        color:white;
-        font-size:16px;
-        font-weight:bold;
-      ">
-      ✅ GUNAKAN FOTO
-    </button>
-
-  `;
-
-
-  // Simpan sementara untuk tahap berikutnya
   window.fotoBoothBase64 =
     imageData;
 
 
+  // Matikan kamera
+  matikanKameraBooth();
+
+
+  // Sembunyikan kamera
+  document.getElementById(
+    "boothCameraPage"
+  ).style.display = "none";
+
+
+  // Tampilkan halaman preview
+  document.getElementById(
+    "boothPhotoPage"
+  ).style.display = "block";
+
+
+  document.getElementById(
+    "boothPhotoPreview"
+  ).src = imageData;
+
+
   document.getElementById("status").innerText =
-    "📸 Foto berhasil diambil. Periksa hasilnya.";
+    "📸 Foto berhasil diambil.";
+
 }
 
 
@@ -913,67 +1243,18 @@ function matikanKameraBooth() {
 function ambilUlangFoto() {
 
   document.getElementById(
-    "cameraSection"
-  ).innerHTML = `
+    "boothPhotoPage"
+  ).style.display = "none";
 
-    <div style="
-      font-size:20px;
-      font-weight:bold;
-      margin-bottom:12px;
-      color:#333;
-    ">
-      📸 Foto Kesiapan Booth
-    </div>
 
-    <div style="
-      color:#666;
-      font-size:14px;
-      margin-bottom:12px;
-    ">
-      Pastikan booth dan produk sudah
-      tertata rapi.
-    </div>
+  document.getElementById(
+    "boothCameraPage"
+  ).style.display = "block";
 
-    <video
-      id="cameraPreview"
-      autoplay
-      playsinline
-      muted
-      style="
-        width:100%;
-        border-radius:16px;
-        background:#111;
-        display:block;
-      ">
-    </video>
-
-    <canvas
-      id="photoCanvas"
-      style="display:none;">
-    </canvas>
-
-    <button
-      id="takePhotoButton"
-      onclick="ambilFotoBooth()"
-      style="
-        width:100%;
-        margin-top:15px;
-        padding:15px;
-        border:none;
-        border-radius:14px;
-        background:#ed7612;
-        color:white;
-        font-size:17px;
-        font-weight:bold;
-      ">
-      📸 AMBIL FOTO BOOTH
-    </button>
-
-  `;
 
   bukaKameraBooth();
-}
 
+}
 
 // ==================================================
 // FOTO DIPILIH UNTUK ABSENSI
