@@ -560,10 +560,105 @@
   </button>
 
 </div>
+
+  <!-- =========================================
+     HALAMAN ABSENSI BERHASIL
+========================================= -->
+
+<div id="successPage" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:11000;
+  background:#fff4df;
+  padding:25px;
+  text-align:center;
+">
+
+  <div style="
+    margin-top:40px;
+    font-size:65px;
+  ">
+    ✅
+  </div>
+
+
+  <div style="
+    margin-top:15px;
+    font-size:26px;
+    font-weight:bold;
+    color:#198754;
+  ">
+    ABSENSI BERHASIL
+  </div>
+
+
+  <div id="successEmployee" style="
+    margin-top:20px;
+    font-size:20px;
+    font-weight:bold;
+    color:#333;
+  ">
+  </div>
+
+
+  <div id="successOutlet" style="
+    margin-top:8px;
+    color:#666;
+  ">
+  </div>
+
+
+  <div id="successTime" style="
+    margin-top:20px;
+    padding:15px;
+    background:white;
+    border-radius:15px;
+    color:#555;
+    line-height:1.8;
+  ">
+  </div>
+
+
+  <div style="
+    margin-top:15px;
+    color:#198754;
+    font-size:14px;
+  ">
+    📸 Foto booth telah tersimpan
+  </div>
+
+
+  <button
+    onclick="selesaiAbsensi()"
+    style="
+      width:100%;
+      margin-top:25px;
+      padding:16px;
+      border:none;
+      border-radius:15px;
+      background:#ed7612;
+      color:white;
+      font-size:18px;
+      font-weight:bold;
+    "
+  >
+    SELESAI
+  </button>
+
+</div>
   
 <script>
 
 let sudahScan = false;
+
+// ==========================================
+// DATA ABSENSI SEMENTARA
+// ==========================================
+
+let absensiToken = '';
+let absensiLatitude = null;
+let absensiLongitude = null;
 
 const API_URL =
   'https://script.google.com/macros/s/AKfycbyrDQpUcEfVCuXtZBfCJdCsJfBIje0ohA82T6a3CtHXflH-e4drjyNdbLAVlPy5-6DnGw/exec';
@@ -770,6 +865,11 @@ function cekGPS(token) {
 
       const longitude =
         position.coords.longitude;
+
+      // Simpan koordinat untuk proses absensi
+      absensiToken = token;
+      absensiLatitude = latitude;
+      absensiLongitude = longitude;
 
       const accuracy =
         position.coords.accuracy;
@@ -1260,22 +1360,259 @@ function ambilUlangFoto() {
 // FOTO DIPILIH UNTUK ABSENSI
 // ==================================================
 
-function gunakanFoto() {
+// ==================================================
+// KIRIM ABSENSI KE SERVER
+// ==================================================
 
-  document.getElementById("status").innerText =
-    "✅ Foto booth siap digunakan.";
+async function gunakanFoto() {
 
-  console.log(
-    "Foto booth siap dikirim:",
-    window.fotoBoothBase64
-  );
+  // ==============================================
+  // CEK DATA
+  // ==============================================
 
-  // BELUM DIKIRIM KE SERVER.
-  // Tahap berikutnya kita sambungkan
-  // ke Google Drive + Sheet Absensi.
+  if (!window.fotoBoothBase64) {
+
+    alert(
+      "Foto booth belum tersedia."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !absensiToken ||
+    absensiLatitude === null ||
+    absensiLongitude === null
+  ) {
+
+    alert(
+      "Data lokasi belum tersedia. Silakan ulangi proses absensi."
+    );
+
+    return;
+
+  }
+
+
+  // ==============================================
+  // UBAH STATUS TOMBOL
+  // ==============================================
+
+  const button =
+    document.querySelector(
+      ".btn-use-photo"
+    );
+
+
+  if (button) {
+
+    button.disabled = true;
+
+    button.innerText =
+      "⏳ MENYIMPAN ABSENSI...";
+
+  }
+
+
+  document.getElementById(
+    "status"
+  ).innerText =
+    "⏳ Mengirim foto dan data absensi ke server...";
+
+
+  try {
+
+    // ==========================================
+    // DATA YANG DIKIRIM
+    // ==========================================
+
+    const data = {
+
+      token:
+        absensiToken,
+
+      latitude:
+        absensiLatitude,
+
+      longitude:
+        absensiLongitude,
+
+      foto:
+        window.fotoBoothBase64
+
+    };
+
+
+    console.log(
+      "Mengirim absensi:",
+      {
+        token: data.token,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        ukuranFoto:
+          data.foto.length
+      }
+    );
+
+
+    // ==========================================
+    // KIRIM POST KE APPS SCRIPT
+    // ==========================================
+
+    const response =
+      await fetch(
+        API_URL,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+
+          body:
+            JSON.stringify(data)
+        }
+      );
+
+
+    // ==========================================
+    // BACA RESPONSE SERVER
+    // ==========================================
+
+    const hasil =
+      await response.json();
+
+
+    console.log(
+      "Response server:",
+      hasil
+    );
+
+
+    // ==========================================
+    // BERHASIL
+    // ==========================================
+
+    if (hasil.success) {
+
+      // Sembunyikan halaman preview
+      document.getElementById(
+        "boothPhotoPage"
+      ).style.display = "none";
+
+
+      // Tampilkan halaman sukses
+      tampilkanAbsensiBerhasil(
+        hasil
+      );
+
+
+      return;
+
+    }
+
+
+    // ==========================================
+    // SERVER MENOLAK
+    // ==========================================
+
+    throw new Error(
+      hasil.message ||
+      "Absensi gagal disimpan."
+    );
+
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Gagal menyimpan absensi:",
+      error
+    );
+
+
+    document.getElementById(
+      "status"
+    ).innerText =
+      "❌ Absensi gagal disimpan.";
+
+
+    alert(
+      "❌ Absensi gagal disimpan.\n\n" +
+      error.message
+    );
+
+
+    // Aktifkan kembali tombol
+    if (button) {
+
+      button.disabled = false;
+
+      button.innerText =
+        "✅ GUNAKAN FOTO";
+
+    }
+
+  }
 
 }
 
+  // ==================================================
+// TAMPILKAN ABSENSI BERHASIL
+// ==================================================
+
+function tampilkanAbsensiBerhasil(
+  hasil
+) {
+
+  document.getElementById(
+    "successEmployee"
+  ).innerText =
+    hasil.nama;
+
+
+  document.getElementById(
+    "successOutlet"
+  ).innerText =
+    hasil.outlet;
+
+
+  document.getElementById(
+    "successTime"
+  ).innerHTML =
+
+    "🕐 Waktu Server<br>" +
+
+    "<b>" +
+    hasil.timestamp +
+    "</b>" +
+
+    "<br><br>" +
+
+    "📍 Jarak dari outlet<br>" +
+
+    "<b>" +
+    hasil.jarak +
+    " meter" +
+    "</b>";
+
+
+  document.getElementById(
+    "successPage"
+  ).style.display =
+    "block";
+
+}
+
+  function selesaiAbsensi() {
+
+  window.location.reload();
+
+}
   
 // ==================================================
 // ERROR SCANNER
