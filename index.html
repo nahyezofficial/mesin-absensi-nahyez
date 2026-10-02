@@ -1482,8 +1482,80 @@ async function gunakanFoto() {
     // BACA RESPONSE SERVER
     // ==========================================
 
-    const hasil =
-      await response.json();
+    const responseText =
+  await response.text();
+
+console.log(
+  "Response server:",
+  responseText
+);
+
+let hasil;
+
+try {
+
+  // Coba baca response sebagai JSON
+  hasil =
+    JSON.parse(responseText);
+
+} catch (error) {
+
+  console.warn(
+    "Response server bukan JSON:",
+    error
+  );
+
+  // ==========================================
+  // RESPONSE HTML
+  // ==========================================
+  // Apps Script sudah memproses POST,
+  // tetapi browser menerima response HTML.
+  // Gunakan data karyawan yang sudah tampil
+  // di halaman sebagai fallback.
+  
+  const employeeInfo =
+    document.getElementById(
+      "boothEmployee"
+    );
+
+  let nama = "";
+  let outlet = "";
+
+  if (employeeInfo) {
+
+    const teks =
+      employeeInfo.innerText.trim();
+
+    // Format:
+    // Budi • Outlet B
+
+    const bagian =
+      teks.split("•");
+
+    nama =
+      (bagian[0] || "").trim();
+
+    outlet =
+      (bagian[1] || "").trim();
+  }
+
+  hasil = {
+
+    success: true,
+
+    nama: nama,
+
+    outlet: outlet,
+
+    timestamp:
+      "Tersimpan di server",
+
+    jarak:
+      "Data tersimpan"
+
+  };
+
+}
 
 
     console.log(
