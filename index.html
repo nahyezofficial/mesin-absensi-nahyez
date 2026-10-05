@@ -607,10 +607,8 @@ body {
   
 <div id="boothPhotoPage">
 
-  <div class="photo-title">
-
+  <div class="photo-title" id="judulPreviewFoto">
     📸 Periksa Foto Booth
-
   </div>
 
 
@@ -933,21 +931,27 @@ function pilihJenisAbsensi(jenis) {
 
   if (jenisAbsensi === "MASUK") {
 
-    document.getElementById("judulFotoAbsensi").innerText =
-      "Foto Kesiapan Booth";
+  document.getElementById("judulFotoAbsensi").innerText =
+    "Foto Kesiapan Booth";
 
-    document.getElementById("takePhotoButton").innerText =
-      "📸 AMBIL FOTO BOOTH";
+  document.getElementById("takePhotoButton").innerText =
+    "📸 AMBIL FOTO BOOTH";
 
-  } else if (jenisAbsensi === "PULANG") {
+  document.getElementById("judulPreviewFoto").innerText =
+    "📸 Periksa Foto Booth";
 
-    document.getElementById("judulFotoAbsensi").innerText =
-      "Foto Sisa Bubur";
+} else if (jenisAbsensi === "PULANG") {
 
-    document.getElementById("takePhotoButton").innerText =
-      "📸 AMBIL FOTO SISA BUBUR";
+  document.getElementById("judulFotoAbsensi").innerText =
+    "Foto Sisa Bubur";
 
-  }
+  document.getElementById("takePhotoButton").innerText =
+    "📸 AMBIL FOTO SISA BUBUR";
+
+  document.getElementById("judulPreviewFoto").innerText =
+    "📸 Periksa Foto Sisa Bubur";
+
+}
 
   console.log(
     "Jenis absensi dipilih:",
