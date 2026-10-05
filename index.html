@@ -512,6 +512,75 @@
      PREVIEW FOTO BOOTH
 ========================================= -->
 
+  <div id="jenisAbsensiPage" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  background:#fff4df;
+  padding:25px;
+  text-align:center;
+">
+
+  <div style="
+    margin-top:45px;
+    font-size:32px;
+    font-weight:bold;
+    color:#333;
+  ">
+    Pilih Jenis Absensi
+  </div>
+
+  <div style="
+    margin-top:15px;
+    font-size:18px;
+    color:#666;
+  ">
+    Silakan pilih jenis absensi Anda
+  </div>
+
+  <button
+    onclick="pilihJenisAbsensi('MASUK')"
+    style="
+      display:block;
+      width:100%;
+      max-width:380px;
+      margin:45px auto 18px;
+      padding:22px;
+      border:none;
+      border-radius:18px;
+      background:#198754;
+      color:white;
+      font-size:24px;
+      font-weight:bold;
+      box-shadow:0 5px 12px rgba(0,0,0,.15);
+    "
+  >
+    🟢 ABSEN MASUK
+  </button>
+
+  <button
+    onclick="pilihJenisAbsensi('PULANG')"
+    style="
+      display:block;
+      width:100%;
+      max-width:380px;
+      margin:0 auto;
+      padding:22px;
+      border:none;
+      border-radius:18px;
+      background:#0d6efd;
+      color:white;
+      font-size:24px;
+      font-weight:bold;
+      box-shadow:0 5px 12px rgba(0,0,0,.15);
+    "
+  >
+    🔵 ABSEN PULANG
+  </button>
+
+</div>
+  
 <div id="boothPhotoPage">
 
   <div class="photo-title">
@@ -659,7 +728,8 @@ let sudahScan = false;
 let absensiToken = '';
 let absensiLatitude = null;
 let absensiLongitude = null;
-
+let jenisAbsensi = '';
+  
 const API_URL =
   'https://script.google.com/macros/s/AKfycbyrDQpUcEfVCuXtZBfCJdCsJfBIje0ohA82T6a3CtHXflH-e4drjyNdbLAVlPy5-6DnGw/exec';
 
@@ -829,7 +899,26 @@ function cekKaryawan(token) {
   document.body.appendChild(script);
 }
 
+// ==================================================
+// PILIH JENIS ABSENSI
+// ==================================================
 
+function pilihJenisAbsensi(jenis) {
+
+  jenisAbsensi = jenis;
+
+  console.log(
+    "Jenis absensi dipilih:",
+    jenisAbsensi
+  );
+
+  document.getElementById(
+    "jenisAbsensiPage"
+  ).style.display = "none";
+
+  bukaKameraBooth();
+}
+  
 // ==================================================
 // AMBIL GPS HP
 // ==================================================
@@ -1059,8 +1148,9 @@ function validasiLokasi(
            ${data.outlet}
          `;
 
-        // Buka kamera belakang untuk foto booth
-        bukaKameraBooth();
+        document.getElementById(
+          "jenisAbsensiPage"
+        ).style.display = "block";
         
       }
 
