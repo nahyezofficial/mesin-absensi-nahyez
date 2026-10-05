@@ -932,11 +932,21 @@ function pilihJenisAbsensi(jenis) {
   jenisAbsensi = jenis;
 
   if (jenisAbsensi === "MASUK") {
+
     document.getElementById("judulFotoAbsensi").innerText =
       "Foto Kesiapan Booth";
+
+    document.getElementById("takePhotoButton").innerText =
+      "📸 AMBIL FOTO BOOTH";
+
   } else if (jenisAbsensi === "PULANG") {
+
     document.getElementById("judulFotoAbsensi").innerText =
       "Foto Sisa Bubur";
+
+    document.getElementById("takePhotoButton").innerText =
+      "📸 AMBIL FOTO SISA BUBUR";
+
   }
 
   console.log(
