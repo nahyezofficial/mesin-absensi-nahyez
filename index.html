@@ -457,8 +457,10 @@
     margin-bottom:12px;
     color:#333;
   ">
+    <div id="judulFotoAbsensi">
     📸 Foto Kesiapan Booth
-  </div>
+   </div>
+</div>
 
   <div style="
     color:#666;
@@ -906,6 +908,14 @@ function cekKaryawan(token) {
 function pilihJenisAbsensi(jenis) {
 
   jenisAbsensi = jenis;
+
+  if (jenisAbsensi === "MASUK") {
+    document.getElementById("judulFotoAbsensi").innerText =
+      "Foto Kesiapan Booth";
+  } else if (jenisAbsensi === "PULANG") {
+    document.getElementById("judulFotoAbsensi").innerText =
+      "Foto Sisa Bubur";
+  }
 
   console.log(
     "Jenis absensi dipilih:",
