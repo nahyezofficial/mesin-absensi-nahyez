@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Dashboard Admin - Nahyez Baby Meal</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+      background: #f4f7fb;
+      color: #263238;
+    }
+
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+      background: linear-gradient(
+        135deg,
+        #6f8fb3,
+        #9fb6d0
+      );
+
+      color: white;
+
+      padding: 22px;
+
+      border-radius: 20px;
+
+      margin-bottom: 20px;
+
+      box-shadow:
+        0 8px 24px rgba(
+          0,
+          0,
+          0,
+          0.08
+        );
+    }
+
+
+    .header h1 {
+      margin: 0;
+
+      font-size: 25px;
+
+      font-weight: 700;
+    }
+
+
+    .header p {
+      margin:
+        6px
+        0
+        0;
+
+      opacity: 0.9;
+
+      font-size: 14px;
+    }
+
+
+    /* =========================
+       FILTER
+    ========================= */
+
+    .filter-box {
+      background: white;
+
+      padding: 16px;
+
+      border-radius: 16px;
+
+      margin-bottom: 20px;
+
+      display: flex;
+
+      gap: 12px;
+
+      align-items: center;
+
+      flex-wrap: wrap;
+
+      box-shadow:
+        0 4px 16px rgba(
+          0,
+          0,
+          0,
+          0.05
+        );
+    }
+
+
+    .filter-box label {
+      font-size: 14px;
+
+      font-weight: 600;
+    }
+
+
+    .filter-box select {
+
+      padding: 11px 14px;
+
+      border-radius: 10px;
+
+      border: 1px solid #d6dce5;
+
+      background: white;
+
+      font-size: 14px;
+
+      min-width: 180px;
+
+      outline: none;
+    }
+
+
+    .btn-refresh {
+
+      border: none;
+
+      border-radius: 10px;
+
+      padding:
+        11px
+        16px;
+
+      background: #6f8fb3;
+
+      color: white;
+
+      font-weight: 600;
+
+      cursor: pointer;
+    }
+
+
+    .btn-refresh:active {
+      transform: scale(0.98);
+    }
+
+
+    /* =========================
+       STATISTIC CARDS
+    ========================= */
+
+    .stats-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          4,
+          1fr
+        );
+
+      gap: 15px;
+
+      margin-bottom: 22px;
+    }
+
+
+    .stat-card {
+
+      background: white;
+
+      border-radius: 18px;
+
+      padding: 18px;
+
+      box-shadow:
+        0 5px 18px rgba(
+          0,
+          0,
+          0,
+          0.05
+        );
+    }
+
+
+    .stat-icon {
+
+      font-size: 25px;
+
+      margin-bottom: 8px;
+    }
+
+
+    .stat-title {
+
+      font-size: 13px;
+
+      color: #718096;
+
+      margin-bottom: 5px;
+    }
+
+
+    .stat-value {
+
+      font-size: 30px;
+
+      font-weight: 800;
+
+      color: #263238;
+    }
+
+
+    /* =========================
+       KINERJA
+    ========================= */
+
+    .section {
+
+      background: white;
+
+      border-radius: 18px;
+
+      padding: 20px;
+
+      box-shadow:
+        0 5px 18px rgba(
+          0,
+          0,
+          0,
+          0.05
+        );
+    }
+
+
+    .section-header {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 10px;
+
+      margin-bottom: 16px;
+
+      flex-wrap: wrap;
+    }
+
+
+    .section-title {
+
+      margin: 0;
+
+      font-size: 19px;
+
+      font-weight: 700;
+    }
+
+
+    .periode {
+
+      font-size: 13px;
+
+      color: #718096;
+    }
+
+
+    .table-wrapper {
+
+      width: 100%;
+
+      overflow-x: auto;
+    }
+
+
+    table {
+
+      width: 100%;
+
+      border-collapse: collapse;
+
+      min-width: 760px;
+    }
+
+
+    th {
+
+      text-align: left;
+
+      background: #f5f7fa;
+
+      padding: 12px;
+
+      font-size: 12px;
+
+      color: #687386;
+
+      white-space: nowrap;
+    }
+
+
+    td {
+
+      padding: 13px 12px;
+
+      border-bottom:
+        1px solid
+        #edf0f4;
+
+      font-size: 13px;
+
+      white-space: nowrap;
+    }
+
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+
+    .nama {
+
+      font-weight: 700;
+
+      color: #263238;
+    }
+
+
+    .id {
+
+      font-size: 11px;
+
+      color: #8994a3;
+
+      margin-top: 3px;
+    }
+
+
+    .badge {
+
+      display: inline-block;
+
+      padding:
+        5px
+        8px;
+
+      border-radius: 8px;
+
+      font-size: 11px;
+
+      font-weight: 700;
+    }
+
+
+    .badge-green {
+
+      background: #e8f7ef;
+
+      color: #198754;
+    }
+
+
+    .badge-orange {
+
+      background: #fff1df;
+
+      color: #d97706;
+    }
+
+
+    .badge-red {
+
+      background: #fdecec;
+
+      color: #dc3545;
+    }
+
+
+    .badge-blue {
+
+      background: #eaf2ff;
+
+      color: #0d6efd;
+    }
+
+
+    .loading {
+
+      text-align: center;
+
+      padding: 30px;
+
+      color: #718096;
+    }
+
+
+    .error {
+
+      background: #fdecec;
+
+      color: #b42318;
+
+      padding: 14px;
+
+      border-radius: 12px;
+
+      margin-bottom: 15px;
+
+      display: none;
+    }
+
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (
+      max-width: 700px
+    ) {
+
+      .container {
+        padding: 12px;
+      }
+
+
+      .header {
+
+        padding: 18px;
+
+        border-radius: 16px;
+      }
+
+
+      .header h1 {
+
+        font-size: 21px;
+      }
+
+
+      .stats-grid {
+
+        grid-template-columns:
+          repeat(
+            2,
+            1fr
+          );
+
+        gap: 10px;
+      }
+
+
+      .stat-card {
+
+        padding: 15px;
+
+        border-radius: 15px;
+      }
+
+
+      .stat-value {
+
+        font-size: 26px;
+      }
+
+
+      .filter-box {
+
+        align-items:
+          stretch;
+      }
+
+
+      .filter-box select,
+      .btn-refresh {
+
+        width: 100%;
+      }
+
+
+      .section {
+
+        padding: 15px;
+
+        border-radius: 16px;
+      }
+
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+  <div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+      <h1>
+        Dashboard Admin
+      </h1>
+
+      <p>
+        NAHYEZ BABY MEAL
+      </p>
+
+    </div>
+
+
+    <!-- FILTER -->
+
+    <div class="filter-box">
+
+      <label
+        for="bulan"
+      >
+        Periode:
+      </label>
+
+      <select
+        id="bulan"
+      ></select>
+
+      <button
+        class="btn-refresh"
+        id="btnRefresh"
+      >
+        🔄 Refresh
+      </button>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+      id="errorBox"
+      class="error"
+    ></div>
+
+
+    <!-- STATISTICS -->
+
+    <div
+      class="stats-grid"
+    >
+
+      <div
+        class="stat-card"
+      >
+
+        <div
+          class="stat-icon"
+        >
+          👥
+        </div>
+
+        <div
+          class="stat-title"
+        >
+          Karyawan Aktif
+        </div>
+
+        <div
+          class="stat-value"
+          id="jumlahKaryawan"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div
+        class="stat-card"
+      >
+
+        <div
+          class="stat-icon"
+        >
+          🏪
+        </div>
+
+        <div
+          class="stat-title"
+        >
+          Outlet Aktif
+        </div>
+
+        <div
+          class="stat-value"
+          id="jumlahOutlet"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div
+        class="stat-card"
+      >
+
+        <div
+          class="stat-icon"
+        >
+          🟢
+        </div>
+
+        <div
+          class="stat-title"
+        >
+          MASUK Hari Ini
+        </div>
+
+        <div
+          class="stat-value"
+          id="jumlahMasuk"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div
+        class="stat-card"
+      >
+
+        <div
+          class="stat-icon"
+        >
+          🔵
+        </div>
+
+        <div
+          class="stat-title"
+        >
+          PULANG Hari Ini
+        </div>
+
+        <div
+          class="stat-value"
+          id="jumlahPulang"
+        >
+          -
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- KINERJA -->
+
+    <div
+      class="section"
+    >
+
+      <div
+        class="section-header"
+      >
+
+        <h2
+          class="section-title"
+        >
+          📊 Kinerja Karyawan
+        </h2>
+
+        <div
+          class="periode"
+          id="periodeText"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div
+        id="loading"
+        class="loading"
+      >
+        Memuat data...
+      </div>
+
+
+      <div
+        class="table-wrapper"
+        id="tableWrapper"
+        style="display:none;"
+      >
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Karyawan
+              </th>
+
+              <th>
+                Outlet
+              </th>
+
+              <th>
+                Hari Kerja
+              </th>
+
+              <th>
+                Tepat Waktu
+              </th>
+
+              <th>
+                Terlambat
+              </th>
+
+              <th>
+                Tidak Absen
+              </th>
+
+              <th>
+                Persentase
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody
+            id="tableBody"
+          ></tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+<script>
+
+  // ==========================================
+  // API
+  // ==========================================
+
+  const API_URL =
+    'https://script.google.com/macros/s/AKfycbyrDQpUcEfVCuXtZBfCJdCsJfBIje0ohA82T6a3CtHXflH-e4drjyNdbLAVlPy5-6DnGw/exec';
+
+
+  // ==========================================
+  // ELEMENT
+  // ==========================================
+
+  const bulanSelect =
+    document.getElementById(
+      'bulan'
+    );
+
+  const btnRefresh =
+    document.getElementById(
+      'btnRefresh'
+    );
+
+  const errorBox =
+    document.getElementById(
+      'errorBox'
+    );
+
+
+  // ==========================================
+  // BULAN
+  // ==========================================
+
+  const namaBulan = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember'
+  ];
+
+
+  const tahunSekarang =
+    new Date().getFullYear();
+
+
+  for (
+    let bulan = 1;
+    bulan <= 12;
+    bulan++
+  ) {
+
+    const option =
+      document.createElement(
+        'option'
+      );
+
+    option.value =
+      bulan;
+
+    option.textContent =
+      namaBulan[
+        bulan - 1
+      ] +
+      ' ' +
+      tahunSekarang;
+
+    bulanSelect.appendChild(
+      option
+    );
+  }
+
+
+  bulanSelect.value =
+    new Date().getMonth() + 1;
+
+
+  // ==========================================
+  // FORMAT PERSENTASE
+  // ==========================================
+
+  function formatPersentase(
+    value
+  ) {
+
+    return Number(value)
+      .toLocaleString(
+        'id-ID',
+        {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1
+        }
+      ) + '%';
+  }
+
+
+  // ==========================================
+  // LOAD DASHBOARD
+  // ==========================================
+
+  async function loadDashboard() {
+
+    errorBox.style.display =
+      'none';
+
+    document.getElementById(
+      'loading'
+    ).style.display =
+      'block';
+
+    document.getElementById(
+      'tableWrapper'
+    ).style.display =
+      'none';
+
+
+    const tahun =
+      tahunSekarang;
+
+    const bulan =
+      Number(
+        bulanSelect.value
+      );
+
+
+    const url =
+      API_URL +
+      '?action=dashboard' +
+      '&tahun=' +
+      tahun +
+      '&bulan=' +
+      bulan;
+
+
+    try {
+
+      const response =
+        await fetch(url);
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          'HTTP ' +
+          response.status
+        );
+
+      }
+
+
+      const data =
+        await response.json();
+
+
+      if (
+        !data ||
+        data.success !== true
+      ) {
+
+        throw new Error(
+          'API mengembalikan data tidak valid.'
+        );
+
+      }
+
+
+      // ======================================
+      // STATISTIK
+      // ======================================
+
+      const statistik =
+        data.statistik;
+
+
+      document.getElementById(
+        'jumlahKaryawan'
+      ).textContent =
+        statistik.jumlahKaryawanAktif;
+
+
+      document.getElementById(
+        'jumlahOutlet'
+      ).textContent =
+        statistik.jumlahOutlet;
+
+
+      document.getElementById(
+        'jumlahMasuk'
+      ).textContent =
+        statistik.jumlahMasukHariIni;
+
+
+      document.getElementById(
+        'jumlahPulang'
+      ).textContent =
+        statistik.jumlahPulangHariIni;
+
+
+      // ======================================
+      // PERIODE
+      // ======================================
+
+      document.getElementById(
+        'periodeText'
+      ).textContent =
+        namaBulan[
+          bulan - 1
+        ] +
+        ' ' +
+        tahun;
+
+
+      // ======================================
+      // TABEL
+      // ======================================
+
+      const tbody =
+        document.getElementById(
+          'tableBody'
+        );
+
+
+      tbody.innerHTML =
+        '';
+
+
+      const daftar =
+        data.kinerja.data || [];
+
+
+      if (
+        daftar.length === 0
+      ) {
+
+        tbody.innerHTML =
+          '<tr>' +
+          '<td colspan="7" ' +
+          'style="text-align:center;">' +
+          'Tidak ada data karyawan.' +
+          '</td>' +
+          '</tr>';
+
+      } else {
+
+        daftar.forEach(
+          function(item) {
+
+            const row =
+              document.createElement(
+                'tr'
+              );
+
+
+            let badgePersentase =
+              'badge-red';
+
+
+            if (
+              item.persentaseTepatWaktu >= 90
+            ) {
+
+              badgePersentase =
+                'badge-green';
+
+            } else if (
+              item.persentaseTepatWaktu >= 75
+            ) {
+
+              badgePersentase =
+                'badge-orange';
+
+            }
+
+
+            row.innerHTML =
+
+              '<td>' +
+
+                '<div class="nama">' +
+
+                  item.nama +
+
+                '</div>' +
+
+                '<div class="id">' +
+
+                  item.idKaryawan +
+
+                '</div>' +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                item.outletId +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                item.hariKerja +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                '<span class="badge badge-green">' +
+
+                  item.tepatWaktu +
+
+                '</span>' +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                '<span class="badge badge-orange">' +
+
+                  item.terlambat +
+
+                '</span>' +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                '<span class="badge badge-red">' +
+
+                  item.tidakAbsen +
+
+                '</span>' +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                '<span class="badge ' +
+
+                  badgePersentase +
+
+                '">' +
+
+                  formatPersentase(
+
+                    item.persentaseTepatWaktu
+
+                  ) +
+
+                '</span>' +
+
+              '</td>';
+
+
+            tbody.appendChild(
+              row
+            );
+
+          }
+        );
+
+      }
+
+
+      document.getElementById(
+        'loading'
+      ).style.display =
+        'none';
+
+
+      document.getElementById(
+        'tableWrapper'
+      ).style.display =
+        'block';
+
+
+    } catch (error) {
+
+      console.error(
+        error
+      );
+
+
+      document.getElementById(
+        'loading'
+      ).style.display =
+        'none';
+
+
+      errorBox.textContent =
+        'Gagal memuat dashboard: ' +
+        error.message;
+
+
+      errorBox.style.display =
+        'block';
+
+    }
+
+  }
+
+
+  // ==========================================
+  // EVENT
+  // ==========================================
+
+  btnRefresh.addEventListener(
+    'click',
+    loadDashboard
+  );
+
+
+  bulanSelect.addEventListener(
+    'change',
+    loadDashboard
+  );
+
+
+  // ==========================================
+  // LOAD AWAL
+  // ==========================================
+
+  loadDashboard();
+
+</script>
+
+</body>
+</html>
