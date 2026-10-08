@@ -733,17 +733,99 @@
 
   /* Nilai */
 
-  .kinerja-table tbody td:nth-child(n+2) {
+  /* ======================================
+     WARNA BARIS KINERJA
+  ====================================== */
+
+  .kinerja-table tbody td:nth-child(2),
+  .kinerja-table tbody td:nth-child(3),
+  .kinerja-table tbody td:nth-child(4),
+  .kinerja-table tbody td:nth-child(5),
+  .kinerja-table tbody td:nth-child(6),
+  .kinerja-table tbody td:nth-child(7) {
+
+    border-radius: 10px;
+
+    padding: 10px 12px;
+
+    margin-bottom: 5px;
+
+    box-sizing: border-box;
+
     font-size: 14px;
+
     font-weight: 700;
 
     color: #263238;
 
     overflow: hidden;
+
+    white-space: nowrap;
   }
 
-  .kinerja-table tbody td:nth-child(n+2) {
-    white-space: nowrap;
+
+  /* OUTLET */
+
+  .kinerja-table tbody td:nth-child(2) {
+    background: #eef5ff;
+  }
+
+
+  /* HARI KERJA */
+
+  .kinerja-table tbody td:nth-child(3) {
+    background: #f3f5f7;
+  }
+
+
+  /* TEPAT WAKTU */
+
+  .kinerja-table tbody td:nth-child(4) {
+    background: #e9f8ef;
+  }
+
+
+  /* TERLAMBAT */
+
+  .kinerja-table tbody td:nth-child(5) {
+    background: #fff4df;
+  }
+
+
+  /* TIDAK ABSEN */
+
+  .kinerja-table tbody td:nth-child(6) {
+    background: #fdecef;
+  }
+
+
+  /* PERSENTASE */
+
+  .kinerja-table tbody td:nth-child(7) {
+    background: #fdecef;
+  }
+
+
+  /* Label di dalam baris */
+
+  .kinerja-table tbody td:nth-child(n+2)::before {
+    flex: 0 1 auto;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    color: #687386;
+
+    text-align: left;
+  }
+
+
+  /* Hilangkan background lama pada elemen nilai
+     agar warna memenuhi seluruh baris */
+
+  .kinerja-table tbody td:nth-child(n+2) * {
+    background: transparent !important;
   }
 
 }
