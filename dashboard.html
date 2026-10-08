@@ -441,6 +441,100 @@
        MOBILE
     ========================= */
 
+    /* =========================
+   ABSENSI HARI INI
+========================= */
+
+.absensi-item {
+
+  border:
+    1px solid
+    #edf0f4;
+
+  border-radius: 14px;
+
+  padding: 15px;
+
+  margin-bottom: 10px;
+
+  background: #ffffff;
+}
+
+
+.absensi-top {
+
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 8px;
+}
+
+
+.absensi-jenis {
+
+  font-size: 13px;
+
+  font-weight: 800;
+}
+
+
+.absensi-jenis.masuk {
+
+  color: #198754;
+}
+
+
+.absensi-jenis.pulang {
+
+  color: #0d6efd;
+}
+
+
+.absensi-jam {
+
+  font-size: 18px;
+
+  font-weight: 800;
+
+  color: #263238;
+}
+
+
+.absensi-nama {
+
+  font-weight: 700;
+
+  font-size: 14px;
+}
+
+
+.absensi-id {
+
+  font-size: 11px;
+
+  color: #8994a3;
+
+  margin-top: 2px;
+}
+
+
+.absensi-detail {
+
+  font-size: 12px;
+
+  color: #687386;
+
+  margin-top: 8px;
+
+  line-height: 1.6;
+}
+    
     @media (
       max-width: 700px
     ) {
@@ -679,6 +773,56 @@
 
     </div>
 
+    <!-- ABSENSI HARI INI -->
+
+<div
+  class="section"
+  style="margin-bottom: 20px;"
+>
+
+  <div
+    class="section-header"
+  >
+
+    <h2
+      class="section-title"
+    >
+      📋 Absensi Hari Ini
+    </h2>
+
+    <div
+      class="periode"
+      id="absensiTanggal"
+    >
+      -
+    </div>
+
+  </div>
+
+
+  <div
+    id="absensiLoading"
+    class="loading"
+  >
+    Memuat absensi...
+  </div>
+
+
+  <div
+    id="absensiKosong"
+    class="loading"
+    style="display:none;"
+  >
+    Belum ada absensi hari ini.
+  </div>
+
+
+  <div
+    id="absensiList"
+    style="display:none;"
+  ></div>
+
+</div>
 
     <!-- KINERJA -->
 
@@ -943,6 +1087,157 @@
         );
 
       }
+
+      // ======================================
+// ABSENSI HARI INI
+// ======================================
+
+const absensi =
+  data.absensiHariIni;
+
+
+const absensiTanggal =
+  document.getElementById(
+    'absensiTanggal'
+  );
+
+
+const absensiLoading =
+  document.getElementById(
+    'absensiLoading'
+  );
+
+
+const absensiKosong =
+  document.getElementById(
+    'absensiKosong'
+  );
+
+
+const absensiList =
+  document.getElementById(
+    'absensiList'
+  );
+
+
+absensiLoading.style.display =
+  'none';
+
+
+absensiTanggal.textContent =
+  absensi.tanggal;
+
+
+absensiList.innerHTML =
+  '';
+
+
+if (
+  !absensi.data ||
+  absensi.data.length === 0
+) {
+
+  absensiKosong.style.display =
+    'block';
+
+  absensiList.style.display =
+    'none';
+
+} else {
+
+  absensiKosong.style.display =
+    'none';
+
+  absensiList.style.display =
+    'block';
+
+
+  absensi.data.forEach(
+    function(item) {
+
+      const div =
+        document.createElement(
+          'div'
+        );
+
+
+      const jenisClass =
+        item.jenisAbsensi === 'MASUK'
+          ? 'masuk'
+          : 'pulang';
+
+
+      const icon =
+        item.jenisAbsensi === 'MASUK'
+          ? '🟢'
+          : '🔵';
+
+
+      div.className =
+        'absensi-item';
+
+
+      div.innerHTML =
+
+        '<div class="absensi-top">' +
+
+          '<div>' +
+
+            '<div class="absensi-jenis ' +
+              jenisClass +
+            '">' +
+
+              icon +
+              ' ' +
+              item.jenisAbsensi +
+
+            '</div>' +
+
+          '</div>' +
+
+          '<div class="absensi-jam">' +
+
+            item.jam +
+
+          '</div>' +
+
+        '</div>' +
+
+
+        '<div class="absensi-nama">' +
+
+          item.nama +
+
+        '</div>' +
+
+
+        '<div class="absensi-id">' +
+
+          item.idKaryawan +
+
+        '</div>' +
+
+
+        '<div class="absensi-detail">' +
+
+          '🏪 ' +
+          item.outlet +
+          '<br>' +
+
+          '📍 Jarak: ' +
+          item.jarakMeter +
+          ' meter' +
+
+        '</div>';
+
+
+      absensiList.appendChild(
+        div
+      );
+
+    }
+  );
+}
 
 
       // ======================================
