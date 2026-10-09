@@ -830,6 +830,66 @@
 
 }
 
+    /* =========================
+   SPOILER FOTO ABSENSI
+========================= */
+
+.foto-spoiler {
+  margin-top: 14px;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.foto-spoiler-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.foto-spoiler-button:active {
+  background: #e2e8f0;
+}
+
+.foto-spoiler-content {
+  display: none;
+  padding: 12px;
+  background: #ffffff;
+}
+
+.foto-spoiler-content.buka {
+  display: block;
+}
+
+.foto-spoiler-content img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #f1f5f9;
+}
+
+.foto-spoiler-tanpa-foto {
+  padding: 14px;
+  color: #64748b;
+  font-size: 12px;
+  text-align: center;
+}
+
   </style>
 </head>
 
@@ -1375,91 +1435,177 @@ if (
     'block';
 
 
-  absensi.data.forEach(
-    function(item) {
+absensi.data.forEach(function(item) {
 
-      const div =
-        document.createElement(
-          'div'
-        );
+  const div = document.createElement('div');
 
+  const jenisClass =
+    item.jenisAbsensi === 'MASUK'
+      ? 'masuk'
+      : 'pulang';
 
-      const jenisClass =
-        item.jenisAbsensi === 'MASUK'
-          ? 'masuk'
-          : 'pulang';
+  const icon =
+    item.jenisAbsensi === 'MASUK'
+      ? '🟢'
+      : '🔵';
 
+  // Elemen utama kartu absensi
+  div.className = 'absensi-item';
 
-      const icon =
-        item.jenisAbsensi === 'MASUK'
-          ? '🟢'
-          : '🔵';
+  // Informasi absensi
+  div.innerHTML =
+    '<div class="absensi-top">' +
 
-
-      div.className =
-        'absensi-item';
-
-
-      div.innerHTML =
-
-        '<div class="absensi-top">' +
-
-          '<div>' +
-
-            '<div class="absensi-jenis ' +
-              jenisClass +
-            '">' +
-
-              icon +
-              ' ' +
-              item.jenisAbsensi +
-
-            '</div>' +
-
-          '</div>' +
-
-          '<div class="absensi-jam">' +
-
-            item.jam +
-
-          '</div>' +
-
+      '<div>' +
+        '<div class="absensi-jenis ' +
+          jenisClass +
+        '">' +
+          icon + ' ' + item.jenisAbsensi +
         '</div>' +
+      '</div>' +
 
+      '<div class="absensi-jam">' +
+        item.jam +
+      '</div>' +
 
-        '<div class="absensi-nama">' +
+    '</div>' +
 
-          item.nama +
+    '<div class="absensi-nama">' +
+      item.nama +
+    '</div>' +
 
-        '</div>' +
+    '<div class="absensi-id">' +
+      item.idKaryawan +
+    '</div>' +
 
+    '<div class="absensi-detail">' +
+      '🏪 ' + item.outlet +
+      '<br>' +
+      '📍 Jarak: ' + item.jarakMeter + ' meter' +
+    '</div>';
 
-        '<div class="absensi-id">' +
+  // =================================
+  // SPOILER FOTO BUKTI ABSENSI
+  // =================================
 
-          item.idKaryawan +
+  const spoiler = document.createElement('div');
+  spoiler.className = 'foto-spoiler';
 
-        '</div>' +
+  const tombol = document.createElement('button');
+  tombol.type = 'button';
+  tombol.className = 'foto-spoiler-button';
+  tombol.setAttribute('aria-expanded', 'false');
 
+  const label = document.createElement('span');
+  label.textContent = '📷 Lihat Foto Bukti Absensi';
 
-        '<div class="absensi-detail">' +
+  const panah = document.createElement('span');
+  panah.textContent = '▼';
+  panah.setAttribute('aria-hidden', 'true');
 
-          '🏪 ' +
-          item.outlet +
-          '<br>' +
+  tombol.appendChild(label);
+  tombol.appendChild(panah);
 
-          '📍 Jarak: ' +
-          item.jarakMeter +
-          ' meter' +
+  const konten = document.createElement('div');
+  konten.className = 'foto-spoiler-content';
 
-        '</div>';
+  // Jika URL foto tersedia, siapkan gambar.
+  // Foto baru dimuat saat spoiler dibuka.
+  if (item.foto) {
 
+    const foto = document.createElement('img');
 
-      absensiList.appendChild(
-        div
+    foto.alt =
+      'Foto bukti absensi ' +
+      item.nama +
+      ' - ' +
+      item.jenisAbsensi;
+
+    foto.loading = 'lazy';
+
+    foto.addEventListener('error', function() {
+      konten.innerHTML = '';
+
+      const pesan = document.createElement('div');
+      pesan.className = 'foto-spoiler-tanpa-foto';
+      pesan.textContent =
+        'Foto tidak dapat ditampilkan. Periksa URL foto atau izin akses Google Drive.';
+
+      konten.appendChild(pesan);
+    });
+
+    // Simpan URL terlebih dahulu agar tidak langsung dimuat.
+    foto.dataset.src = item.foto;
+
+    tombol.addEventListener('click', function() {
+
+      const sedangBuka =
+        konten.classList.contains('buka');
+
+      if (sedangBuka) {
+
+        konten.classList.remove('buka');
+        tombol.setAttribute('aria-expanded', 'false');
+        label.textContent = '📷 Lihat Foto Bukti Absensi';
+        panah.textContent = '▼';
+
+      } else {
+
+        konten.classList.add('buka');
+        tombol.setAttribute('aria-expanded', 'true');
+        label.textContent = '📷 Tutup Foto Bukti Absensi';
+        panah.textContent = '▲';
+
+        if (foto.dataset.src) {
+          foto.src = foto.dataset.src;
+          delete foto.dataset.src;
+        }
+
+      }
+
+    });
+
+    konten.appendChild(foto);
+
+  } else {
+
+    const pesan = document.createElement('div');
+    pesan.className = 'foto-spoiler-tanpa-foto';
+    pesan.textContent = 'Foto bukti absensi tidak tersedia.';
+
+    konten.appendChild(pesan);
+
+    tombol.addEventListener('click', function() {
+
+      const sedangBuka =
+        konten.classList.contains('buka');
+
+      konten.classList.toggle('buka', !sedangBuka);
+
+      tombol.setAttribute(
+        'aria-expanded',
+        String(!sedangBuka)
       );
 
-    }
-  );
+      label.textContent = sedangBuka
+        ? '📷 Lihat Foto Bukti Absensi'
+        : '📷 Tutup Foto Bukti Absensi';
+
+      panah.textContent = sedangBuka ? '▼' : '▲';
+
+    });
+
+  }
+
+  spoiler.appendChild(tombol);
+  spoiler.appendChild(konten);
+
+  div.appendChild(spoiler);
+
+  // Masukkan kartu ke daftar absensi.
+  absensiList.appendChild(div);
+
+});
 }
 
 
