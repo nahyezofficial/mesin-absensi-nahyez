@@ -1534,8 +1534,21 @@ absensi.data.forEach(function(item) {
       konten.appendChild(pesan);
     });
 
-    // Simpan URL terlebih dahulu agar tidak langsung dimuat.
-    foto.dataset.src = item.foto;
+    // Ubah URL Google Drive menjadi URL thumbnail gambar.
+    const urlFotoAsli = item.foto || '';
+
+    const cocok = urlFotoAsli.match(
+      /\/file\/d\/([^/]+)/
+    );
+
+    if (cocok && cocok[1]) {
+      foto.dataset.src =
+        'https://drive.google.com/thumbnail?id=' +
+        encodeURIComponent(cocok[1]) +
+        '&sz=w1000';
+    } else {
+      foto.dataset.src = urlFotoAsli;
+    }
 
     tombol.addEventListener('click', function() {
 
