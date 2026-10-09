@@ -890,6 +890,26 @@
   text-align: center;
 }
 
+    .btn-logout {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #dc5a5a;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-logout:hover {
+  background: #c74444;
+}
+
+.btn-logout:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
   </style>
 </head>
 
@@ -917,24 +937,29 @@
 
     <div class="filter-box">
 
-      <label
-        for="bulan"
-      >
-        Periode:
-      </label>
+  <label for="bulan">
+    Periode:
+  </label>
 
-      <select
-        id="bulan"
-      ></select>
+  <select id="bulan"></select>
 
-      <button
-        class="btn-refresh"
-        id="btnRefresh"
-      >
-        🔄 Refresh
-      </button>
+  <button
+    class="btn-refresh"
+    id="btnRefresh"
+    type="button"
+  >
+    🔄 Refresh
+  </button>
 
-    </div>
+  <button
+    class="btn-logout"
+    id="btnLogout"
+    type="button"
+  >
+    🚪 Logout
+  </button>
+
+</div>
 
 
     <!-- ERROR -->
@@ -1208,24 +1233,28 @@
 
 
   // ==========================================
-  // ELEMENT
-  // ==========================================
+// ELEMENT
+// ==========================================
 
-  const bulanSelect =
-    document.getElementById(
-      'bulan'
-    );
+const bulanSelect =
+  document.getElementById(
+    'bulan'
+  );
 
-  const btnRefresh =
-    document.getElementById(
-      'btnRefresh'
-    );
+const btnRefresh =
+  document.getElementById(
+    'btnRefresh'
+  );
 
-  const errorBox =
-    document.getElementById(
-      'errorBox'
-    );
+const btnLogout =
+  document.getElementById(
+    'btnLogout'
+  );
 
+const errorBox =
+  document.getElementById(
+    'errorBox'
+  );
 
   // ==========================================
   // BULAN
@@ -1863,19 +1892,45 @@ absensi.data.forEach(function(item) {
 
 
   // ==========================================
-  // EVENT
-  // ==========================================
+// EVENT
+// ==========================================
 
-  btnRefresh.addEventListener(
-    'click',
-    loadDashboard
-  );
+btnRefresh.addEventListener(
+  'click',
+  loadDashboard
+);
 
+bulanSelect.addEventListener(
+  'change',
+  loadDashboard
+);
 
-  bulanSelect.addEventListener(
-    'change',
-    loadDashboard
-  );
+// Logout admin
+btnLogout.addEventListener(
+  'click',
+  async function () {
+    const yakin = confirm(
+      'Apakah kamu yakin ingin logout dari Dashboard Admin Nahyez Baby Meal?'
+    );
+
+    if (!yakin) return;
+
+    btnLogout.disabled = true;
+    btnLogout.textContent = 'Memproses...';
+
+    try {
+      await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'same-origin',
+        cache: 'no-store'
+      });
+    } catch (error) {
+      // Tetap arahkan ke halaman login.
+    }
+
+    window.location.replace('/');
+  }
+);
 
 
   // ==========================================
