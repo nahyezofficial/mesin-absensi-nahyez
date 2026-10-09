@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Dashboard Admin - Nahyez Baby Meal</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+      background: #f4f7fb;
+      color: #263238;
+    }
+
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+      background: linear-gradient(
+        135deg,
+        #6f8fb3,
+        #9fb6d0
+      );
+
+      color: white;
+
+      padding: 22px;
+
+      border-radius: 20px;
+
+      margin-bottom: 20px;
+
+      box-shadow:
+        0 8px 24px rgba(
+          0,
+          0,
+          0,
+          0.08
+        );
+    }
+
+
+    .header h1 {
+      margin: 0;
+
+      font-size: 25px;
+
+      font-weight: 700;
+    }
+
+
+    .header p {
+      margin:
+        6px
+        0
+        0;
+
+      opacity: 0.9;
+
+      font-size: 14px;
+    }
+
+
+    /* =========================
+       FILTER
+    ========================= */
+
+    .filter-box {
+      background: white;
+
+      padding: 16px;
+
+      border-radius: 16px;
+
+      margin-bottom: 20px;
+
+      display: flex;
+
+      gap: 12px;
+
+      align-items: center;
+
+      flex-wrap: wrap;
+
+      box-shadow:
+        0 4px 16px rgba(
+          0,
+          0,
+          0,
+          0.05
+        );
+    }
+
+
+    .filter-box label {
+      font-size: 14px;
+
+      font-weight: 600;
+    }
+
+
+    .filter-box select {
+
+      padding: 11px 14px;
+
+      border-radius: 10px;
+
+      border: 1px solid #d6dce5;
+
+      background: white;
+
+      font-size: 14px;
+
+      min-width: 180px;
+
+      outline: none;
+    }
+
+
+    .btn-refresh {
+
+      border: none;
+
+      border-radius: 10px;
+
+      padding:
+        11px
+        16px;
+
+      background: #6f8fb3;
+
+      color: white;
+
+      font-weight: 600;
+
+      cursor: pointer;
+    }
+
+
+    .btn-refresh:active {
+      transform: scale(0.98);
+    }
+
+
+    /* =========================
+       STATISTIC CARDS
+    ========================= */
+
+    .stats-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          4,
+          1fr
+        );
+
+      gap: 15px;
+
+      margin-bottom: 22px;
+    }
+
+
+    .stat-card {
+
+      background: white;
+
+      border-radius: 18px;
+
+      padding: 18px;
+
+      box-shadow:
+        0 5px 18px rgba(
+          0,
+          0,
+          0,
+          0.05
+        );
+    }
+
+
+    .stat-icon {
+
+      font-size: 25px;
+
+      margin-bottom: 8px;
+    }
+
+
+    .stat-title {
+
+      font-size: 13px;
+
+      color: #718096;
+
+      margin-bottom: 5px;
+    }
+
+
+    .stat-value {
+
+      font-size: 30px;
+
+      font-weight: 800;
+
+      color: #263238;
+    }
+
+
+    /* =========================
+       KINERJA
+    ========================= */
+
+    .section {
+
+      background: white;
+
+      border-radius: 18px;
+
+      padding: 20px;
+
+      box-shadow:
+        0 5px 18px rgba(
+          0,
+          0,
+          0,
+          0.05
+        );
+    }
+
+
+    .section-header {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 10px;
+
+      margin-bottom: 16px;
+
+      flex-wrap: wrap;
+    }
+
+
+    .section-title {
+
+      margin: 0;
+
+      font-size: 19px;
+
+      font-weight: 700;
+    }
+
+
+    .periode {
+
+      font-size: 13px;
+
+      color: #718096;
+    }
+
+
+    .table-wrapper {
+
+      width: 100%;
+
+      overflow-x: auto;
+    }
+
+
+    table {
+
+      width: 100%;
+
+      border-collapse: collapse;
+
+      min-width: 760px;
+    }
+
+
+    th {
+
+      text-align: left;
+
+      background: #f5f7fa;
+
+      padding: 12px;
+
+      font-size: 12px;
+
+      color: #687386;
+
+      white-space: nowrap;
+    }
+
+
+    td {
+
+      padding: 13px 12px;
+
+      border-bottom:
+        1px solid
+        #edf0f4;
+
+      font-size: 13px;
+
+      white-space: nowrap;
+    }
+
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+
+    .nama {
+
+      font-weight: 700;
+
+      color: #263238;
+    }
+
+
+    .id {
+
+      font-size: 11px;
+
+      color: #8994a3;
+
+      margin-top: 3px;
+    }
+
+
+    .badge {
+
+      display: inline-block;
+
+      padding:
+        5px
+        8px;
+
+      border-radius: 8px;
+
+      font-size: 11px;
+
+      font-weight: 700;
+    }
+
+
+    .badge-green {
+
+      background: #e8f7ef;
+
+      color: #198754;
+    }
+
+
+    .badge-orange {
+
+      background: #fff1df;
+
+      color: #d97706;
+    }
+
+
+    .badge-red {
+
+      background: #fdecec;
+
+      color: #dc3545;
+    }
+
+
+    .badge-blue {
+
+      background: #eaf2ff;
+
+      color: #0d6efd;
+    }
+
+
+    .loading {
+
+      text-align: center;
+
+      padding: 30px;
+
+      color: #718096;
+    }
+
+
+    .error {
+
+      background: #fdecec;
+
+      color: #b42318;
+
+      padding: 14px;
+
+      border-radius: 12px;
+
+      margin-bottom: 15px;
+
+      display: none;
+    }
+
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    /* =========================
+   ABSENSI HARI INI
+========================= */
+
+.absensi-item {
+
+  border:
+    1px solid
+    #edf0f4;
+
+  border-radius: 14px;
+
+  padding: 15px;
+
+  margin-bottom: 10px;
+
+  background: #ffffff;
+}
+
+
+.absensi-top {
+
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 8px;
+}
+
+
+.absensi-jenis {
+
+  font-size: 13px;
+
+  font-weight: 800;
+}
+
+
+.absensi-jenis.masuk {
+
+  color: #198754;
+}
+
+
+.absensi-jenis.pulang {
+
+  color: #0d6efd;
+}
+
+
+.absensi-jam {
+
+  font-size: 18px;
+
+  font-weight: 800;
+
+  color: #263238;
+}
+
+
+.absensi-nama {
+
+  font-weight: 700;
+
+  font-size: 14px;
+}
+
+
+.absensi-id {
+
+  font-size: 11px;
+
+  color: #8994a3;
+
+  margin-top: 2px;
+}
+
+
+.absensi-detail {
+
+  font-size: 12px;
+
+  color: #687386;
+
+  margin-top: 8px;
+
+  line-height: 1.6;
+}
+    
+    @media (
+      max-width: 700px
+    ) {
+
+      .container {
+        padding: 12px;
+      }
+
+
+      .header {
+
+        padding: 18px;
+
+        border-radius: 16px;
+      }
+
+
+      .header h1 {
+
+        font-size: 21px;
+      }
+
+
+      .stats-grid {
+
+        grid-template-columns:
+          repeat(
+            2,
+            1fr
+          );
+
+        gap: 10px;
+      }
+
+
+      .stat-card {
+
+        padding: 15px;
+
+        border-radius: 15px;
+      }
+
+
+      .stat-value {
+
+        font-size: 26px;
+      }
+
+
+      .filter-box {
+
+        align-items:
+          stretch;
+      }
+
+
+      .filter-box select,
+      .btn-refresh {
+
+        width: 100%;
+      }
+
+
+      .section {
+
+        padding: 15px;
+
+        border-radius: 16px;
+      }
+
+    }
+
+    /* ======================================
+   KINERJA KARYAWAN - MOBILE CARD
+====================================== */
+
+@media (max-width: 600px) {
+
+  .kinerja-table {
+    display: block;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: fixed;
+    overflow: visible !important;
+  }
+
+  .kinerja-table thead {
+    display: none;
+  }
+
+  .kinerja-table tbody {
+    display: block;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .kinerja-table tbody tr {
+    display: block;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    margin: 0 0 14px 0;
+    padding: 15px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #edf0f4;
+    border-radius: 14px;
+    background: #ffffff;
+
+    overflow: hidden;
+  }
+
+  .kinerja-table tbody tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .kinerja-table tbody td {
+    display: flex;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    box-sizing: border-box;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 8px 0;
+
+    border: none;
+
+    text-align: right;
+
+    white-space: normal;
+  }
+
+  /* Nama karyawan */
+
+  .kinerja-table tbody td:first-child {
+    display: block;
+
+    width: 100% !important;
+
+    padding-top: 0;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+
+    border-bottom: 1px solid #edf0f4;
+
+    text-align: left;
+  }
+
+  /* Label */
+
+  .kinerja-table tbody td:nth-child(2)::before {
+    content: "Outlet";
+  }
+
+  .kinerja-table tbody td:nth-child(3)::before {
+    content: "Hari Kerja";
+  }
+
+  .kinerja-table tbody td:nth-child(4)::before {
+    content: "Tepat Waktu";
+  }
+
+  .kinerja-table tbody td:nth-child(5)::before {
+    content: "Terlambat";
+  }
+
+  .kinerja-table tbody td:nth-child(6)::before {
+    content: "Tidak Absen";
+  }
+
+  .kinerja-table tbody td:nth-child(7)::before {
+    content: "Persentase";
+  }
+
+  .kinerja-table tbody td:nth-child(n+2)::before {
+    flex: 0 1 auto;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    color: #8994a3;
+
+    text-align: left;
+  }
+
+  /* Nilai */
+
+  /* ======================================
+     WARNA BARIS KINERJA
+  ====================================== */
+
+  .kinerja-table tbody td:nth-child(2),
+  .kinerja-table tbody td:nth-child(3),
+  .kinerja-table tbody td:nth-child(4),
+  .kinerja-table tbody td:nth-child(5),
+  .kinerja-table tbody td:nth-child(6),
+  .kinerja-table tbody td:nth-child(7) {
+
+    border-radius: 10px;
+
+    padding: 10px 12px;
+
+    margin-bottom: 5px;
+
+    box-sizing: border-box;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #263238;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+  }
+
+
+  /* OUTLET */
+
+  .kinerja-table tbody td:nth-child(2) {
+    background: #eef5ff;
+  }
+
+
+  /* HARI KERJA */
+
+  .kinerja-table tbody td:nth-child(3) {
+    background: #f3f5f7;
+  }
+
+
+  /* TEPAT WAKTU */
+
+  .kinerja-table tbody td:nth-child(4) {
+    background: #e9f8ef;
+  }
+
+
+  /* TERLAMBAT */
+
+  .kinerja-table tbody td:nth-child(5) {
+    background: #fff4df;
+  }
+
+
+  /* TIDAK ABSEN */
+
+  .kinerja-table tbody td:nth-child(6) {
+    background: #fdecef;
+  }
+
+
+  /* PERSENTASE */
+
+  .kinerja-table tbody td:nth-child(7) {
+    background: #fdecef;
+  }
+
+
+  /* Label di dalam baris */
+
+  .kinerja-table tbody td:nth-child(n+2)::before {
+    flex: 0 1 auto;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    color: #687386;
+
+    text-align: left;
+  }
+
+
+  /* Hilangkan background lama pada elemen nilai
+     agar warna memenuhi seluruh baris */
+
+  .kinerja-table tbody td:nth-child(n+2) * {
+    background: transparent !important;
+  }
+
+}
+
+    /* =========================
+   SPOILER FOTO ABSENSI
+========================= */
+
+.foto-spoiler {
+  margin-top: 14px;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.foto-spoiler-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.foto-spoiler-button:active {
+  background: #e2e8f0;
+}
+
+.foto-spoiler-content {
+  display: none;
+  padding: 12px;
+  background: #ffffff;
+}
+
+.foto-spoiler-content.buka {
+  display: block;
+}
+
+.foto-spoiler-content img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #f1f5f9;
+}
+
+.foto-spoiler-tanpa-foto {
+  padding: 14px;
+  color: #64748b;
+  font-size: 12px;
+  text-align: center;
+}
+
+  </style>
+</head>
+
+
+<body>
+
+  <div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+      <h1>
+        Dashboard Admin
+      </h1>
+
+      <p>
+        NAHYEZ BABY MEAL
+      </p>
+
+    </div>
+
+
+    <!-- FILTER -->
+
+    <div class="filter-box">
+
+      <label
+        for="bulan"
+      >
+        Periode:
+      </label>
+
+      <select
+        id="bulan"
+      ></select>
+
+      <button
+        class="btn-refresh"
+        id="btnRefresh"
+      >
+        🔄 Refresh
+      </button>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+      id="errorBox"
+      class="error"
+    ></div>
+
+
+    <!-- STATISTICS -->
+
+    <div
+      class="stats-grid"
+    >
+
+      <div
+        class="stat-card"
+      >
+
+        <div
+          class="stat-icon"
+        >
+          👥
+        </div>
+
+        <div
+          class="stat-title"
+        >
+          Karyawan Aktif
+        </div>
+
+        <div
+          class="stat-value"
+          id="jumlahKaryawan"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div
+        class="stat-card"
+      >
+
+        <div
+          class="stat-icon"
+        >
+          🏪
+        </div>
+
+        <div
+          class="stat-title"
+        >
+          Outlet Aktif
+        </div>
+
+        <div
+          class="stat-value"
+          id="jumlahOutlet"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div
+        class="stat-card"
+      >
+
+        <div
+          class="stat-icon"
+        >
+          🟢
+        </div>
+
+        <div
+          class="stat-title"
+        >
+          MASUK Hari Ini
+        </div>
+
+        <div
+          class="stat-value"
+          id="jumlahMasuk"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div
+        class="stat-card"
+      >
+
+        <div
+          class="stat-icon"
+        >
+          🔵
+        </div>
+
+        <div
+          class="stat-title"
+        >
+          PULANG Hari Ini
+        </div>
+
+        <div
+          class="stat-value"
+          id="jumlahPulang"
+        >
+          -
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ABSENSI HARI INI -->
+
+<div
+  class="section"
+  style="margin-bottom: 20px;"
+>
+
+  <div
+    class="section-header"
+  >
+
+    <h2
+      class="section-title"
+    >
+      📋 Absensi Hari Ini
+    </h2>
+
+    <div
+      class="periode"
+      id="absensiTanggal"
+    >
+      -
+    </div>
+
+  </div>
+
+
+  <div
+    id="absensiLoading"
+    class="loading"
+  >
+    Memuat absensi...
+  </div>
+
+
+  <div
+    id="absensiKosong"
+    class="loading"
+    style="display:none;"
+  >
+    Belum ada absensi hari ini.
+  </div>
+
+
+  <div
+    id="absensiList"
+    style="display:none;"
+  ></div>
+
+</div>
+
+    <!-- KINERJA -->
+
+    <div
+      class="section"
+    >
+
+      <div
+        class="section-header"
+      >
+
+        <h2
+          class="section-title"
+        >
+          📊 Kinerja Karyawan
+        </h2>
+
+        <div
+          class="periode"
+          id="periodeText"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div
+        id="loading"
+        class="loading"
+      >
+        Memuat data...
+      </div>
+
+
+      <div
+        class="table-wrapper"
+        id="tableWrapper"
+        style="display:none;"
+      >
+
+        <table class="kinerja-table">
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Karyawan
+              </th>
+
+              <th>
+                Outlet
+              </th>
+
+              <th>
+                Hari Kerja
+              </th>
+
+              <th>
+                Tepat Waktu
+              </th>
+
+              <th>
+                Terlambat
+              </th>
+
+              <th>
+                Tidak Absen
+              </th>
+
+              <th>
+                Persentase
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody
+            id="tableBody"
+          ></tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+<script>
+
+  // ==========================================
+  // API
+  // ==========================================
+
+  const API_URL = '/api/dashboard';
+
+
+  // ==========================================
+  // ELEMENT
+  // ==========================================
+
+  const bulanSelect =
+    document.getElementById(
+      'bulan'
+    );
+
+  const btnRefresh =
+    document.getElementById(
+      'btnRefresh'
+    );
+
+  const errorBox =
+    document.getElementById(
+      'errorBox'
+    );
+
+
+  // ==========================================
+  // BULAN
+  // ==========================================
+
+  const namaBulan = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember'
+  ];
+
+
+  const tahunSekarang =
+    new Date().getFullYear();
+
+
+  for (
+    let bulan = 1;
+    bulan <= 12;
+    bulan++
+  ) {
+
+    const option =
+      document.createElement(
+        'option'
+      );
+
+    option.value =
+      bulan;
+
+    option.textContent =
+      namaBulan[
+        bulan - 1
+      ] +
+      ' ' +
+      tahunSekarang;
+
+    bulanSelect.appendChild(
+      option
+    );
+  }
+
+
+  bulanSelect.value =
+    new Date().getMonth() + 1;
+
+
+  // ==========================================
+  // FORMAT PERSENTASE
+  // ==========================================
+
+  function formatPersentase(
+    value
+  ) {
+
+    return Number(value)
+      .toLocaleString(
+        'id-ID',
+        {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1
+        }
+      ) + '%';
+  }
+
+
+  // ==========================================
+  // LOAD DASHBOARD
+  // ==========================================
+
+  async function loadDashboard() {
+
+    errorBox.style.display =
+      'none';
+
+    document.getElementById(
+      'loading'
+    ).style.display =
+      'block';
+
+    document.getElementById(
+      'tableWrapper'
+    ).style.display =
+      'none';
+
+
+    const tahun =
+      tahunSekarang;
+
+    const bulan =
+      Number(
+        bulanSelect.value
+      );
+
+
+    const url =
+      API_URL +
+      '?action=dashboard' +
+      '&tahun=' +
+      tahun +
+      '&bulan=' +
+      bulan;
+
+
+    try {
+
+      const response =
+        await fetch(url);
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          'HTTP ' +
+          response.status
+        );
+
+      }
+
+
+      const data =
+        await response.json();
+
+
+      if (
+        !data ||
+        data.success !== true
+      ) {
+
+        throw new Error(
+          'API mengembalikan data tidak valid.'
+        );
+
+      }
+
+      // ======================================
+// ABSENSI HARI INI
+// ======================================
+
+const absensi =
+  data.absensiHariIni;
+
+
+const absensiTanggal =
+  document.getElementById(
+    'absensiTanggal'
+  );
+
+
+const absensiLoading =
+  document.getElementById(
+    'absensiLoading'
+  );
+
+
+const absensiKosong =
+  document.getElementById(
+    'absensiKosong'
+  );
+
+
+const absensiList =
+  document.getElementById(
+    'absensiList'
+  );
+
+
+absensiLoading.style.display =
+  'none';
+
+
+absensiTanggal.textContent =
+  absensi.tanggal;
+
+
+absensiList.innerHTML =
+  '';
+
+
+if (
+  !absensi.data ||
+  absensi.data.length === 0
+) {
+
+  absensiKosong.style.display =
+    'block';
+
+  absensiList.style.display =
+    'none';
+
+} else {
+
+  absensiKosong.style.display =
+    'none';
+
+  absensiList.style.display =
+    'block';
+
+
+absensi.data.forEach(function(item) {
+
+  const div = document.createElement('div');
+
+  const jenisClass =
+    item.jenisAbsensi === 'MASUK'
+      ? 'masuk'
+      : 'pulang';
+
+  const icon =
+    item.jenisAbsensi === 'MASUK'
+      ? '🟢'
+      : '🔵';
+
+  // Elemen utama kartu absensi
+  div.className = 'absensi-item';
+
+  // Informasi absensi
+  div.innerHTML =
+    '<div class="absensi-top">' +
+
+      '<div>' +
+        '<div class="absensi-jenis ' +
+          jenisClass +
+        '">' +
+          icon + ' ' + item.jenisAbsensi +
+        '</div>' +
+      '</div>' +
+
+      '<div class="absensi-jam">' +
+        item.jam +
+      '</div>' +
+
+    '</div>' +
+
+    '<div class="absensi-nama">' +
+      item.nama +
+    '</div>' +
+
+    '<div class="absensi-id">' +
+      item.idKaryawan +
+    '</div>' +
+
+    '<div class="absensi-detail">' +
+      '🏪 ' + item.outlet +
+      '<br>' +
+      '📍 Jarak: ' + item.jarakMeter + ' meter' +
+    '</div>';
+
+  // =================================
+  // SPOILER FOTO BUKTI ABSENSI
+  // =================================
+
+  const spoiler = document.createElement('div');
+  spoiler.className = 'foto-spoiler';
+
+  const tombol = document.createElement('button');
+  tombol.type = 'button';
+  tombol.className = 'foto-spoiler-button';
+  tombol.setAttribute('aria-expanded', 'false');
+
+  const label = document.createElement('span');
+  label.textContent = '📷 Lihat Foto Bukti Absensi';
+
+  const panah = document.createElement('span');
+  panah.textContent = '▼';
+  panah.setAttribute('aria-hidden', 'true');
+
+  tombol.appendChild(label);
+  tombol.appendChild(panah);
+
+  const konten = document.createElement('div');
+  konten.className = 'foto-spoiler-content';
+
+  // Jika URL foto tersedia, siapkan gambar.
+  // Foto baru dimuat saat spoiler dibuka.
+  if (item.foto) {
+
+    const foto = document.createElement('img');
+
+    foto.alt =
+      'Foto bukti absensi ' +
+      item.nama +
+      ' - ' +
+      item.jenisAbsensi;
+
+    foto.loading = 'lazy';
+
+    foto.addEventListener('error', function() {
+      konten.innerHTML = '';
+
+      const pesan = document.createElement('div');
+      pesan.className = 'foto-spoiler-tanpa-foto';
+      pesan.textContent =
+        'Foto tidak dapat ditampilkan. Periksa URL foto atau izin akses Google Drive.';
+
+      konten.appendChild(pesan);
+    });
+
+    // Ubah URL Google Drive menjadi URL thumbnail gambar.
+    const urlFotoAsli = item.foto || '';
+
+    const cocok = urlFotoAsli.match(
+      /\/file\/d\/([^/]+)/
+    );
+
+    if (cocok && cocok[1]) {
+      foto.dataset.src =
+        'https://drive.google.com/thumbnail?id=' +
+        encodeURIComponent(cocok[1]) +
+        '&sz=w1000';
+    } else {
+      foto.dataset.src = urlFotoAsli;
+    }
+
+    tombol.addEventListener('click', function() {
+
+      const sedangBuka =
+        konten.classList.contains('buka');
+
+      if (sedangBuka) {
+
+        konten.classList.remove('buka');
+        tombol.setAttribute('aria-expanded', 'false');
+        label.textContent = '📷 Lihat Foto Bukti Absensi';
+        panah.textContent = '▼';
+
+      } else {
+
+        konten.classList.add('buka');
+        tombol.setAttribute('aria-expanded', 'true');
+        label.textContent = '📷 Tutup Foto Bukti Absensi';
+        panah.textContent = '▲';
+
+        if (foto.dataset.src) {
+          foto.src = foto.dataset.src;
+          delete foto.dataset.src;
+        }
+
+      }
+
+    });
+
+    konten.appendChild(foto);
+
+  } else {
+
+    const pesan = document.createElement('div');
+    pesan.className = 'foto-spoiler-tanpa-foto';
+    pesan.textContent = 'Foto bukti absensi tidak tersedia.';
+
+    konten.appendChild(pesan);
+
+    tombol.addEventListener('click', function() {
+
+      const sedangBuka =
+        konten.classList.contains('buka');
+
+      konten.classList.toggle('buka', !sedangBuka);
+
+      tombol.setAttribute(
+        'aria-expanded',
+        String(!sedangBuka)
+      );
+
+      label.textContent = sedangBuka
+        ? '📷 Lihat Foto Bukti Absensi'
+        : '📷 Tutup Foto Bukti Absensi';
+
+      panah.textContent = sedangBuka ? '▼' : '▲';
+
+    });
+
+  }
+
+  spoiler.appendChild(tombol);
+  spoiler.appendChild(konten);
+
+  div.appendChild(spoiler);
+
+  // Masukkan kartu ke daftar absensi.
+  absensiList.appendChild(div);
+
+});
+}
+
+
+      // ======================================
+      // STATISTIK
+      // ======================================
+
+      const statistik =
+        data.statistik;
+
+
+      document.getElementById(
+        'jumlahKaryawan'
+      ).textContent =
+        statistik.jumlahKaryawanAktif;
+
+
+      document.getElementById(
+        'jumlahOutlet'
+      ).textContent =
+        statistik.jumlahOutlet;
+
+
+      document.getElementById(
+        'jumlahMasuk'
+      ).textContent =
+        statistik.jumlahMasukHariIni;
+
+
+      document.getElementById(
+        'jumlahPulang'
+      ).textContent =
+        statistik.jumlahPulangHariIni;
+
+
+      // ======================================
+      // PERIODE
+      // ======================================
+
+      document.getElementById(
+        'periodeText'
+      ).textContent =
+        namaBulan[
+          bulan - 1
+        ] +
+        ' ' +
+        tahun;
+
+
+      // ======================================
+      // TABEL
+      // ======================================
+
+      const tbody =
+        document.getElementById(
+          'tableBody'
+        );
+
+
+      tbody.innerHTML =
+        '';
+
+
+      const daftar =
+        data.kinerja.data || [];
+
+
+      if (
+        daftar.length === 0
+      ) {
+
+        tbody.innerHTML =
+          '<tr>' +
+          '<td colspan="7" ' +
+          'style="text-align:center;">' +
+          'Tidak ada data karyawan.' +
+          '</td>' +
+          '</tr>';
+
+      } else {
+
+        daftar.forEach(
+          function(item) {
+
+            const row =
+              document.createElement(
+                'tr'
+              );
+
+
+            let badgePersentase =
+              'badge-red';
+
+
+            if (
+              item.persentaseTepatWaktu >= 90
+            ) {
+
+              badgePersentase =
+                'badge-green';
+
+            } else if (
+              item.persentaseTepatWaktu >= 75
+            ) {
+
+              badgePersentase =
+                'badge-orange';
+
+            }
+
+
+            row.innerHTML =
+
+              '<td>' +
+
+                '<div class="nama">' +
+
+                  item.nama +
+
+                '</div>' +
+
+                '<div class="id">' +
+
+                  item.idKaryawan +
+
+                '</div>' +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                item.outletId +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                item.hariKerja +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                '<span class="badge badge-green">' +
+
+                  item.tepatWaktu +
+
+                '</span>' +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                '<span class="badge badge-orange">' +
+
+                  item.terlambat +
+
+                '</span>' +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                '<span class="badge badge-red">' +
+
+                  item.tidakAbsen +
+
+                '</span>' +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                '<span class="badge ' +
+
+                  badgePersentase +
+
+                '">' +
+
+                  formatPersentase(
+
+                    item.persentaseTepatWaktu
+
+                  ) +
+
+                '</span>' +
+
+              '</td>';
+
+
+            tbody.appendChild(
+              row
+            );
+
+          }
+        );
+
+      }
+
+
+      document.getElementById(
+        'loading'
+      ).style.display =
+        'none';
+
+
+      document.getElementById(
+        'tableWrapper'
+      ).style.display =
+        'block';
+
+
+    } catch (error) {
+
+      console.error(
+        error
+      );
+
+
+      document.getElementById(
+        'loading'
+      ).style.display =
+        'none';
+
+
+      errorBox.textContent =
+        'Gagal memuat dashboard: ' +
+        error.message;
+
+
+      errorBox.style.display =
+        'block';
+
+    }
+
+  }
+
+
+  // ==========================================
+  // EVENT
+  // ==========================================
+
+  btnRefresh.addEventListener(
+    'click',
+    loadDashboard
+  );
+
+
+  bulanSelect.addEventListener(
+    'change',
+    loadDashboard
+  );
+
+
+  // ==========================================
+  // LOAD AWAL
+  // ==========================================
+
+  loadDashboard();
+
+</script>
+
+</body>
+</html>
