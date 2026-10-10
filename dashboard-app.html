@@ -1541,72 +1541,128 @@ absensi.data.forEach(function(item) {
   // Foto baru dimuat saat spoiler dibuka.
   if (item.foto) {
 
-    const foto = document.createElement('img');
+  const foto = document.createElement('img');
 
-    foto.alt =
-      'Foto bukti absensi ' +
-      item.nama +
-      ' - ' +
-      item.jenisAbsensi;
+  foto.alt =
+    'Foto bukti absensi ' +
+    item.nama +
+    ' - ' +
+    item.jenisAbsensi;
 
-    foto.loading = 'lazy';
+  foto.loading = 'lazy';
 
-    foto.addEventListener('error', function() {
-      konten.innerHTML = '';
+  foto.addEventListener('error', function() {
+    konten.innerHTML = '';
 
-      const pesan = document.createElement('div');
-      pesan.className = 'foto-spoiler-tanpa-foto';
-      pesan.textContent =
-        'Foto tidak dapat ditampilkan. Periksa URL foto atau izin akses Google Drive.';
+    const pesan = document.createElement('div');
+    pesan.className = 'foto-spoiler-tanpa-foto';
+    pesan.textContent =
+      'Foto tidak dapat ditampilkan. Silakan coba kembali.';
 
-      konten.appendChild(pesan);
-    });
+    konten.appendChild(pesan);
+  });
 
-    // Ubah URL Google Drive menjadi URL thumbnail gambar.
-    const urlFotoAsli = item.foto || '';
+  // Ambil ID file dari URL Google Drive
+  const urlFotoAsli = String(item.foto || '');
 
-    const cocok = urlFotoAsli.match(
-      /\/file\/d\/([^/]+)/
-    );
+  const cocok = urlFotoAsli.match(
+    /\/file\/d\/([a-zA-Z0-9_-]+)/
+  );
 
-    if (cocok && cocok[1]) {
-  foto.dataset.src =
-    'https://drive.google.com/thumbnail?id=' +
-    encodeURIComponent(cocok[1]) +
-    '&sz=w1000';
-} else {
-  foto.dataset.src = urlFotoAsli;
-}
+  if (cocok && cocok[1]) {
+    foto.dataset.fileId = cocok[1];
+  } else {
+    foto.dataset.fileId = '';
+  }
 
-    tombol.addEventListener('click', function() {
+  tombol.addEventListener('click', async function() {
 
-      const sedangBuka =
-        konten.classList.contains('buka');
+    const sedangBuka =
+      konten.classList.contains('buka');
 
-      if (sedangBuka) {
+    if (sedangBuka) {
 
-        konten.classList.remove('buka');
-        tombol.setAttribute('aria-expanded', 'false');
-        label.textContent = '📷 Lihat Foto Bukti Absensi';
-        panah.textContent = '▼';
+      konten.classList.remove('buka');
+      tombol.setAttribute('aria-expanded', 'false');
+      label.textContent = '📷 Lihat Foto Bukti Absensi';
+      panah.textContent = '▼';
 
-      } else {
+    } else {
 
-        konten.classList.add('buka');
-        tombol.setAttribute('aria-expanded', 'true');
-        label.textContent = '📷 Tutup Foto Bukti Absensi';
-        panah.textContent = '▲';
+      konten.classList.add('buka');
+      tombol.setAttribute('aria-expanded', 'true');
+      label.textContent = '📷 Tutup Foto Bukti Absensi';
+      panah.textContent = '▲';
 
-        if (foto.dataset.src) {
-          foto.src = foto.dataset.src;
-          delete foto.dataset.src;
+      // Jangan meminta ulang jika foto sudah berhasil dimuat
+      if (
+        foto.dataset.fileId &&
+        !foto.dataset.loaded &&
+        !foto.dataset.loading
+      ) {
+
+        foto.dataset.loading = 'true';
+
+        try {
+
+          const response = await fetch(
+            '/api/photo?id=' +
+            encodeURIComponent(foto.dataset.fileId),
+            {
+              method: 'GET',
+              credentials: 'same-origin',
+              cache: 'no-store'
+            }
+          );
+
+          const hasil = await response.json();
+
+          if (!response.ok || !hasil.success) {
+            throw new Error(
+              hasil.message || 'Foto gagal dimuat.'
+            );
+          }
+
+          if (
+            !['image/jpeg', 'image/png', 'image/webp']
+              .includes(hasil.mimeType) ||
+            typeof hasil.data !== 'string'
+          ) {
+            throw new Error('Data foto tidak valid.');
+          }
+
+          foto.src =
+            'data:' +
+            hasil.mimeType +
+            ';base64,' +
+            hasil.data;
+
+          foto.dataset.loaded = 'true';
+
+        } catch (error) {
+
+          console.error('Gagal memuat foto:', error);
+
+          konten.innerHTML = '';
+
+          const pesan = document.createElement('div');
+          pesan.className = 'foto-spoiler-tanpa-foto';
+          pesan.textContent =
+            'Foto gagal dimuat. Silakan tutup lalu buka kembali halaman dashboard.';
+
+          konten.appendChild(pesan);
+
+        } finally {
+
+          delete foto.dataset.loading;
+
         }
-
       }
+    }
+  });
 
-    });
-
-    konten.appendChild(foto);
+  konten.appendChild(foto);
+}
 
   } else {
 
