@@ -1571,8 +1571,9 @@ absensi.data.forEach(function(item) {
 
     if (cocok && cocok[1]) {
   foto.dataset.src =
-    'https://drive.google.com/uc?export=view&id=' +
-    encodeURIComponent(cocok[1]);
+    'https://drive.google.com/thumbnail?id=' +
+    encodeURIComponent(cocok[1]) +
+    '&sz=w1000';
 } else {
   foto.dataset.src = urlFotoAsli;
 }
