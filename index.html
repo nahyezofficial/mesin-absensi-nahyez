@@ -1543,14 +1543,13 @@ async function bukaKameraBooth() {
 // AMBIL FOTO BOOTH
 // ==================================================
 
-function ambilFotoBooth() {
+async function ambilFotoBooth() {
 
   const video =
     document.getElementById("cameraPreview");
 
   const canvas =
     document.getElementById("photoCanvas");
-
 
   if (
     !video.videoWidth ||
@@ -1565,64 +1564,146 @@ function ambilFotoBooth() {
 
   }
 
+  // ==========================================
+  // 1. BATASI RESOLUSI FOTO
+  // ==========================================
 
-  canvas.width =
+  const MAX_DIMENSION = 1280;
+
+  const originalWidth =
     video.videoWidth;
 
-  canvas.height =
+  const originalHeight =
     video.videoHeight;
 
+  const scale = Math.min(
+    1,
+    MAX_DIMENSION /
+      Math.max(originalWidth, originalHeight)
+  );
+
+  const targetWidth =
+    Math.round(originalWidth * scale);
+
+  const targetHeight =
+    Math.round(originalHeight * scale);
+
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
 
   const context =
     canvas.getContext("2d");
 
+  if (!context) {
+
+    alert(
+      "Gagal memproses foto. Silakan coba kembali."
+    );
+
+    return;
+
+  }
+
+  // ==========================================
+  // 2. GAMBAR ULANG DENGAN RESOLUSI TERBATAS
+  // ==========================================
 
   context.drawImage(
     video,
     0,
     0,
-    canvas.width,
-    canvas.height
+    targetWidth,
+    targetHeight
   );
 
+  // ==========================================
+  // 3. KOMPRESI JPEG OTOMATIS
+  // Target maksimal sekitar 400 KB
+  // ==========================================
 
-  const imageData =
+  const MAX_SIZE = 400 * 1024;
+
+  const MIN_QUALITY = 0.50;
+
+  let quality = 0.75;
+
+  let imageData =
     canvas.toDataURL(
       "image/jpeg",
-      0.90
+      quality
     );
 
+  while (
+    imageData.length * 0.75 > MAX_SIZE &&
+    quality > MIN_QUALITY
+  ) {
+
+    quality = Math.max(
+      MIN_QUALITY,
+      quality - 0.05
+    );
+
+    imageData =
+      canvas.toDataURL(
+        "image/jpeg",
+        quality
+      );
+
+  }
+
+  // ==========================================
+  // 4. SIMPAN FOTO HASIL KOMPRESI
+  // ==========================================
 
   window.fotoBoothBase64 =
     imageData;
 
+  // Estimasi ukuran JPEG dalam KB
+  const estimatedSizeKB =
+    Math.round(
+      imageData.length * 0.75 / 1024
+    );
 
-  // Matikan kamera
+  console.log(
+    "Foto berhasil dikompresi:",
+    {
+      resolusi:
+        targetWidth + " × " + targetHeight,
+      kualitasJPEG: quality,
+      estimasiUkuranKB: estimatedSizeKB
+    }
+  );
+
+  // ==========================================
+  // 5. MATIKAN KAMERA
+  // ==========================================
+
   matikanKameraBooth();
 
+  // ==========================================
+  // 6. TAMPILKAN PREVIEW
+  // ==========================================
 
-  // Sembunyikan kamera
   document.getElementById(
     "boothCameraPage"
   ).style.display = "none";
 
-
-  // Tampilkan halaman preview
   document.getElementById(
     "boothPhotoPage"
   ).style.display = "block";
-
 
   document.getElementById(
     "boothPhotoPreview"
   ).src = imageData;
 
-
-  document.getElementById("status").innerText =
-    "📸 Foto berhasil diambil.";
+  document.getElementById(
+    "status"
+  ).innerText =
+    "📸 Foto siap digunakan (" +
+    estimatedSizeKB +
+    " KB).";
 
 }
-
 
 // ==================================================
 // MATIKAN KAMERA
