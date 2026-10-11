@@ -962,110 +962,159 @@
 </div>
 
 <!-- =====================================
-     PENGATURAN ABSENSI
+     PENGATURAN ABSENSI - ACCORDION
 ===================================== -->
 
 <div class="filter-box" style="
   margin-top: 16px;
   display: block;
+  padding: 0;
+  overflow: hidden;
 ">
 
-  <h3 style="
-    margin: 0 0 8px;
-    color: #334155;
-    font-size: 17px;
-  ">
-    ⚙️ Pengaturan Absensi
-  </h3>
-
-  <p style="
-    margin: 0 0 16px;
-    color: #64748b;
-    font-size: 13px;
-    line-height: 1.5;
-  ">
-    Atur batas waktu kedatangan karyawan.
-    Absensi sampai batas waktu yang ditentukan
-    dihitung tepat waktu.
-  </p>
-
-  <form id="formBatasJamMasuk">
-
-    <div style="
+  <!-- TOMBOL BUKA-TUTUP -->
+  <button
+    type="button"
+    id="togglePengaturanAbsensi"
+    aria-expanded="false"
+    aria-controls="isiPengaturanAbsensi"
+    style="
+      box-sizing: border-box;
       display: flex;
-      flex-wrap: wrap;
-      align-items: end;
+      align-items: center;
+      justify-content: space-between;
       gap: 12px;
+      width: 100%;
+      min-height: 64px;
+      padding: 18px;
+      border: none;
+      background: transparent;
+      color: #334155;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+    "
+  >
+
+    <span style="
+      font-size: 17px;
+      font-weight: 700;
     ">
+      ⚙️ Pengaturan Absensi
+    </span>
+
+    <span
+      id="ikonPengaturanAbsensi"
+      aria-hidden="true"
+      style="
+        font-size: 20px;
+        transition: transform 0.2s ease;
+      "
+    >
+      ▼
+    </span>
+
+  </button>
+
+  <!-- ISI PENGATURAN -->
+  <div
+    id="isiPengaturanAbsensi"
+    hidden
+    style="
+      padding: 0 18px 18px;
+    "
+  >
+
+    <p style="
+      margin: 0 0 16px;
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.6;
+    ">
+      Atur batas waktu kedatangan karyawan.
+      Absensi sampai batas waktu yang ditentukan
+      dihitung tepat waktu.
+    </p>
+
+    <form id="formBatasJamMasuk">
 
       <div style="
-        flex: 1;
-        min-width: 180px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        gap: 12px;
       ">
 
-        <label
-          for="batasJamMasuk"
-          style="
-            display: block;
-            margin-bottom: 7px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #334155;
-          "
-        >
-          Batas Jam Masuk
-        </label>
+        <div style="
+          flex: 1;
+          min-width: 180px;
+        ">
 
-        <input
-          type="time"
-          id="batasJamMasuk"
-          value="05:50"
-          required
+          <label
+            for="batasJamMasuk"
+            style="
+              display: block;
+              margin-bottom: 7px;
+              font-size: 13px;
+              font-weight: 700;
+              color: #334155;
+            "
+          >
+            Batas Jam Masuk
+          </label>
+
+          <input
+            type="time"
+            id="batasJamMasuk"
+            value="06:05"
+            required
+            style="
+              box-sizing: border-box;
+              width: 100%;
+              min-height: 44px;
+              padding: 10px 12px;
+              border: 1px solid #cbd5e1;
+              border-radius: 10px;
+              background: #ffffff;
+              color: #1e293b;
+              font-size: 16px;
+            "
+          >
+
+        </div>
+
+        <button
+          type="submit"
+          id="btnSimpanBatasJam"
+          class="btn-refresh"
           style="
-            box-sizing: border-box;
-            width: 100%;
             min-height: 44px;
-            padding: 10px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            background: #ffffff;
-            color: #1e293b;
-            font-size: 16px;
+            border: none;
+            cursor: pointer;
           "
         >
+          💾 Simpan Perubahan
+        </button>
 
       </div>
 
-      <button
-        type="submit"
-        id="btnSimpanBatasJam"
-        class="btn-refresh"
-        style="
-          min-height: 44px;
-          border: none;
-          cursor: pointer;
-        "
-      >
-        💾 Simpan Perubahan
-      </button>
+    </form>
 
-    </div>
+    <div
+      id="statusBatasJam"
+      role="status"
+      aria-live="polite"
+      style="
+        display: none;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        line-height: 1.5;
+      "
+    ></div>
 
-  </form>
-
-  <div
-    id="statusBatasJam"
-    role="status"
-    aria-live="polite"
-    style="
-      display: none;
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      line-height: 1.5;
-    "
-  ></div>
+  </div>
 
 </div>
 
@@ -2203,6 +2252,41 @@ btnLogout.addEventListener(
   // ==========================================
   // LOAD AWAL
   // ==========================================
+
+  // ========================================
+// TOGGLE PENGATURAN ABSENSI
+// ========================================
+
+const togglePengaturanAbsensi =
+  document.getElementById("togglePengaturanAbsensi");
+
+const isiPengaturanAbsensi =
+  document.getElementById("isiPengaturanAbsensi");
+
+const ikonPengaturanAbsensi =
+  document.getElementById("ikonPengaturanAbsensi");
+
+if (
+  togglePengaturanAbsensi &&
+  isiPengaturanAbsensi &&
+  ikonPengaturanAbsensi
+) {
+  togglePengaturanAbsensi.addEventListener("click", function() {
+    const sedangTerbuka =
+      togglePengaturanAbsensi.getAttribute("aria-expanded") === "true";
+
+    togglePengaturanAbsensi.setAttribute(
+      "aria-expanded",
+      String(!sedangTerbuka)
+    );
+
+    isiPengaturanAbsensi.hidden = sedangTerbuka;
+
+    ikonPengaturanAbsensi.style.transform = sedangTerbuka
+      ? "rotate(0deg)"
+      : "rotate(180deg)";
+  });
+}
 
   // ========================================
 // PENGATURAN BATAS JAM MASUK
