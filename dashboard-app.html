@@ -1345,6 +1345,13 @@ const errorBox =
   // ==========================================
 
   async function loadDashboard() {
+    if (dashboardSedangMemuat) {
+  return;
+}
+
+dashboardSedangMemuat = true;
+
+      try {
 
     errorBox.style.display =
       'none';
@@ -1378,36 +1385,131 @@ const errorBox =
       bulan;
 
 
-    try {
+    let data = null;
+let percobaan = 0;
+let berhasil = false;
+let pesanKesalahan = '';
 
-      const response =
-        await fetch(url);
+while (
+  percobaan <= DASHBOARD_MAX_RETRY &&
+  !berhasil
+) {
+  percobaan++;
 
+  const controller = new AbortController();
+  dashboardController = controller;
 
-      if (!response.ok) {
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, DASHBOARD_TIMEOUT_MS);
 
-        throw new Error(
-          'HTTP ' +
-          response.status
-        );
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      credentials: 'same-origin',
+      cache: 'no-store',
+      signal: controller.signal
+    });
 
+    if (response.status === 401) {
+      throw new Error(
+        'Sesi admin tidak valid. Silakan login kembali.'
+      );
+    }
+
+    if (
+      [502, 503, 504].includes(response.status)
+    ) {
+      pesanKesalahan =
+        'Server sedang mengalami gangguan (HTTP ' +
+        response.status + ').';
+
+      if (percobaan <= DASHBOARD_MAX_RETRY) {
+        await response.text();
+
+        await new Promise(resolve => {
+          setTimeout(resolve, 1000);
+        });
+
+        continue;
       }
 
+      throw new Error(
+        pesanKesalahan +
+        ' Silakan tekan Refresh untuk mencoba kembali.'
+      );
+    }
 
-      const data =
-        await response.json();
+    if (!response.ok) {
+      throw new Error(
+        'HTTP ' + response.status
+      );
+    }
 
+    const hasil = await response.json();
 
-      if (
-        !data ||
-        data.success !== true
-      ) {
+    if (!hasil || hasil.success !== true) {
+      throw new Error(
+        'API mengembalikan data tidak valid.'
+      );
+    }
 
-        throw new Error(
-          'API mengembalikan data tidak valid.'
-        );
+    data = hasil;
+    berhasil = true;
+    pesanKesalahan = '';
 
-      }
+  } catch (error) {
+    if (
+      error.message &&
+      error.message.startsWith('Sesi admin tidak valid')
+    ) {
+      throw error;
+    }
+
+    const gangguanJaringan =
+      error.name === 'AbortError' ||
+      error instanceof TypeError;
+
+    if (error.name === 'AbortError') {
+      pesanKesalahan =
+        'Server terlalu lama merespons.';
+    } else if (error instanceof TypeError) {
+      pesanKesalahan =
+        'Terjadi gangguan koneksi jaringan.';
+    } else {
+      throw error;
+    }
+
+    if (percobaan <= DASHBOARD_MAX_RETRY) {
+      await new Promise(resolve => {
+        setTimeout(resolve, 1000);
+      });
+
+      continue;
+    }
+
+    throw new Error(
+      pesanKesalahan +
+      ' Silakan tekan Refresh untuk mencoba kembali.'
+    );
+
+  } finally {
+    clearTimeout(timeoutId);
+    dashboardController = null;
+  }
+}
+
+if (!berhasil || !data) {
+  throw new Error(
+    'Dashboard gagal dimuat. Silakan coba Refresh.'
+  );
+}
+
+if (!berhasil || !data) {
+  throw new Error(
+    'Dashboard gagal dimuat. Silakan coba Refresh.'
+  );
+}
 
       // ======================================
 // ABSENSI HARI INI
@@ -1931,26 +2033,18 @@ absensi.data.forEach(function(item) {
 
 
     } catch (error) {
+      console.error('Gagal memuat dashboard:', error);
 
-      console.error(
-        error
-      );
-
-
-      document.getElementById(
-        'loading'
-      ).style.display =
-        'none';
-
+      document.getElementById('loading').style.display = 'none';
 
       errorBox.textContent =
-        'Gagal memuat dashboard: ' +
-        error.message;
+        'Gagal memuat dashboard: ' + error.message;
 
+      errorBox.style.display = 'block';
 
-      errorBox.style.display =
-        'block';
-
+    } finally {
+      dashboardSedangMemuat = false;
+      dashboardController = null;
     }
 
   }
