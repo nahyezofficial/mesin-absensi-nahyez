@@ -961,7 +961,115 @@
 
 </div>
 
+<!-- =====================================
+     PENGATURAN ABSENSI
+===================================== -->
 
+<div class="filter-box" style="
+  margin-top: 16px;
+  display: block;
+">
+
+  <h3 style="
+    margin: 0 0 8px;
+    color: #334155;
+    font-size: 17px;
+  ">
+    ⚙️ Pengaturan Absensi
+  </h3>
+
+  <p style="
+    margin: 0 0 16px;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+  ">
+    Atur batas waktu kedatangan karyawan.
+    Absensi sampai batas waktu yang ditentukan
+    dihitung tepat waktu.
+  </p>
+
+  <form id="formBatasJamMasuk">
+
+    <div style="
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 12px;
+    ">
+
+      <div style="
+        flex: 1;
+        min-width: 180px;
+      ">
+
+        <label
+          for="batasJamMasuk"
+          style="
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+          "
+        >
+          Batas Jam Masuk
+        </label>
+
+        <input
+          type="time"
+          id="batasJamMasuk"
+          value="05:50"
+          required
+          style="
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 16px;
+          "
+        >
+
+      </div>
+
+      <button
+        type="submit"
+        id="btnSimpanBatasJam"
+        class="btn-refresh"
+        style="
+          min-height: 44px;
+          border: none;
+          cursor: pointer;
+        "
+      >
+        💾 Simpan Perubahan
+      </button>
+
+    </div>
+
+  </form>
+
+  <div
+    id="statusBatasJam"
+    role="status"
+    aria-live="polite"
+    style="
+      display: none;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+    "
+  ></div>
+
+</div>
+
+<!-- AKHIR PENGATURAN ABSENSI -->
     <!-- ERROR -->
 
     <div
