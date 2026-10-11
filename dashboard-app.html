@@ -1231,6 +1231,16 @@
 
   const API_URL = '/api/dashboard';
 
+  // ==========================================
+// PENGAMAN PEMUATAN DASHBOARD
+// ==========================================
+
+let dashboardSedangMemuat = false;
+let dashboardController = null;
+
+const DASHBOARD_TIMEOUT_MS = 20000;
+const DASHBOARD_MAX_RETRY = 1;
+
 
   // ==========================================
 // ELEMENT
