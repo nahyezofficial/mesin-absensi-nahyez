@@ -2204,6 +2204,82 @@ btnLogout.addEventListener(
   // LOAD AWAL
   // ==========================================
 
+  // ========================================
+// PENGATURAN BATAS JAM MASUK
+// ========================================
+
+const formBatasJamMasuk = document.getElementById("formBatasJamMasuk");
+const inputBatasJamMasuk = document.getElementById("batasJamMasuk");
+const btnSimpanBatasJam = document.getElementById("btnSimpanBatasJam");
+const statusBatasJam = document.getElementById("statusBatasJam");
+
+function tampilkanStatusBatasJam(pesan, berhasil) {
+  statusBatasJam.textContent = pesan;
+  statusBatasJam.style.display = "block";
+  statusBatasJam.style.background = berhasil ? "#dcfce7" : "#fee2e2";
+  statusBatasJam.style.color = berhasil ? "#166534" : "#991b1b";
+}
+
+if (formBatasJamMasuk) {
+  formBatasJamMasuk.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const batasJamMasuk = inputBatasJamMasuk.value;
+
+    if (!batasJamMasuk) {
+      tampilkanStatusBatasJam(
+        "Silakan tentukan batas jam masuk terlebih dahulu.",
+        false
+      );
+      return;
+    }
+
+    const konfirmasi = confirm(
+      "Simpan batas jam masuk menjadi " + batasJamMasuk + "?"
+    );
+
+    if (!konfirmasi) return;
+
+    btnSimpanBatasJam.disabled = true;
+    btnSimpanBatasJam.textContent = "⏳ Menyimpan...";
+
+    try {
+      const response = await fetch("/api/settings/attendance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          batasJamMasuk: batasJamMasuk
+        })
+      });
+
+      const hasil = await response.json();
+
+      if (!response.ok || !hasil.success) {
+        throw new Error(
+          hasil.message || "Pengaturan gagal disimpan."
+        );
+      }
+
+      tampilkanStatusBatasJam(
+        "✅ " + (hasil.message || "Batas jam masuk berhasil disimpan.") +
+        " Batas baru: " + (hasil.batasJamMasuk || batasJamMasuk) + ".",
+        true
+      );
+
+    } catch (error) {
+      tampilkanStatusBatasJam(
+        "❌ " + (error.message || "Terjadi kesalahan saat menyimpan."),
+        false
+      );
+    } finally {
+      btnSimpanBatasJam.disabled = false;
+      btnSimpanBatasJam.textContent = "💾 Simpan Perubahan";
+    }
+  });
+}
+
   loadDashboard();
 
 </script>
