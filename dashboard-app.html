@@ -2282,6 +2282,10 @@ if (
 
     isiPengaturanAbsensi.hidden = sedangTerbuka;
 
+    if (!sedangTerbuka) {
+      muatBatasJamMasuk();
+    }
+
     ikonPengaturanAbsensi.style.transform = sedangTerbuka
       ? "rotate(0deg)"
       : "rotate(180deg)";
@@ -2302,6 +2306,51 @@ function tampilkanStatusBatasJam(pesan, berhasil) {
   statusBatasJam.style.display = "block";
   statusBatasJam.style.background = berhasil ? "#dcfce7" : "#fee2e2";
   statusBatasJam.style.color = berhasil ? "#166534" : "#991b1b";
+}
+
+  // ========================================
+// MEMBACA BATAS JAM MASUK DARI SERVER
+// ========================================
+
+let batasJamMasukSudahDimuat = false;
+
+async function muatBatasJamMasuk() {
+  if (batasJamMasukSudahDimuat) return;
+
+  try {
+    const response = await fetch("/api/settings/attendance", {
+      method: "GET",
+      credentials: "same-origin",
+      cache: "no-store"
+    });
+
+    const hasil = await response.json();
+
+    if (!response.ok || !hasil.success) {
+      throw new Error(
+        hasil.message || "Gagal membaca batas jam masuk."
+      );
+    }
+
+    if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(hasil.batasJamMasuk)) {
+      throw new Error("Format batas jam masuk dari server tidak valid.");
+    }
+
+    inputBatasJamMasuk.value = hasil.batasJamMasuk;
+    batasJamMasukSudahDimuat = true;
+
+    tampilkanStatusBatasJam(
+      "✅ Pengaturan berhasil dimuat. Batas jam masuk saat ini: " +
+      hasil.batasJamMasuk + ".",
+      true
+    );
+
+  } catch (error) {
+    tampilkanStatusBatasJam(
+      "❌ " + (error.message || "Gagal memuat pengaturan."),
+      false
+    );
+  }
 }
 
 if (formBatasJamMasuk) {
@@ -2351,6 +2400,11 @@ if (formBatasJamMasuk) {
         " Batas baru: " + (hasil.batasJamMasuk || batasJamMasuk) + ".",
         true
       );
+
+      inputBatasJamMasuk.value =
+  hasil.batasJamMasuk || batasJamMasuk;
+
+batasJamMasukSudahDimuat = true;
 
     } catch (error) {
       tampilkanStatusBatasJam(
