@@ -910,6 +910,56 @@
   cursor: not-allowed;
 }
 
+
+    /* =========================
+       LAYOUT SIDEBAR - TAHAP 1
+    ========================= */
+    .app-layout {
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+      width: 100%;
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+    .sidebar {
+      flex: 0 0 245px;
+      position: sticky;
+      top: 18px;
+      padding: 18px 12px;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 5px 22px rgba(15, 23, 42, .07);
+    }
+    .sidebar-brand { padding: 5px 10px 18px; border-bottom: 1px solid #e8edf4; margin-bottom: 14px; }
+    .sidebar-brand strong { display:block; color:#334155; font-size:16px; line-height:1.4; }
+    .sidebar-brand span { display:block; color:#7b8ba1; font-size:12px; margin-top:4px; }
+    .nav-label { padding: 12px 12px 7px; color:#94a3b8; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+    .nav-btn { display:flex; align-items:center; gap:10px; width:100%; min-height:45px; margin:3px 0; padding:11px 12px; border:0; border-radius:11px; background:transparent; color:#475569; font-family:inherit; font-size:14px; font-weight:600; text-align:left; cursor:pointer; }
+    .nav-btn:hover { background:#f1f5f9; }
+    .nav-btn.active { background:#eaf1f9; color:#365b82; }
+    .nav-sub { padding-left:16px; font-size:13px; }
+    .nav-logout { margin-top:20px; color:#b91c1c; }
+    .main-content { flex:1; min-width:0; max-width:none; margin:0; padding:0; }
+    .page-panel { min-width:0; }
+    .page-panel[hidden] { display:none !important; }
+    .page-heading { margin:0 0 15px; color:#334155; font-size:21px; }
+    .mobile-nav-toggle { display:none; }
+    @media (max-width: 850px) {
+      .app-layout { display:block; padding:12px; }
+      .mobile-nav-toggle { display:block; width:100%; margin-bottom:12px; padding:12px 14px; border:0; border-radius:12px; background:#fff; color:#334155; font-weight:700; text-align:left; box-shadow:0 3px 12px rgba(15,23,42,.06); }
+      .sidebar { display:none; position:static; width:100%; margin-bottom:14px; }
+      .sidebar.open { display:block; }
+      .main-content { width:100%; }
+      .main-content.nav-open > .header,
+      .main-content.nav-open > #errorBox,
+      .main-content.nav-open > .page-panel { display:none !important; }
+      .container { padding:0; }
+      .header { border-radius:15px; }
+      .filter-box select { min-width:140px; }
+    }
+
   </style>
 </head>
 
@@ -951,15 +1001,9 @@
     🔄 Refresh
   </button>
 
-  <button
-    class="btn-logout"
-    id="btnLogout"
-    type="button"
-  >
-    🚪 Logout
-  </button>
-
 </div>
+<!-- Tombol logout lama dipertahankan sebagai target handler, tetapi tidak ditampilkan di halaman Kinerja. -->
+<button class="btn-logout" id="btnLogout" type="button" hidden>Logout</button>
 
 <!-- =====================================
      PENGATURAN ABSENSI - ACCORDION
@@ -2417,6 +2461,126 @@ batasJamMasukSudahDimuat = true;
     }
   });
 }
+
+
+  // ==========================================
+  // NAVIGASI SIDEBAR - TAHAP 1
+  // Hanya menata tampilan; alur API dan data lama dipertahankan.
+  // ==========================================
+  (function siapkanNavigasiSidebar() {
+    const container = document.querySelector('body > .container');
+    if (!container) return;
+
+    const header = container.querySelector('.header');
+    const filter = container.querySelector('.filter-box');
+    const settings = document.getElementById('togglePengaturanAbsensi')?.closest('.filter-box');
+    const error = document.getElementById('errorBox');
+    const stats = container.querySelector('.stats-grid');
+    const sections = container.querySelectorAll('.section');
+    const attendanceSection = sections[0];
+    const performanceSection = sections[1];
+    if (!header || !filter || !settings || !error || !stats || !attendanceSection || !performanceSection) return;
+
+    const layout = document.createElement('div');
+    layout.className = 'app-layout';
+    const sidebar = document.createElement('aside');
+    sidebar.className = 'sidebar';
+    sidebar.id = 'adminSidebar';
+    sidebar.innerHTML = `
+      <div class="sidebar-brand"><strong>NAHYEZ BABY MEAL</strong><span>Panel Administrasi</span></div>
+      <div class="nav-label">Menu Utama</div>
+      <button type="button" class="nav-btn active" data-page="dashboard">🏠 <span>Dashboard</span></button>
+      <button type="button" class="nav-btn" data-page="settings">⚙️ <span>Pengaturan</span></button>
+      <button type="button" class="nav-btn" data-page="performance">📊 <span>Kinerja Karyawan</span></button>
+      <button type="button" class="nav-btn nav-logout" id="navLogout">🚪 <span>Logout</span></button>
+    `;
+
+    const main = document.createElement('main');
+    main.className = 'container main-content';
+    const mobileToggle = document.createElement('button');
+    mobileToggle.type = 'button';
+    mobileToggle.className = 'mobile-nav-toggle';
+    mobileToggle.textContent = '☰  Buka Menu';
+    mobileToggle.setAttribute('aria-controls', 'adminSidebar');
+    mobileToggle.setAttribute('aria-expanded', 'false');
+
+    const dashboardPage = document.createElement('section');
+    dashboardPage.className = 'page-panel';
+    dashboardPage.id = 'page-dashboard';
+    const settingsPage = document.createElement('section');
+    settingsPage.className = 'page-panel';
+    settingsPage.id = 'page-settings';
+    const performancePage = document.createElement('section');
+    performancePage.className = 'page-panel';
+    performancePage.id = 'page-performance';
+
+    const settingsHeading = document.createElement('h2');
+    settingsHeading.className = 'page-heading';
+    settingsHeading.textContent = '⚙️ Pengaturan';
+    const performanceHeading = document.createElement('h2');
+    performanceHeading.className = 'page-heading';
+    performanceHeading.textContent = '📊 Kinerja Karyawan';
+    settingsPage.appendChild(settingsHeading);
+    performancePage.appendChild(performanceHeading);
+
+    // Pertahankan header dan pesan error sebagai elemen global.
+    container.parentNode.insertBefore(layout, container);
+    layout.appendChild(sidebar);
+    layout.appendChild(main);
+    main.appendChild(mobileToggle);
+    main.appendChild(header);
+    main.appendChild(error);
+    main.appendChild(dashboardPage);
+    main.appendChild(settingsPage);
+    main.appendChild(performancePage);
+
+    dashboardPage.appendChild(stats);
+    dashboardPage.appendChild(attendanceSection);
+    settingsPage.appendChild(settings);
+    performancePage.appendChild(filter);
+    performancePage.appendChild(performanceSection);
+    container.remove();
+
+    // Menu Pengaturan memuat pengaturan absensi termasuk batas jam masuk.
+    function bukaHalaman(page) {
+      const target = page;
+      dashboardPage.hidden = target !== 'dashboard';
+      settingsPage.hidden = target !== 'settings';
+      performancePage.hidden = target !== 'performance';
+      sidebar.querySelectorAll('[data-page]').forEach(button => {
+        button.classList.toggle('active', button.dataset.page === page);
+      });
+      if (target === 'settings') {
+        const isi = document.getElementById('isiPengaturanAbsensi');
+        const toggle = document.getElementById('togglePengaturanAbsensi');
+        const ikon = document.getElementById('ikonPengaturanAbsensi');
+        if (isi && toggle && isi.hidden) {
+          isi.hidden = false;
+          toggle.setAttribute('aria-expanded', 'true');
+          if (ikon) ikon.style.transform = 'rotate(180deg)';
+          muatBatasJamMasuk();
+        }
+      }
+      mobileToggle.textContent = '☰  Menu';
+      sidebar.classList.remove('open');
+      main.classList.remove('nav-open');
+      mobileToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    sidebar.querySelectorAll('[data-page]').forEach(button => {
+      button.addEventListener('click', () => bukaHalaman(button.dataset.page));
+    });
+    mobileToggle.addEventListener('click', () => {
+      const opened = sidebar.classList.toggle('open');
+      mobileToggle.setAttribute('aria-expanded', String(opened));
+      mobileToggle.textContent = opened ? '✕  Tutup Menu' : '☰  Buka Menu';
+      // Pada layar HP, saat menu dibuka fokuskan tampilan ke menu agar
+      // halaman aktif tidak terlihat seolah-olah masih menjadi isi menu.
+      main.classList.toggle('nav-open', opened);
+    });
+    document.getElementById('navLogout')?.addEventListener('click', () => btnLogout.click());
+    bukaHalaman('dashboard');
+  })();
 
   loadDashboard();
 
