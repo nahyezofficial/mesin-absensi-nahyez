@@ -2,2203 +2,2736 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Mesin Absensi Nahyez</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <title>Dashboard Admin - Nahyez Baby Meal</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #fff4df, #ffe0b2);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+      background: #f4f7fb;
+      color: #263238;
     }
+
 
     .container {
       width: 100%;
-      max-width: 450px;
-      background: white;
-      border-radius: 24px;
-      padding: 25px;
-      box-shadow: 0 10px 35px rgba(0,0,0,0.12);
-      text-align: center;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
     }
 
-    .logo {
-      font-size: 30px;
-      font-weight: bold;
-      color: #ed7612;
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+      background: linear-gradient(
+        135deg,
+        #6f8fb3,
+        #9fb6d0
+      );
+
+      color: white;
+
+      padding: 22px;
+
+      border-radius: 20px;
+
+      margin-bottom: 20px;
+
+      box-shadow:
+        0 8px 24px rgba(
+          0,
+          0,
+          0,
+          0.08
+        );
+    }
+
+
+    .header h1 {
+      margin: 0;
+
+      font-size: 25px;
+
+      font-weight: 700;
+    }
+
+
+    .header p {
+      margin:
+        6px
+        0
+        0;
+
+      opacity: 0.9;
+
+      font-size: 14px;
+    }
+
+
+    /* =========================
+       FILTER
+    ========================= */
+
+    .filter-box {
+      background: white;
+
+      padding: 16px;
+
+      border-radius: 16px;
+
+      margin-bottom: 20px;
+
+      display: flex;
+
+      gap: 12px;
+
+      align-items: center;
+
+      flex-wrap: wrap;
+
+      box-shadow:
+        0 4px 16px rgba(
+          0,
+          0,
+          0,
+          0.05
+        );
+    }
+
+
+    .filter-box label {
+      font-size: 14px;
+
+      font-weight: 600;
+    }
+
+
+    .filter-box select {
+
+      padding: 11px 14px;
+
+      border-radius: 10px;
+
+      border: 1px solid #d6dce5;
+
+      background: white;
+
+      font-size: 14px;
+
+      min-width: 180px;
+
+      outline: none;
+    }
+
+
+    .btn-refresh {
+
+      border: none;
+
+      border-radius: 10px;
+
+      padding:
+        11px
+        16px;
+
+      background: #6f8fb3;
+
+      color: white;
+
+      font-weight: 600;
+
+      cursor: pointer;
+    }
+
+
+    .btn-refresh:active {
+      transform: scale(0.98);
+    }
+
+
+    /* =========================
+       STATISTIC CARDS
+    ========================= */
+
+    .stats-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          4,
+          1fr
+        );
+
+      gap: 15px;
+
+      margin-bottom: 22px;
+    }
+
+
+    .stat-card {
+
+      background: white;
+
+      border-radius: 18px;
+
+      padding: 18px;
+
+      box-shadow:
+        0 5px 18px rgba(
+          0,
+          0,
+          0,
+          0.05
+        );
+    }
+
+
+    .stat-icon {
+
+      font-size: 25px;
+
+      margin-bottom: 8px;
+    }
+
+
+    .stat-title {
+
+      font-size: 13px;
+
+      color: #718096;
+
       margin-bottom: 5px;
     }
 
-    .subtitle {
-      color: #666;
-      margin-bottom: 25px;
+
+    .stat-value {
+
+      font-size: 30px;
+
+      font-weight: 800;
+
+      color: #263238;
     }
 
-    .scanner-title {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 15px;
-      color: #333;
+
+    /* =========================
+       KINERJA
+    ========================= */
+
+    .section {
+
+      background: white;
+
+      border-radius: 18px;
+
+      padding: 20px;
+
+      box-shadow:
+        0 5px 18px rgba(
+          0,
+          0,
+          0,
+          0.05
+        );
     }
 
-    #reader {
+
+    .section-header {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 10px;
+
+      margin-bottom: 16px;
+
+      flex-wrap: wrap;
+    }
+
+
+    .section-title {
+
+      margin: 0;
+
+      font-size: 19px;
+
+      font-weight: 700;
+    }
+
+
+    .periode {
+
+      font-size: 13px;
+
+      color: #718096;
+    }
+
+
+    .table-wrapper {
+
       width: 100%;
-      overflow: hidden;
-      border-radius: 16px;
+
+      overflow-x: auto;
     }
 
-    .status {
-      margin-top: 20px;
-      padding: 15px;
+
+    table {
+
+      width: 100%;
+
+      border-collapse: collapse;
+
+      min-width: 760px;
+    }
+
+
+    th {
+
+      text-align: left;
+
+      background: #f5f7fa;
+
+      padding: 12px;
+
+      font-size: 12px;
+
+      color: #687386;
+
+      white-space: nowrap;
+    }
+
+
+    td {
+
+      padding: 13px 12px;
+
+      border-bottom:
+        1px solid
+        #edf0f4;
+
+      font-size: 13px;
+
+      white-space: nowrap;
+    }
+
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+
+    .nama {
+
+      font-weight: 700;
+
+      color: #263238;
+    }
+
+
+    .id {
+
+      font-size: 11px;
+
+      color: #8994a3;
+
+      margin-top: 3px;
+    }
+
+
+    .badge {
+
+      display: inline-block;
+
+      padding:
+        5px
+        8px;
+
+      border-radius: 8px;
+
+      font-size: 11px;
+
+      font-weight: 700;
+    }
+
+
+    .badge-green {
+
+      background: #e8f7ef;
+
+      color: #198754;
+    }
+
+
+    .badge-orange {
+
+      background: #fff1df;
+
+      color: #d97706;
+    }
+
+
+    .badge-red {
+
+      background: #fdecec;
+
+      color: #dc3545;
+    }
+
+
+    .badge-blue {
+
+      background: #eaf2ff;
+
+      color: #0d6efd;
+    }
+
+
+    .loading {
+
+      text-align: center;
+
+      padding: 30px;
+
+      color: #718096;
+    }
+
+
+    .error {
+
+      background: #fdecec;
+
+      color: #b42318;
+
+      padding: 14px;
+
       border-radius: 12px;
-      background: #f7f7f7;
-      color: #555;
-      min-height: 50px;
-    }
 
-    .result {
-      margin-top: 15px;
-      padding: 18px;
-      border-radius: 15px;
-      background: #fff4df;
+      margin-bottom: 15px;
+
       display: none;
     }
 
-    .result-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #198754;
-      margin-bottom: 10px;
-    }
 
-    .token {
-      font-weight: bold;
-      word-break: break-all;
-      color: #333;
-    }
+    /* =========================
+       MOBILE
+    ========================= */
 
-    .note {
-      margin-top: 20px;
-      font-size: 12px;
-      color: #888;
-      line-height: 1.5;
-    }
+    /* =========================
+   ABSENSI HARI INI
+========================= */
 
-    /* =========================================
-   MODE FOTO BOOTH
-========================================= */
+.absensi-item {
 
-#boothCameraPage {
-
-  display: none;
-
-  position: fixed !important;
-
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-
-  width: 100% !important;
-  max-width: none !important;
-
-  height: 100vh;
-  height: 100dvh;
-
-  margin: 0 !important;
-
-  z-index: 99999;
-
-  background: #fff4df;
-
-  padding: 18px;
-
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  box-sizing: border-box;
-
-}
-
-
-/* Isi halaman kamera tetap berada di tengah */
-
-#boothCameraPage .camera-header,
-#boothCameraPage .camera-preview-wrapper,
-#boothCameraPage .camera-instruction,
-#boothCameraPage .btn-take-photo {
-
-  width: 100%;
-
-  max-width: 600px;
-
-  margin-left: auto;
-  margin-right: auto;
-
-}
-
-
-/* Kamera selalu berada di bawah header */
-
-#boothCameraPage .camera-preview-wrapper {
-
-  display: block;
-
-}
-
-
-/* Video mengikuti lebar area kamera */
-
-#boothCameraPage #cameraPreview {
-
-  width: 100% !important;
-
-  max-width: 100% !important;
-
-  height: auto !important;
-
-  min-height: 0 !important;
-
-  aspect-ratio: 4 / 3;
-
-  object-fit: cover;
-
-  display: block;
-
-}
-
-
-/* Tombol selalu di bawah kamera */
-
-#boothCameraPage .btn-take-photo {
-
-  display: block;
-
-  position: relative;
-
-  margin-top: 15px;
-
-}
-
-
-/* Cegah halaman utama melebar ke samping */
-
-html,
-body {
-
-  max-width: 100%;
-
-  overflow-x: hidden;
-
-}
-
-
-/* Header kamera */
-
-.camera-header {
-
-  text-align: center;
-
-  margin-bottom: 15px;
-
-}
-
-
-.camera-brand {
-
-  font-size: 24px;
-
-  font-weight: bold;
-
-  color: #ed7612;
-
-}
-
-
-.camera-title {
-
-  font-size: 21px;
-
-  font-weight: bold;
-
-  color: #333;
-
-  margin-top: 8px;
-
-}
-
-
-#boothEmployee {
-
-  margin-top: 6px;
-
-  font-size: 14px;
-
-  color: #666;
-
-}
-
-
-/* Area video */
-
-.camera-preview-wrapper {
-
-  width: 100%;
-
-  background: #111;
-
-  border-radius: 20px;
-
-  overflow: hidden;
-
-  box-shadow:
-    0 8px 25px rgba(0,0,0,0.18);
-
-}
-
-
-/* Kamera */
-
-#cameraPreview {
-
-  width: 100%;
-
-  height: auto;
-
-  min-height: 350px;
-
-  max-height: 65vh;
-
-  object-fit: cover;
-
-  display: block;
-
-}
-
-
-/* Instruksi */
-
-.camera-instruction {
-
-  margin-top: 15px;
-
-  padding: 12px;
-
-  border-radius: 12px;
-
-  background: #fff;
-
-  color: #666;
-
-  font-size: 14px;
-
-  text-align: center;
-
-  line-height: 1.5;
-
-}
-
-
-/* Tombol foto */
-
-.btn-take-photo {
-
-  width: 100%;
-
-  margin-top: 15px;
-
-  padding: 16px;
-
-  border: none;
-
-  border-radius: 15px;
-
-  background: #ed7612;
-
-  color: white;
-
-  font-size: 18px;
-
-  font-weight: bold;
-
-  box-shadow:
-    0 5px 15px rgba(0,0,0,0.15);
-
-}
-
-
-/* Mode preview foto */
-
-#boothPhotoPage {
-
-  display: none;
-
-  position: fixed;
-
-  inset: 0;
-
-  z-index: 10000;
-
-  background: #fff4df;
-
-  padding: 18px;
-
-  overflow-y: auto;
-
-}
-
-
-.photo-title {
-
-  text-align: center;
-
-  font-size: 21px;
-
-  font-weight: bold;
-
-  color: #333;
-
-  margin-bottom: 15px;
-
-}
-
-
-#boothPhotoPreview {
-
-  width: 100%;
-
-  border-radius: 18px;
-
-  display: block;
-
-  background: #111;
-
-}
-
-
-.photo-button {
-
-  width: 100%;
-
-  padding: 15px;
-
-  border: none;
+  border:
+    1px solid
+    #edf0f4;
 
   border-radius: 14px;
 
-  margin-top: 12px;
+  padding: 15px;
 
-  font-size: 17px;
+  margin-bottom: 10px;
 
-  font-weight: bold;
-
+  background: #ffffff;
 }
 
 
-.btn-retake {
-
-  background: #777;
-
-  color: white;
-
-}
-
-
-.btn-use-photo {
-
-  background: #198754;
-
-  color: white;
-
-}
-
-    /* =========================================
-   ANIMASI IKON ABSENSI BERHASIL
-========================================= */
-
-/* =========================================
-   IKON ABSENSI BERHASIL
-========================================= */
-
-.success-icon {
-  width: 105px;
-  height: 105px;
-  margin: 25px auto 0;
-
-  border-radius: 50%;
-
-  color: white;
+.absensi-top {
 
   display: flex;
+
+  justify-content:
+    space-between;
+
   align-items: center;
-  justify-content: center;
 
-  font-size: 58px;
-  font-weight: bold;
+  gap: 10px;
 
-  animation: successPulse 1.8s infinite;
+  margin-bottom: 8px;
 }
 
 
-/* ==============================
-   WARNA ABSEN MASUK
-============================== */
+.absensi-jenis {
 
-.success-icon.masuk {
-  background: #198754;
+  font-size: 13px;
 
-  box-shadow:
-    0 0 0 0 rgba(25, 135, 84, 0.45);
+  font-weight: 800;
 }
 
 
-/* ==============================
-   WARNA ABSEN PULANG
-============================== */
+.absensi-jenis.masuk {
 
-.success-icon.pulang {
-  background: #0d6efd;
-
-  box-shadow:
-    0 0 0 0 rgba(13, 110, 253, 0.45);
+  color: #198754;
 }
 
 
-/* ==============================
-   ANIMASI PULSE
-============================== */
+.absensi-jenis.pulang {
 
-@keyframes successPulse {
+  color: #0d6efd;
+}
 
-  0% {
-    transform: scale(1);
+
+.absensi-jam {
+
+  font-size: 18px;
+
+  font-weight: 800;
+
+  color: #263238;
+}
+
+
+.absensi-nama {
+
+  font-weight: 700;
+
+  font-size: 14px;
+}
+
+
+.absensi-id {
+
+  font-size: 11px;
+
+  color: #8994a3;
+
+  margin-top: 2px;
+}
+
+
+.absensi-detail {
+
+  font-size: 12px;
+
+  color: #687386;
+
+  margin-top: 8px;
+
+  line-height: 1.6;
+}
+    
+    @media (
+      max-width: 700px
+    ) {
+
+      .container {
+        padding: 12px;
+      }
+
+
+      .header {
+
+        padding: 18px;
+
+        border-radius: 16px;
+      }
+
+
+      .header h1 {
+
+        font-size: 21px;
+      }
+
+
+      .stats-grid {
+
+        grid-template-columns:
+          repeat(
+            2,
+            1fr
+          );
+
+        gap: 10px;
+      }
+
+
+      .stat-card {
+
+        padding: 15px;
+
+        border-radius: 15px;
+      }
+
+
+      .stat-value {
+
+        font-size: 26px;
+      }
+
+
+      .filter-box {
+
+        align-items:
+          stretch;
+      }
+
+
+      .filter-box select,
+      .btn-refresh {
+
+        width: 100%;
+      }
+
+
+      .section {
+
+        padding: 15px;
+
+        border-radius: 16px;
+      }
+
+    }
+
+    /* ======================================
+   KINERJA KARYAWAN - MOBILE CARD
+====================================== */
+
+@media (max-width: 600px) {
+
+  .kinerja-table {
+    display: block;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: fixed;
+    overflow: visible !important;
   }
 
-  50% {
-    transform: scale(1.06);
+  .kinerja-table thead {
+    display: none;
   }
 
-  100% {
-    transform: scale(1);
+  .kinerja-table tbody {
+    display: block;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .kinerja-table tbody tr {
+    display: block;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    margin: 0 0 14px 0;
+    padding: 15px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #edf0f4;
+    border-radius: 14px;
+    background: #ffffff;
+
+    overflow: hidden;
+  }
+
+  .kinerja-table tbody tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .kinerja-table tbody td {
+    display: flex;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    box-sizing: border-box;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 8px 0;
+
+    border: none;
+
+    text-align: right;
+
+    white-space: normal;
+  }
+
+  /* Nama karyawan */
+
+  .kinerja-table tbody td:first-child {
+    display: block;
+
+    width: 100% !important;
+
+    padding-top: 0;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+
+    border-bottom: 1px solid #edf0f4;
+
+    text-align: left;
+  }
+
+  /* Label */
+
+  .kinerja-table tbody td:nth-child(2)::before {
+    content: "Outlet";
+  }
+
+  .kinerja-table tbody td:nth-child(3)::before {
+    content: "Hari Kerja";
+  }
+
+  .kinerja-table tbody td:nth-child(4)::before {
+    content: "Tepat Waktu";
+  }
+
+  .kinerja-table tbody td:nth-child(5)::before {
+    content: "Terlambat";
+  }
+
+  .kinerja-table tbody td:nth-child(6)::before {
+    content: "Tidak Absen";
+  }
+
+  .kinerja-table tbody td:nth-child(7)::before {
+    content: "Persentase";
+  }
+
+  .kinerja-table tbody td:nth-child(n+2)::before {
+    flex: 0 1 auto;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    color: #8994a3;
+
+    text-align: left;
+  }
+
+  /* Nilai */
+
+  /* ======================================
+     WARNA BARIS KINERJA
+  ====================================== */
+
+  .kinerja-table tbody td:nth-child(2),
+  .kinerja-table tbody td:nth-child(3),
+  .kinerja-table tbody td:nth-child(4),
+  .kinerja-table tbody td:nth-child(5),
+  .kinerja-table tbody td:nth-child(6),
+  .kinerja-table tbody td:nth-child(7) {
+
+    border-radius: 10px;
+
+    padding: 10px 12px;
+
+    margin-bottom: 5px;
+
+    box-sizing: border-box;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #263238;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+  }
+
+
+  /* OUTLET */
+
+  .kinerja-table tbody td:nth-child(2) {
+    background: #eef5ff;
+  }
+
+
+  /* HARI KERJA */
+
+  .kinerja-table tbody td:nth-child(3) {
+    background: #f3f5f7;
+  }
+
+
+  /* TEPAT WAKTU */
+
+  .kinerja-table tbody td:nth-child(4) {
+    background: #e9f8ef;
+  }
+
+
+  /* TERLAMBAT */
+
+  .kinerja-table tbody td:nth-child(5) {
+    background: #fff4df;
+  }
+
+
+  /* TIDAK ABSEN */
+
+  .kinerja-table tbody td:nth-child(6) {
+    background: #fdecef;
+  }
+
+
+  /* PERSENTASE */
+
+  .kinerja-table tbody td:nth-child(7) {
+    background: #fdecef;
+  }
+
+
+  /* Label di dalam baris */
+
+  .kinerja-table tbody td:nth-child(n+2)::before {
+    flex: 0 1 auto;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    color: #687386;
+
+    text-align: left;
+  }
+
+
+  /* Hilangkan background lama pada elemen nilai
+     agar warna memenuhi seluruh baris */
+
+  .kinerja-table tbody td:nth-child(n+2) * {
+    background: transparent !important;
   }
 
 }
 
+    /* =========================
+   SPOILER FOTO ABSENSI
+========================= */
 
-/* ==============================
-   ANIMASI CENTANG
-============================== */
-
-.success-check {
-  animation:
-    successCheck 0.6s ease-out;
-}
-
-
-@keyframes successCheck {
-
-  0% {
-    transform: scale(0.3);
-    opacity: 0;
-  }
-
-  70% {
-    transform: scale(1.15);
-    opacity: 1;
-  }
-
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-}
-
-
-/* Lingkaran berdenyut lembut */
-
-@keyframes successPulse {
-
-  0% {
-    transform: scale(1);
-    box-shadow:
-      0 0 0 0 rgba(25, 135, 84, 0.45);
-  }
-
-  50% {
-    transform: scale(1.06);
-    box-shadow:
-      0 0 0 15px rgba(25, 135, 84, 0);
-  }
-
-  100% {
-    transform: scale(1);
-    box-shadow:
-      0 0 0 0 rgba(25, 135, 84, 0);
-  }
-
-}
-
-
-/* Animasi tanda centang */
-
-.success-check {
-  animation:
-    successCheck 0.6s ease-out;
-}
-
-
-@keyframes successCheck {
-
-  0% {
-    transform: scale(0.3);
-    opacity: 0;
-  }
-
-  70% {
-    transform: scale(1.15);
-    opacity: 1;
-  }
-
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-}
-
-/* =========================================
-   BANNER HALAMAN AWAL
-========================================= */
-
-.attendance-banner {
-  width: 100%;
-  margin-bottom: 20px;
-  border-radius: 16px;
+.foto-spoiler {
+  margin-top: 14px;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
   overflow: hidden;
+  background: #f8fafc;
 }
 
-.attendance-banner img {
+.foto-spoiler-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.foto-spoiler-button:active {
+  background: #e2e8f0;
+}
+
+.foto-spoiler-content {
+  display: none;
+  padding: 12px;
+  background: #ffffff;
+}
+
+.foto-spoiler-content.buka {
+  display: block;
+}
+
+.foto-spoiler-content img {
   display: block;
   width: 100%;
+  max-width: 100%;
   height: auto;
-}    
+  max-height: 420px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #f1f5f9;
+}
+
+.foto-spoiler-tanpa-foto {
+  padding: 14px;
+  color: #64748b;
+  font-size: 12px;
+  text-align: center;
+}
+
+    .btn-logout {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #dc5a5a;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-logout:hover {
+  background: #c74444;
+}
+
+.btn-logout:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+    /* =========================
+       LAYOUT SIDEBAR - TAHAP 1
+    ========================= */
+    .app-layout {
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+      width: 100%;
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+    .sidebar {
+      flex: 0 0 245px;
+      position: sticky;
+      top: 18px;
+      padding: 18px 12px;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 5px 22px rgba(15, 23, 42, .07);
+    }
+    .sidebar-brand { padding: 5px 10px 18px; border-bottom: 1px solid #e8edf4; margin-bottom: 14px; }
+    .sidebar-brand strong { display:block; color:#334155; font-size:16px; line-height:1.4; }
+    .sidebar-brand span { display:block; color:#7b8ba1; font-size:12px; margin-top:4px; }
+    .nav-label { padding: 12px 12px 7px; color:#94a3b8; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+    .nav-btn { display:flex; align-items:center; gap:10px; width:100%; min-height:45px; margin:3px 0; padding:11px 12px; border:0; border-radius:11px; background:transparent; color:#475569; font-family:inherit; font-size:14px; font-weight:600; text-align:left; cursor:pointer; }
+    .nav-btn:hover { background:#f1f5f9; }
+    .nav-btn.active { background:#eaf1f9; color:#365b82; }
+    .nav-sub { padding-left:16px; font-size:13px; min-height:40px; margin:2px 0; }
+    .nav-submenu { margin:2px 0 8px; padding-left:8px; border-left:2px solid #e2e8f0; }
+    .nav-submenu[hidden] { display:none !important; }
+    .nav-parent { justify-content:space-between; }
+    .nav-parent .nav-parent-label { display:flex; align-items:center; gap:10px; }
+    .nav-chevron { transition:transform .2s ease; font-size:12px; }
+    .outlet-table-wrap { width:100%; overflow-x:auto; border:1px solid #e8edf4; border-radius:12px; }
+    .outlet-table { min-width:760px; width:100%; border-collapse:collapse; }
+    .outlet-table th, .outlet-table td { padding:12px; border-bottom:1px solid #edf0f4; text-align:left; font-size:13px; white-space:nowrap; }
+    .outlet-table th { background:#f5f7fa; color:#687386; font-size:12px; }
+    .outlet-table tr:last-child td { border-bottom:0; }
+    .outlet-status { display:inline-block; padding:5px 9px; border-radius:8px; background:#e8f7ef; color:#198754; font-size:11px; font-weight:700; }
+    .outlet-status.nonaktif { background:#fdecec; color:#b42318; }
+    .outlet-note { margin:0 0 16px; color:#64748b; font-size:13px; line-height:1.6; }
+    .outlet-count { color:#64748b; font-size:13px; }
+    .nav-logout { margin-top:20px; color:#b91c1c; }
+    .main-content { flex:1; min-width:0; max-width:none; margin:0; padding:0; }
+    .page-panel { min-width:0; }
+    .page-panel[hidden] { display:none !important; }
+    .page-heading { margin:0 0 15px; color:#334155; font-size:21px; }
+    .mobile-nav-toggle { display:none; }
+    @media (max-width: 850px) {
+      .app-layout { display:block; padding:12px; }
+      .mobile-nav-toggle { display:block; width:100%; margin-bottom:12px; padding:12px 14px; border:0; border-radius:12px; background:#fff; color:#334155; font-weight:700; text-align:left; box-shadow:0 3px 12px rgba(15,23,42,.06); }
+      .sidebar { display:none; position:static; width:100%; margin-bottom:14px; }
+      .sidebar.open { display:block; }
+      .main-content { width:100%; }
+      .main-content.nav-open > .header,
+      .main-content.nav-open > #errorBox,
+      .main-content.nav-open > .page-panel { display:none !important; }
+      .container { padding:0; }
+      .header { border-radius:15px; }
+      .filter-box select { min-width:140px; }
+    }
+
   </style>
 </head>
 
+
 <body>
 
-  <!-- =========================================
-     MODE FOTO BOOTH
-========================================= -->
-
-<div id="boothCameraPage">
-
-  <div class="camera-header">
-
-    <div class="camera-brand">
-      Nahyez Baby Meal
-    </div>
-
-    <div class="camera-title" id="judulFotoAbsensi">
-      📸 Foto Kesiapan Booth
-    </div>
-
-    <div id="boothEmployee">
-      Pastikan booth sudah siap melayani pelanggan
-    </div>
-
-  </div>
-
-
-  <div class="camera-preview-wrapper">
-
-    <video
-      id="cameraPreview"
-      autoplay
-      playsinline
-      muted>
-    </video>
-
-  </div>
-
-
-  <div class="camera-instruction">
-
-    Pastikan produk, meja, dan area booth
-    terlihat jelas serta tertata rapi.
-
-  </div>
-
-
-  <button
-    id="takePhotoButton"
-    onclick="ambilFotoBooth()"
-    class="btn-take-photo">
-
-    📸 AMBIL FOTO BOOTH
-
-  </button>
-
-
-  <canvas
-    id="photoCanvas"
-    style="display:none;">
-  </canvas>
-
-</div>
-  
   <div class="container">
 
-    <div class="attendance-banner">
-      <img
-        src="banner-absen.jpg"
-        alt="Absen Crew Nahyez Baby Meal"
+    <!-- HEADER -->
+
+    <div class="header">
+
+      <h1>
+        Dashboard Admin
+      </h1>
+
+      <p>
+        NAHYEZ BABY MEAL
+      </p>
+
+    </div>
+
+
+    <!-- FILTER -->
+
+    <div class="filter-box">
+
+  <label for="bulan">
+    Periode:
+  </label>
+
+  <select id="bulan"></select>
+
+  <button
+    class="btn-refresh"
+    id="btnRefresh"
+    type="button"
+  >
+    🔄 Refresh
+  </button>
+
+</div>
+<!-- Tombol logout lama dipertahankan sebagai target handler, tetapi tidak ditampilkan di halaman Kinerja. -->
+<button class="btn-logout" id="btnLogout" type="button" hidden>Logout</button>
+
+<!-- =====================================
+     PENGATURAN ABSENSI - ACCORDION
+===================================== -->
+
+<div class="filter-box" style="
+  margin-top: 16px;
+  display: block;
+  padding: 0;
+  overflow: hidden;
+">
+
+  <!-- TOMBOL BUKA-TUTUP -->
+  <button
+    type="button"
+    id="togglePengaturanAbsensi"
+    aria-expanded="false"
+    aria-controls="isiPengaturanAbsensi"
+    style="
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      min-height: 64px;
+      padding: 18px;
+      border: none;
+      background: transparent;
+      color: #334155;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+    "
+  >
+
+    <span style="
+      font-size: 17px;
+      font-weight: 700;
+    ">
+      ⚙️ Pengaturan Absensi
+    </span>
+
+    <span
+      id="ikonPengaturanAbsensi"
+      aria-hidden="true"
+      style="
+        font-size: 20px;
+        transition: transform 0.2s ease;
+      "
+    >
+      ▼
+    </span>
+
+  </button>
+
+  <!-- ISI PENGATURAN -->
+  <div
+    id="isiPengaturanAbsensi"
+    hidden
+    style="
+      padding: 0 18px 18px;
+    "
+  >
+
+    <p style="
+      margin: 0 0 16px;
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.6;
+    ">
+      Atur batas waktu kedatangan karyawan.
+      Absensi sampai batas waktu yang ditentukan
+      dihitung tepat waktu.
+    </p>
+
+    <form id="formBatasJamMasuk">
+
+      <div style="
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        gap: 12px;
+      ">
+
+        <div style="
+          flex: 1;
+          min-width: 180px;
+        ">
+
+          <label
+            for="batasJamMasuk"
+            style="
+              display: block;
+              margin-bottom: 7px;
+              font-size: 13px;
+              font-weight: 700;
+              color: #334155;
+            "
+          >
+            Batas Jam Masuk
+          </label>
+
+          <input
+            type="time"
+            id="batasJamMasuk"
+            value="06:05"
+            required
+            style="
+              box-sizing: border-box;
+              width: 100%;
+              min-height: 44px;
+              padding: 10px 12px;
+              border: 1px solid #cbd5e1;
+              border-radius: 10px;
+              background: #ffffff;
+              color: #1e293b;
+              font-size: 16px;
+            "
+          >
+
+        </div>
+
+        <button
+          type="submit"
+          id="btnSimpanBatasJam"
+          class="btn-refresh"
+          style="
+            min-height: 44px;
+            border: none;
+            cursor: pointer;
+          "
+        >
+          💾 Simpan Perubahan
+        </button>
+
+      </div>
+
+    </form>
+
+    <div
+      id="statusBatasJam"
+      role="status"
+      aria-live="polite"
+      style="
+        display: none;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        line-height: 1.5;
+      "
+    ></div>
+
+  </div>
+
+</div>
+
+<!-- AKHIR PENGATURAN ABSENSI -->
+    <!-- ERROR -->
+
+    <div
+      id="errorBox"
+      class="error"
+    ></div>
+
+
+    <!-- STATISTICS -->
+
+    <div
+      class="stats-grid"
+    >
+
+      <div
+        class="stat-card"
       >
-    </div>
 
-    <div class="scanner-title">
-      📷 Scan QR Karyawan
-    </div>
+        <div
+          class="stat-icon"
+        >
+          👥
+        </div>
 
-    <div id="reader"></div>
+        <div
+          class="stat-title"
+        >
+          Karyawan Aktif
+        </div>
 
-    <div class="status" id="status">
-      Menunggu kamera...
-    </div>
+        <div
+          class="stat-value"
+          id="jumlahKaryawan"
+        >
+          -
+        </div>
 
-    <div class="result" id="result">
-
-      <div class="result-title">
-        ✅ QR Berhasil Dibaca
       </div>
 
-      <div>
-        QR Token:
+
+      <div
+        class="stat-card"
+      >
+
+        <div
+          class="stat-icon"
+        >
+          🏪
+        </div>
+
+        <div
+          class="stat-title"
+        >
+          Outlet Aktif
+        </div>
+
+        <div
+          class="stat-value"
+          id="jumlahOutlet"
+        >
+          -
+        </div>
+
       </div>
 
-      <div class="token" id="token">
+
+      <div
+        class="stat-card"
+      >
+
+        <div
+          class="stat-icon"
+        >
+          🟢
+        </div>
+
+        <div
+          class="stat-title"
+        >
+          MASUK Hari Ini
+        </div>
+
+        <div
+          class="stat-value"
+          id="jumlahMasuk"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div
+        class="stat-card"
+      >
+
+        <div
+          class="stat-icon"
+        >
+          🔵
+        </div>
+
+        <div
+          class="stat-title"
+        >
+          PULANG Hari Ini
+        </div>
+
+        <div
+          class="stat-value"
+          id="jumlahPulang"
+        >
+          -
+        </div>
+
       </div>
 
     </div>
 
-    <div class="note">
-      Izinkan akses kamera ketika browser memintanya.
-      <br>
-      QR akan dibaca langsung melalui kamera.
-    </div>
+    <!-- ABSENSI HARI INI -->
 
-  </div>
+<div
+  class="section"
+  style="margin-bottom: 20px;"
+>
 
-  
-<!-- =========================================
-     PREVIEW FOTO BOOTH
-========================================= -->
-
-  <div id="jenisAbsensiPage" style="
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:10000;
-  background:#fff4df;
-  padding:25px;
-  text-align:center;
-">
-
-  <div style="
-    margin-top:45px;
-    font-size:32px;
-    font-weight:bold;
-    color:#333;
-  ">
-    Pilih Jenis Absensi
-  </div>
-
-  <div style="
-    margin-top:15px;
-    font-size:18px;
-    color:#666;
-  ">
-    Silakan pilih jenis absensi Anda
-  </div>
-
-  <button
-    onclick="pilihJenisAbsensi('MASUK')"
-    style="
-      display:block;
-      width:100%;
-      max-width:380px;
-      margin:45px auto 18px;
-      padding:22px;
-      border:none;
-      border-radius:18px;
-      background:#198754;
-      color:white;
-      font-size:24px;
-      font-weight:bold;
-      box-shadow:0 5px 12px rgba(0,0,0,.15);
-    "
+  <div
+    class="section-header"
   >
-    🟢 ABSEN MASUK
-  </button>
 
-  <button
-    onclick="pilihJenisAbsensi('PULANG')"
-    style="
-      display:block;
-      width:100%;
-      max-width:380px;
-      margin:0 auto;
-      padding:22px;
-      border:none;
-      border-radius:18px;
-      background:#0d6efd;
-      color:white;
-      font-size:24px;
-      font-weight:bold;
-      box-shadow:0 5px 12px rgba(0,0,0,.15);
-    "
-  >
-    🔵 ABSEN PULANG
-  </button>
+    <h2
+      class="section-title"
+    >
+      📋 Absensi Hari Ini
+    </h2>
 
-</div>
-  
-<div id="boothPhotoPage">
+    <div
+      class="periode"
+      id="absensiTanggal"
+    >
+      -
+    </div>
 
-  <div class="photo-title" id="judulPreviewFoto">
-    📸 Periksa Foto Booth
-  </div>
-
-
-  <img
-    id="boothPhotoPreview"
-    src="">
-
-
-  <div style="
-    margin-top:12px;
-    padding:12px;
-    background:white;
-    border-radius:12px;
-    text-align:center;
-    color:#666;
-    font-size:14px;
-  ">
-
-    Pastikan seluruh area booth dan
-    produk terlihat dengan jelas.
-
-  </div>
-
-
-  <button
-    onclick="ambilUlangFoto()"
-    class="photo-button btn-retake">
-
-    🔄 AMBIL ULANG
-
-  </button>
-
-
-  <button
-    onclick="gunakanFoto()"
-    class="photo-button btn-use-photo">
-
-    ✅ GUNAKAN FOTO
-
-  </button>
-
-</div>
-
-  <!-- =========================================
-     HALAMAN ABSENSI BERHASIL
-========================================= -->
-
-<div id="successPage" style="
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:11000;
-  background:#fff4df;
-  padding:25px;
-  text-align:center;
-">
-
-  <div class="success-icon">
-    <span class="success-check">✓</span>
   </div>
 
 
   <div
-    class="success-title"
-    style="
-      margin-top:15px;
-      font-size:26px;
-      font-weight:bold;
-      color:#198754;
-    "
+    id="absensiLoading"
+    class="loading"
   >
-    ABSEN MASUK BERHASIL
+    Memuat absensi...
   </div>
 
 
-  <div id="successEmployee" style="
-    margin-top:20px;
-    font-size:20px;
-    font-weight:bold;
-    color:#333;
-  ">
-  </div>
-
-
-  <div id="successOutlet" style="
-    margin-top:8px;
-    color:#666;
-  ">
-  </div>
-
-
-  <div id="successTime" style="
-    margin-top:20px;
-    padding:15px;
-    background:white;
-    border-radius:15px;
-    color:#555;
-    line-height:1.8;
-  ">
-  </div>
-
-
-  <div style="
-    margin-top:15px;
-    color:#198754;
-    font-size:14px;
-  ">
-    📸 Foto booth telah tersimpan
-  </div>
-
-
-  <button
-    onclick="selesaiAbsensi()"
-    style="
-      width:100%;
-      margin-top:25px;
-      padding:16px;
-      border:none;
-      border-radius:15px;
-      background:#ed7612;
-      color:white;
-      font-size:18px;
-      font-weight:bold;
-    "
+  <div
+    id="absensiKosong"
+    class="loading"
+    style="display:none;"
   >
-    SELESAI
-  </button>
+    Belum ada absensi hari ini.
+  </div>
+
+
+  <div
+    id="absensiList"
+    style="display:none;"
+  ></div>
 
 </div>
-  
+
+    <!-- KINERJA -->
+
+    <div
+      class="section"
+    >
+
+      <div
+        class="section-header"
+      >
+
+        <h2
+          class="section-title"
+        >
+          📊 Kinerja Karyawan
+        </h2>
+
+        <div
+          class="periode"
+          id="periodeText"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div
+        id="loading"
+        class="loading"
+      >
+        Memuat data...
+      </div>
+
+
+      <div
+        class="table-wrapper"
+        id="tableWrapper"
+        style="display:none;"
+      >
+
+        <table class="kinerja-table">
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Karyawan
+              </th>
+
+              <th>
+                Outlet
+              </th>
+
+              <th>
+                Hari Kerja
+              </th>
+
+              <th>
+                Tepat Waktu
+              </th>
+
+              <th>
+                Terlambat
+              </th>
+
+              <th>
+                Tidak Absen
+              </th>
+
+              <th>
+                Persentase
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody
+            id="tableBody"
+          ></tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
 <script>
 
-let sudahScan = false;
+  // ==========================================
+  // API
+  // ==========================================
 
+  const API_URL = '/api/dashboard';
+
+  // ==========================================
+// PENGAMAN PEMUATAN DASHBOARD
 // ==========================================
-// DATA ABSENSI SEMENTARA
+
+let dashboardSedangMemuat = false;
+let dashboardController = null;
+
+const DASHBOARD_TIMEOUT_MS = 20000;
+const DASHBOARD_MAX_RETRY = 1;
+
+
+  // ==========================================
+// ELEMENT
 // ==========================================
 
-let absensiToken = '';
-let absensiLatitude = null;
-let absensiLongitude = null;
-let jenisAbsensi = '';
-  
-const API_URL =
-  'https://script.google.com/macros/s/AKfycbyrDQpUcEfVCuXtZBfCJdCsJfBIje0ohA82T6a3CtHXflH-e4drjyNdbLAVlPy5-6DnGw/exec';
+const bulanSelect =
+  document.getElementById(
+    'bulan'
+  );
+
+const btnRefresh =
+  document.getElementById(
+    'btnRefresh'
+  );
+
+const btnLogout =
+  document.getElementById(
+    'btnLogout'
+  );
+
+const errorBox =
+  document.getElementById(
+    'errorBox'
+  );
+
+  // ==========================================
+  // BULAN
+  // ==========================================
+
+  const namaBulan = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember'
+  ];
 
 
-// ==================================================
-// QR BERHASIL DIBACA
-// ==================================================
+  const tahunSekarang =
+    new Date().getFullYear();
 
-function onScanSuccess(decodedText, decodedResult) {
 
-  if (sudahScan) {
-    return;
+  for (
+    let bulan = 1;
+    bulan <= 12;
+    bulan++
+  ) {
+
+    const option =
+      document.createElement(
+        'option'
+      );
+
+    option.value =
+      bulan;
+
+    option.textContent =
+      namaBulan[
+        bulan - 1
+      ] +
+      ' ' +
+      tahunSekarang;
+
+    bulanSelect.appendChild(
+      option
+    );
   }
 
-  sudahScan = true;
 
-  console.log("QR berhasil dibaca:", decodedText);
+  bulanSelect.value =
+    new Date().getMonth() + 1;
 
-  document.getElementById("status").innerText =
-    "QR berhasil dibaca. Memeriksa data karyawan...";
 
-  document.getElementById("token").innerText =
-    decodedText;
+  // ==========================================
+  // FORMAT PERSENTASE
+  // ==========================================
 
-  document.getElementById("result").style.display =
-    "block";
+  function formatPersentase(
+    value
+  ) {
 
-  cekKaryawan(decodedText);
+    return Number(value)
+      .toLocaleString(
+        'id-ID',
+        {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1
+        }
+      ) + '%';
+  }
+
+
+  // ==========================================
+  // LOAD DASHBOARD
+  // ==========================================
+
+  async function loadDashboard() {
+    if (dashboardSedangMemuat) {
+  return;
+}
+
+dashboardSedangMemuat = true;
+
+      try {
+
+    errorBox.style.display =
+      'none';
+
+    document.getElementById(
+      'loading'
+    ).style.display =
+      'block';
+
+    document.getElementById(
+      'tableWrapper'
+    ).style.display =
+      'none';
+
+
+    const tahun =
+      tahunSekarang;
+
+    const bulan =
+      Number(
+        bulanSelect.value
+      );
+
+
+    const url =
+      API_URL +
+      '?action=dashboard' +
+      '&tahun=' +
+      tahun +
+      '&bulan=' +
+      bulan;
+
+
+    let data = null;
+let percobaan = 0;
+let berhasil = false;
+let pesanKesalahan = '';
+
+while (
+  percobaan <= DASHBOARD_MAX_RETRY &&
+  !berhasil
+) {
+  percobaan++;
+
+  const controller = new AbortController();
+  dashboardController = controller;
+
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, DASHBOARD_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      credentials: 'same-origin',
+      cache: 'no-store',
+      signal: controller.signal
+    });
+
+    if (response.status === 401) {
+      throw new Error(
+        'Sesi admin tidak valid. Silakan login kembali.'
+      );
+    }
+
+    if (
+      [502, 503, 504].includes(response.status)
+    ) {
+      pesanKesalahan =
+        'Server sedang mengalami gangguan (HTTP ' +
+        response.status + ').';
+
+      if (percobaan <= DASHBOARD_MAX_RETRY) {
+        await response.text();
+
+        await new Promise(resolve => {
+          setTimeout(resolve, 1000);
+        });
+
+        continue;
+      }
+
+      throw new Error(
+        pesanKesalahan +
+        ' Silakan tekan Refresh untuk mencoba kembali.'
+      );
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        'HTTP ' + response.status
+      );
+    }
+
+    const hasil = await response.json();
+
+    if (!hasil || hasil.success !== true) {
+      throw new Error(
+        'API mengembalikan data tidak valid.'
+      );
+    }
+
+    data = hasil;
+    berhasil = true;
+    pesanKesalahan = '';
+
+  } catch (error) {
+    if (
+      error.message &&
+      error.message.startsWith('Sesi admin tidak valid')
+    ) {
+      throw error;
+    }
+
+    const gangguanJaringan =
+      error.name === 'AbortError' ||
+      error instanceof TypeError;
+
+    if (error.name === 'AbortError') {
+      pesanKesalahan =
+        'Server terlalu lama merespons.';
+    } else if (error instanceof TypeError) {
+      pesanKesalahan =
+        'Terjadi gangguan koneksi jaringan.';
+    } else {
+      throw error;
+    }
+
+    if (percobaan <= DASHBOARD_MAX_RETRY) {
+      await new Promise(resolve => {
+        setTimeout(resolve, 1000);
+      });
+
+      continue;
+    }
+
+    throw new Error(
+      pesanKesalahan +
+      ' Silakan tekan Refresh untuk mencoba kembali.'
+    );
+
+  } finally {
+    clearTimeout(timeoutId);
+    dashboardController = null;
+  }
+}
+
+if (!berhasil || !data) {
+  throw new Error(
+    'Dashboard gagal dimuat. Silakan coba Refresh.'
+  );
+}
+
+if (!berhasil || !data) {
+  throw new Error(
+    'Dashboard gagal dimuat. Silakan coba Refresh.'
+  );
+}
+
+      // ======================================
+// ABSENSI HARI INI
+// ======================================
+
+const absensi =
+  data.absensiHariIni;
+
+
+const absensiTanggal =
+  document.getElementById(
+    'absensiTanggal'
+  );
+
+
+const absensiLoading =
+  document.getElementById(
+    'absensiLoading'
+  );
+
+
+const absensiKosong =
+  document.getElementById(
+    'absensiKosong'
+  );
+
+
+const absensiList =
+  document.getElementById(
+    'absensiList'
+  );
+
+
+absensiLoading.style.display =
+  'none';
+
+
+absensiTanggal.textContent =
+  absensi.tanggal;
+
+
+absensiList.innerHTML =
+  '';
+
+
+if (
+  !absensi.data ||
+  absensi.data.length === 0
+) {
+
+  absensiKosong.style.display =
+    'block';
+
+  absensiList.style.display =
+    'none';
+
+} else {
+
+  absensiKosong.style.display =
+    'none';
+
+  absensiList.style.display =
+    'block';
+
+
+absensi.data.forEach(function(item) {
+
+  const div = document.createElement('div');
+
+  const jenisClass =
+    item.jenisAbsensi === 'MASUK'
+      ? 'masuk'
+      : 'pulang';
+
+  const icon =
+    item.jenisAbsensi === 'MASUK'
+      ? '🟢'
+      : '🔵';
+
+  // Elemen utama kartu absensi
+  div.className = 'absensi-item';
+
+  // Informasi absensi
+  div.innerHTML =
+    '<div class="absensi-top">' +
+
+      '<div>' +
+        '<div class="absensi-jenis ' +
+          jenisClass +
+        '">' +
+          icon + ' ' + item.jenisAbsensi +
+        '</div>' +
+      '</div>' +
+
+      '<div class="absensi-jam">' +
+        item.jam +
+      '</div>' +
+
+    '</div>' +
+
+    '<div class="absensi-nama">' +
+      item.nama +
+    '</div>' +
+
+    '<div class="absensi-id">' +
+      item.idKaryawan +
+    '</div>' +
+
+    '<div class="absensi-detail">' +
+      '🏪 ' + item.outlet +
+      '<br>' +
+      '📍 Jarak: ' + item.jarakMeter + ' meter' +
+    '</div>';
+
+  // =================================
+  // SPOILER FOTO BUKTI ABSENSI
+  // =================================
+
+  const spoiler = document.createElement('div');
+  spoiler.className = 'foto-spoiler';
+
+  const tombol = document.createElement('button');
+  tombol.type = 'button';
+  tombol.className = 'foto-spoiler-button';
+  tombol.setAttribute('aria-expanded', 'false');
+
+  const label = document.createElement('span');
+  label.textContent = '📷 Lihat Foto Bukti Absensi';
+
+  const panah = document.createElement('span');
+  panah.textContent = '▼';
+  panah.setAttribute('aria-hidden', 'true');
+
+  tombol.appendChild(label);
+  tombol.appendChild(panah);
+
+  const konten = document.createElement('div');
+  konten.className = 'foto-spoiler-content';
+
+  // Jika URL foto tersedia, siapkan gambar.
+  // Foto baru dimuat saat spoiler dibuka.
+  if (item.foto) {
+
+  const foto = document.createElement('img');
+
+  foto.alt =
+    'Foto bukti absensi ' +
+    item.nama +
+    ' - ' +
+    item.jenisAbsensi;
+
+  foto.loading = 'lazy';
+
+  foto.addEventListener('error', function() {
+    konten.innerHTML = '';
+
+    const pesan = document.createElement('div');
+    pesan.className = 'foto-spoiler-tanpa-foto';
+    pesan.textContent =
+      'Foto tidak dapat ditampilkan. Silakan coba kembali.';
+
+    konten.appendChild(pesan);
+  });
+
+  // Ambil ID file dari URL Google Drive
+  const urlFotoAsli = String(item.foto || '');
+
+  const cocok = urlFotoAsli.match(
+    /\/file\/d\/([a-zA-Z0-9_-]+)/
+  );
+
+  if (cocok && cocok[1]) {
+    foto.dataset.fileId = cocok[1];
+  } else {
+    foto.dataset.fileId = '';
+  }
+
+  tombol.addEventListener('click', async function() {
+
+    const sedangBuka =
+      konten.classList.contains('buka');
+
+    if (sedangBuka) {
+
+      konten.classList.remove('buka');
+      tombol.setAttribute('aria-expanded', 'false');
+      label.textContent = '📷 Lihat Foto Bukti Absensi';
+      panah.textContent = '▼';
+
+    } else {
+
+      konten.classList.add('buka');
+      tombol.setAttribute('aria-expanded', 'true');
+      label.textContent = '📷 Tutup Foto Bukti Absensi';
+      panah.textContent = '▲';
+
+      // Jangan meminta ulang jika foto sudah berhasil dimuat
+      if (
+        foto.dataset.fileId &&
+        !foto.dataset.loaded &&
+        !foto.dataset.loading
+      ) {
+
+        foto.dataset.loading = 'true';
+
+        try {
+
+          const response = await fetch(
+            '/api/photo?id=' +
+            encodeURIComponent(foto.dataset.fileId),
+            {
+              method: 'GET',
+              credentials: 'same-origin',
+              cache: 'no-store'
+            }
+          );
+
+          const hasil = await response.json();
+
+          if (!response.ok || !hasil.success) {
+            throw new Error(
+              hasil.message || 'Foto gagal dimuat.'
+            );
+          }
+
+          if (
+            !['image/jpeg', 'image/png', 'image/webp']
+              .includes(hasil.mimeType) ||
+            typeof hasil.data !== 'string'
+          ) {
+            throw new Error('Data foto tidak valid.');
+          }
+
+          foto.src =
+            'data:' +
+            hasil.mimeType +
+            ';base64,' +
+            hasil.data;
+
+          foto.dataset.loaded = 'true';
+
+        } catch (error) {
+
+          console.error('Gagal memuat foto:', error);
+
+          konten.innerHTML = '';
+
+          const pesan = document.createElement('div');
+          pesan.className = 'foto-spoiler-tanpa-foto';
+          pesan.textContent =
+            'Foto gagal dimuat. Silakan tutup lalu buka kembali halaman dashboard.';
+
+          konten.appendChild(pesan);
+
+        } finally {
+
+          delete foto.dataset.loading;
+
+        }
+      }
+    }
+  });
+
+  konten.appendChild(foto);
+
+  } else {
+
+    const pesan = document.createElement('div');
+    pesan.className = 'foto-spoiler-tanpa-foto';
+    pesan.textContent = 'Foto bukti absensi tidak tersedia.';
+
+    konten.appendChild(pesan);
+
+    tombol.addEventListener('click', function() {
+
+      const sedangBuka =
+        konten.classList.contains('buka');
+
+      konten.classList.toggle('buka', !sedangBuka);
+
+      tombol.setAttribute(
+        'aria-expanded',
+        String(!sedangBuka)
+      );
+
+      label.textContent = sedangBuka
+        ? '📷 Lihat Foto Bukti Absensi'
+        : '📷 Tutup Foto Bukti Absensi';
+
+      panah.textContent = sedangBuka ? '▼' : '▲';
+
+    });
+
+  }
+
+  spoiler.appendChild(tombol);
+  spoiler.appendChild(konten);
+
+  div.appendChild(spoiler);
+
+  // Masukkan kartu ke daftar absensi.
+  absensiList.appendChild(div);
+
+});
 }
 
 
-// ==================================================
-// CEK KARYAWAN KE APPS SCRIPT
-// ==================================================
+      // ======================================
+      // STATISTIK
+      // ======================================
 
-function cekKaryawan(token) {
-
-  const callbackName =
-    "nahyezCallback_" + Date.now();
-
-  const script = document.createElement("script");
-
-  const url =
-    API_URL +
-    "?action=cekQR" +
-    "&token=" + encodeURIComponent(token) +
-    "&prefix=" + callbackName;
+      const statistik =
+        data.statistik;
 
 
-  window[callbackName] = function(data) {
-
-    console.log("Data karyawan:", data);
-
-    delete window[callbackName];
-
-    script.remove();
+      document.getElementById(
+        'jumlahKaryawan'
+      ).textContent =
+        statistik.jumlahKaryawanAktif;
 
 
-    // ==============================================
-    // QR TIDAK VALID
-    // ==============================================
+      document.getElementById(
+        'jumlahOutlet'
+      ).textContent =
+        statistik.jumlahOutlet;
 
-    if (!data.success) {
 
-      document.getElementById("status").innerText =
-        "❌ QR tidak valid.";
+      document.getElementById(
+        'jumlahMasuk'
+      ).textContent =
+        statistik.jumlahMasukHariIni;
 
-      document.getElementById("result").innerHTML = `
 
-        <div class="result-title"
-             style="color:#dc3545;">
-          ❌ QR Tidak Valid
-        </div>
+      document.getElementById(
+        'jumlahPulang'
+      ).textContent =
+        statistik.jumlahPulangHariIni;
 
-        <div>
-          ${data.message}
-        </div>
 
-      `;
+      // ======================================
+      // PERIODE
+      // ======================================
 
+      document.getElementById(
+        'periodeText'
+      ).textContent =
+        namaBulan[
+          bulan - 1
+        ] +
+        ' ' +
+        tahun;
+
+
+      // ======================================
+      // TABEL
+      // ======================================
+
+      const tbody =
+        document.getElementById(
+          'tableBody'
+        );
+
+
+      tbody.innerHTML =
+        '';
+
+
+      const daftar =
+        data.kinerja.data || [];
+
+
+      if (
+        daftar.length === 0
+      ) {
+
+        tbody.innerHTML =
+          '<tr>' +
+          '<td colspan="7" ' +
+          'style="text-align:center;">' +
+          'Tidak ada data karyawan.' +
+          '</td>' +
+          '</tr>';
+
+      } else {
+
+        daftar.forEach(
+          function(item) {
+
+            const row =
+              document.createElement(
+                'tr'
+              );
+
+
+            let badgePersentase =
+              'badge-red';
+
+
+            if (
+              item.persentaseTepatWaktu >= 90
+            ) {
+
+              badgePersentase =
+                'badge-green';
+
+            } else if (
+              item.persentaseTepatWaktu >= 75
+            ) {
+
+              badgePersentase =
+                'badge-orange';
+
+            }
+
+
+            row.innerHTML =
+
+              '<td>' +
+
+                '<div class="nama">' +
+
+                  item.nama +
+
+                '</div>' +
+
+                '<div class="id">' +
+
+                  item.idKaryawan +
+
+                '</div>' +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                item.outletId +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                item.hariKerja +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                '<span class="badge badge-green">' +
+
+                  item.tepatWaktu +
+
+                '</span>' +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                '<span class="badge badge-orange">' +
+
+                  item.terlambat +
+
+                '</span>' +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                '<span class="badge badge-red">' +
+
+                  item.tidakAbsen +
+
+                '</span>' +
+
+              '</td>' +
+
+
+              '<td>' +
+
+                '<span class="badge ' +
+
+                  badgePersentase +
+
+                '">' +
+
+                  formatPersentase(
+
+                    item.persentaseTepatWaktu
+
+                  ) +
+
+                '</span>' +
+
+              '</td>';
+
+
+            tbody.appendChild(
+              row
+            );
+
+          }
+        );
+
+      }
+
+
+      document.getElementById(
+        'loading'
+      ).style.display =
+        'none';
+
+
+      document.getElementById(
+        'tableWrapper'
+      ).style.display =
+        'block';
+
+
+    } catch (error) {
+      console.error('Gagal memuat dashboard:', error);
+
+      document.getElementById('loading').style.display = 'none';
+
+      errorBox.textContent =
+        'Gagal memuat dashboard: ' + error.message;
+
+      errorBox.style.display = 'block';
+
+    } finally {
+      dashboardSedangMemuat = false;
+      dashboardController = null;
+    }
+
+  }
+
+
+  // ==========================================
+// EVENT
+// ==========================================
+
+btnRefresh.addEventListener(
+  'click',
+  loadDashboard
+);
+
+bulanSelect.addEventListener(
+  'change',
+  loadDashboard
+);
+
+// Logout admin
+btnLogout.addEventListener(
+  'click',
+  async function () {
+    const yakin = confirm(
+      'Apakah kamu yakin ingin logout dari Dashboard Admin Nahyez Baby Meal?'
+    );
+
+    if (!yakin) return;
+
+    btnLogout.disabled = true;
+    btnLogout.textContent = 'Memproses...';
+
+    try {
+      await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'same-origin',
+        cache: 'no-store'
+      });
+    } catch (error) {
+      // Tetap arahkan ke halaman login.
+    }
+
+    window.location.replace('/');
+  }
+);
+
+
+  // ==========================================
+  // LOAD AWAL
+  // ==========================================
+
+  // ========================================
+// TOGGLE PENGATURAN ABSENSI
+// ========================================
+
+const togglePengaturanAbsensi =
+  document.getElementById("togglePengaturanAbsensi");
+
+const isiPengaturanAbsensi =
+  document.getElementById("isiPengaturanAbsensi");
+
+const ikonPengaturanAbsensi =
+  document.getElementById("ikonPengaturanAbsensi");
+
+if (
+  togglePengaturanAbsensi &&
+  isiPengaturanAbsensi &&
+  ikonPengaturanAbsensi
+) {
+  togglePengaturanAbsensi.addEventListener("click", function() {
+    const sedangTerbuka =
+      togglePengaturanAbsensi.getAttribute("aria-expanded") === "true";
+
+    togglePengaturanAbsensi.setAttribute(
+      "aria-expanded",
+      String(!sedangTerbuka)
+    );
+
+    isiPengaturanAbsensi.hidden = sedangTerbuka;
+
+    if (!sedangTerbuka) {
+      muatBatasJamMasuk();
+    }
+
+    ikonPengaturanAbsensi.style.transform = sedangTerbuka
+      ? "rotate(0deg)"
+      : "rotate(180deg)";
+  });
+}
+
+  // ========================================
+// PENGATURAN BATAS JAM MASUK
+// ========================================
+
+const formBatasJamMasuk = document.getElementById("formBatasJamMasuk");
+const inputBatasJamMasuk = document.getElementById("batasJamMasuk");
+const btnSimpanBatasJam = document.getElementById("btnSimpanBatasJam");
+const statusBatasJam = document.getElementById("statusBatasJam");
+
+function tampilkanStatusBatasJam(pesan, berhasil) {
+  statusBatasJam.textContent = pesan;
+  statusBatasJam.style.display = "block";
+  statusBatasJam.style.background = berhasil ? "#dcfce7" : "#fee2e2";
+  statusBatasJam.style.color = berhasil ? "#166534" : "#991b1b";
+}
+
+  // ========================================
+// MEMBACA BATAS JAM MASUK DARI SERVER
+// ========================================
+
+let batasJamMasukSudahDimuat = false;
+
+async function muatBatasJamMasuk() {
+  if (batasJamMasukSudahDimuat) return;
+
+  try {
+    const response = await fetch("/api/settings/attendance", {
+      method: "GET",
+      credentials: "same-origin",
+      cache: "no-store"
+    });
+
+    const hasil = await response.json();
+
+    if (!response.ok || !hasil.success) {
+      throw new Error(
+        hasil.message || "Gagal membaca batas jam masuk."
+      );
+    }
+
+    if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(hasil.batasJamMasuk)) {
+      throw new Error("Format batas jam masuk dari server tidak valid.");
+    }
+
+    inputBatasJamMasuk.value = hasil.batasJamMasuk;
+    batasJamMasukSudahDimuat = true;
+
+    tampilkanStatusBatasJam(
+      "✅ Pengaturan berhasil dimuat. Batas jam masuk saat ini: " +
+      hasil.batasJamMasuk + ".",
+      true
+    );
+
+  } catch (error) {
+    tampilkanStatusBatasJam(
+      "❌ " + (error.message || "Gagal memuat pengaturan."),
+      false
+    );
+  }
+}
+
+if (formBatasJamMasuk) {
+  formBatasJamMasuk.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const batasJamMasuk = inputBatasJamMasuk.value;
+
+    if (!batasJamMasuk) {
+      tampilkanStatusBatasJam(
+        "Silakan tentukan batas jam masuk terlebih dahulu.",
+        false
+      );
       return;
     }
 
+    const konfirmasi = confirm(
+      "Simpan batas jam masuk menjadi " + batasJamMasuk + "?"
+    );
 
-    // ==============================================
-    // KARYAWAN DITEMUKAN
-    // ==============================================
+    if (!konfirmasi) return;
 
-    document.getElementById("status").innerText =
-      "Karyawan ditemukan. Memeriksa lokasi...";
+    btnSimpanBatasJam.disabled = true;
+    btnSimpanBatasJam.textContent = "⏳ Menyimpan...";
+
+    try {
+      const response = await fetch("/api/settings/attendance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          batasJamMasuk: batasJamMasuk
+        })
+      });
+
+      const hasil = await response.json();
+
+      if (!response.ok || !hasil.success) {
+        throw new Error(
+          hasil.message || "Pengaturan gagal disimpan."
+        );
+      }
+
+      tampilkanStatusBatasJam(
+        "✅ " + (hasil.message || "Batas jam masuk berhasil disimpan.") +
+        " Batas baru: " + (hasil.batasJamMasuk || batasJamMasuk) + ".",
+        true
+      );
+
+      inputBatasJamMasuk.value =
+  hasil.batasJamMasuk || batasJamMasuk;
+
+batasJamMasukSudahDimuat = true;
+
+    } catch (error) {
+      tampilkanStatusBatasJam(
+        "❌ " + (error.message || "Terjadi kesalahan saat menyimpan."),
+        false
+      );
+    } finally {
+      btnSimpanBatasJam.disabled = false;
+      btnSimpanBatasJam.textContent = "💾 Simpan Perubahan";
+    }
+  });
+}
 
 
-    document.getElementById("result").innerHTML = `
+  // ==========================================
+  // NAVIGASI SIDEBAR - TAHAP 3
+  // Menambahkan submenu Pengaturan dan daftar outlet.
+  // ==========================================
+  (function siapkanNavigasiSidebar() {
+    const container = document.querySelector('body > .container');
+    if (!container) return;
 
-      <div class="result-title">
-        ✅ Karyawan Ditemukan
+    const header = container.querySelector('.header');
+    const filter = container.querySelector('.filter-box');
+    const settings = document.getElementById('togglePengaturanAbsensi')?.closest('.filter-box');
+    const error = document.getElementById('errorBox');
+    const stats = container.querySelector('.stats-grid');
+    const sections = container.querySelectorAll('.section');
+    const attendanceSection = sections[0];
+    const performanceSection = sections[1];
+    if (!header || !filter || !settings || !error || !stats || !attendanceSection || !performanceSection) return;
+
+    const layout = document.createElement('div');
+    layout.className = 'app-layout';
+    const sidebar = document.createElement('aside');
+    sidebar.className = 'sidebar';
+    sidebar.id = 'adminSidebar';
+    sidebar.innerHTML = `
+      <div class="sidebar-brand"><strong>NAHYEZ BABY MEAL</strong><span>Panel Administrasi</span></div>
+      <div class="nav-label">Menu Utama</div>
+      <button type="button" class="nav-btn active" data-page="dashboard">🏠 <span>Dashboard</span></button>
+      <button type="button" class="nav-btn nav-parent" id="navSettingsToggle" aria-expanded="false" aria-controls="settingsSubmenu">
+        <span class="nav-parent-label">⚙️ <span>Pengaturan</span></span><span class="nav-chevron" id="navSettingsChevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="nav-submenu" id="settingsSubmenu" hidden>
+        <button type="button" class="nav-btn nav-sub" data-page="outlets">🏪 <span>Pengaturan Outlet</span></button>
+        <button type="button" class="nav-btn nav-sub" data-page="employees">👥 <span>Pengaturan Karyawan</span></button>
+        <button type="button" class="nav-btn nav-sub" data-page="attendance">🕒 <span>Pengaturan Absensi</span></button>
       </div>
-
-      <div style="
-        text-align:left;
-        margin-top:15px;
-        line-height:1.8;
-      ">
-
-        <b>ID Karyawan</b><br>
-        ${data.id}
-
-        <br><br>
-
-        <b>Nama</b><br>
-        ${data.nama}
-
-        <br><br>
-
-        <b>Outlet</b><br>
-        ${data.outlet}
-
-        <br><br>
-
-        <b>QR Token</b><br>
-        <span class="token">
-          ${data.qrToken || token}
-        </span>
-
-        <br><br>
-
-        <div id="gpsStatus">
-          📍 Meminta lokasi HP...
-        </div>
-
-      </div>
-
+      <button type="button" class="nav-btn" data-page="performance">📊 <span>Kinerja Karyawan</span></button>
+      <button type="button" class="nav-btn nav-logout" id="navLogout">🚪 <span>Logout</span></button>
     `;
 
+    const main = document.createElement('main');
+    main.className = 'container main-content';
+    const mobileToggle = document.createElement('button');
+    mobileToggle.type = 'button';
+    mobileToggle.className = 'mobile-nav-toggle';
+    mobileToggle.textContent = '☰  Buka Menu';
+    mobileToggle.setAttribute('aria-controls', 'adminSidebar');
+    mobileToggle.setAttribute('aria-expanded', 'false');
 
-    // ==============================================
-    // MULAI CEK GPS
-    // ==============================================
+    const dashboardPage = document.createElement('section');
+    dashboardPage.className = 'page-panel';
+    dashboardPage.id = 'page-dashboard';
+    const outletPage = document.createElement('section');
+    outletPage.className = 'page-panel';
+    outletPage.id = 'page-outlets';
+    const employeePage = document.createElement('section');
+    employeePage.className = 'page-panel';
+    employeePage.id = 'page-employees';
+    const attendancePage = document.createElement('section');
+    attendancePage.className = 'page-panel';
+    attendancePage.id = 'page-attendance';
+    const performancePage = document.createElement('section');
+    performancePage.className = 'page-panel';
+    performancePage.id = 'page-performance';
 
-    cekGPS(token);
+    const outletHeading = document.createElement('h2');
+    outletHeading.className = 'page-heading';
+    outletHeading.textContent = '🏪 Pengaturan Outlet';
+    const outletIntro = document.createElement('p');
+    outletIntro.className = 'outlet-note';
+    outletIntro.textContent = 'Daftar outlet yang terdaftar di database absensi Nahyez Baby Meal.';
+    const outletStatus = document.createElement('div');
+    outletStatus.className = 'loading';
+    outletStatus.id = 'outletLoading';
+    outletStatus.textContent = 'Memuat daftar outlet...';
+    const outletError = document.createElement('div');
+    outletError.className = 'error';
+    outletError.id = 'outletError';
+    const outletTableWrap = document.createElement('div');
+    outletTableWrap.className = 'outlet-table-wrap';
+    outletTableWrap.id = 'outletTableWrap';
+    outletTableWrap.style.display = 'none';
+    outletTableWrap.innerHTML = `
+      <table class="outlet-table">
+        <thead><tr><th>Outlet ID</th><th>Nama Outlet</th><th>Latitude</th><th>Longitude</th><th>Radius</th><th>Status</th></tr></thead>
+        <tbody id="outletTableBody"></tbody>
+      </table>`;
+    const outletCount = document.createElement('p');
+    outletCount.className = 'outlet-count';
+    outletCount.id = 'outletCount';
+    outletCount.style.display = 'none';
+    outletPage.appendChild(outletHeading);
+    outletPage.appendChild(outletIntro);
+    outletPage.appendChild(outletError);
+    outletPage.appendChild(outletStatus);
+    outletPage.appendChild(outletTableWrap);
+    outletPage.appendChild(outletCount);
 
-  };
+    const employeeHeading = document.createElement('h2');
+    employeeHeading.className = 'page-heading';
+    employeeHeading.textContent = '👥 Pengaturan Karyawan';
+    const employeePlaceholder = document.createElement('div');
+    employeePlaceholder.className = 'section';
+    employeePlaceholder.textContent = 'Halaman ini akan kita bangun pada tahap berikutnya. Data karyawan yang ada tetap aman.';
+    employeePage.appendChild(employeeHeading);
+    employeePage.appendChild(employeePlaceholder);
 
+    const performanceHeading = document.createElement('h2');
+    performanceHeading.className = 'page-heading';
+    performanceHeading.textContent = '📊 Kinerja Karyawan';
+    performancePage.appendChild(performanceHeading);
 
-  // ==============================================
-  // TIMEOUT
-  // ==============================================
+    // Pertahankan header dan pesan error sebagai elemen global.
+    container.parentNode.insertBefore(layout, container);
+    layout.appendChild(sidebar);
+    layout.appendChild(main);
+    main.appendChild(mobileToggle);
+    main.appendChild(header);
+    main.appendChild(error);
+    main.appendChild(dashboardPage);
+    main.appendChild(outletPage);
+    main.appendChild(employeePage);
+    main.appendChild(attendancePage);
+    main.appendChild(performancePage);
 
-  window.setTimeout(function() {
+    dashboardPage.appendChild(stats);
+    dashboardPage.appendChild(attendanceSection);
+    attendancePage.appendChild(settings);
+    performancePage.appendChild(filter);
+    performancePage.appendChild(performanceSection);
+    container.remove();
 
-    if (window[callbackName]) {
+    const navSettingsToggle = document.getElementById('navSettingsToggle');
+    const settingsSubmenu = document.getElementById('settingsSubmenu');
+    const navSettingsChevron = document.getElementById('navSettingsChevron');
+    navSettingsToggle?.addEventListener('click', () => {
+      const open = navSettingsToggle.getAttribute('aria-expanded') === 'true';
+      navSettingsToggle.setAttribute('aria-expanded', String(!open));
+      settingsSubmenu.hidden = open;
+      navSettingsChevron.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
 
-      delete window[callbackName];
-
-      script.remove();
-
-      document.getElementById("status").innerText =
-        "❌ Tidak dapat menghubungi server.";
-
+    function bukaHalaman(page) {
+      const pages = {
+        dashboard: dashboardPage,
+        outlets: outletPage,
+        employees: employeePage,
+        attendance: attendancePage,
+        performance: performancePage
+      };
+      Object.entries(pages).forEach(([key, element]) => {
+        element.hidden = key !== page;
+      });
+      sidebar.querySelectorAll('[data-page]').forEach(button => {
+        button.classList.toggle('active', button.dataset.page === page);
+      });
+      if (page === 'outlets') muatDaftarOutlet();
+      if (page === 'attendance') muatBatasJamMasuk();
+      mobileToggle.textContent = '☰  Menu';
+      sidebar.classList.remove('open');
+      main.classList.remove('nav-open');
+      mobileToggle.setAttribute('aria-expanded', 'false');
     }
 
-  }, 15000);
+    sidebar.querySelectorAll('[data-page]').forEach(button => {
+      button.addEventListener('click', () => bukaHalaman(button.dataset.page));
+    });
+    mobileToggle.addEventListener('click', () => {
+      const opened = sidebar.classList.toggle('open');
+      mobileToggle.setAttribute('aria-expanded', String(opened));
+      mobileToggle.textContent = opened ? '✕  Tutup Menu' : '☰  Buka Menu';
+      main.classList.toggle('nav-open', opened);
+    });
+    document.getElementById('navLogout')?.addEventListener('click', () => btnLogout.click());
+    bukaHalaman('dashboard');
+  })();
 
+  // ==========================================
+  // PENGATURAN OUTLET - BACA DAFTAR
+  // Endpoint Worker: GET /api/outlets
+  // ==========================================
+  let outletSedangDimuat = false;
+  let outletSudahDimuat = false;
 
-  script.src = url;
-
-  document.body.appendChild(script);
-}
-
-// ==================================================
-// PILIH JENIS ABSENSI
-// ==================================================
-
-function pilihJenisAbsensi(jenis) {
-
-  jenisAbsensi = jenis;
-
-  if (jenisAbsensi === "MASUK") {
-
-  document.getElementById("judulFotoAbsensi").innerText =
-    "Foto Kesiapan Booth";
-
-  document.getElementById("takePhotoButton").innerText =
-    "📸 AMBIL FOTO BOOTH";
-
-  document.getElementById("judulPreviewFoto").innerText =
-    "📸 Periksa Foto Booth";
-
-} else if (jenisAbsensi === "PULANG") {
-
-  document.getElementById("judulFotoAbsensi").innerText =
-    "Foto Sisa Bubur";
-
-  document.getElementById("takePhotoButton").innerText =
-    "📸 AMBIL FOTO SISA BUBUR";
-
-  document.getElementById("judulPreviewFoto").innerText =
-    "📸 Periksa Foto Sisa Bubur";
-
-}
-
-  console.log(
-    "Jenis absensi dipilih:",
-    jenisAbsensi
-  );
-
-  document.getElementById(
-    "jenisAbsensiPage"
-  ).style.display = "none";
-
-  bukaKameraBooth();
-}
-  
-// ==================================================
-// AMBIL GPS HP
-// ==================================================
-
-function cekGPS(token) {
-
-  const gpsStatus =
-    document.getElementById("gpsStatus");
-
-
-  if (!navigator.geolocation) {
-
-    gpsStatus.innerHTML =
-      "❌ Browser tidak mendukung GPS.";
-
-    document.getElementById("status").innerText =
-      "❌ GPS tidak tersedia.";
-
-    return;
-  }
-
-
-  gpsStatus.innerHTML =
-    "📍 Meminta izin lokasi...";
-
-
-  navigator.geolocation.getCurrentPosition(
-
-    function(position) {
-
-      const latitude =
-        position.coords.latitude;
-
-      const longitude =
-        position.coords.longitude;
-
-      // Simpan koordinat untuk proses absensi
-      absensiToken = token;
-      absensiLatitude = latitude;
-      absensiLongitude = longitude;
-
-      const accuracy =
-        position.coords.accuracy;
-
-
-      console.log("Latitude:", latitude);
-      console.log("Longitude:", longitude);
-      console.log("Akurasi:", accuracy);
-
-
-      gpsStatus.innerHTML =
-        "📍 Lokasi diperoleh.<br>" +
-        "Akurasi GPS: " +
-        Math.round(accuracy) +
-        " meter.<br>" +
-        "Memeriksa jarak ke outlet...";
-
-
-      validasiLokasi(
-        token,
-        latitude,
-        longitude
-      );
-
-    },
-
-    function(error) {
-
-      console.error(
-        "GPS error:",
-        error
-      );
-
-
-      let pesan =
-        "❌ Lokasi tidak dapat diperoleh.";
-
-
-      if (error.code === 1) {
-        pesan =
-          "❌ Izin lokasi ditolak. Silakan izinkan lokasi.";
-      }
-
-      else if (error.code === 2) {
-        pesan =
-          "❌ Lokasi tidak tersedia.";
-      }
-
-      else if (error.code === 3) {
-        pesan =
-          "❌ Waktu mendapatkan lokasi habis.";
-      }
-
-
-      gpsStatus.innerHTML =
-        pesan;
-
-      document.getElementById("status").innerText =
-        "❌ Validasi lokasi gagal.";
-
-    },
-
-    {
-      enableHighAccuracy: true,
-      timeout: 15000,
-      maximumAge: 0
+  async function muatDaftarOutlet() {
+    if (outletSedangDimuat) return;
+    outletSedangDimuat = true;
+    const loading = document.getElementById('outletLoading');
+    const error = document.getElementById('outletError');
+    const tableWrap = document.getElementById('outletTableWrap');
+    const tbody = document.getElementById('outletTableBody');
+    const count = document.getElementById('outletCount');
+    if (!loading || !error || !tableWrap || !tbody || !count) {
+      outletSedangDimuat = false;
+      return;
     }
+    loading.style.display = 'block';
+    loading.textContent = 'Memuat daftar outlet...';
+    error.style.display = 'none';
+    tableWrap.style.display = 'none';
+    count.style.display = 'none';
 
-  );
+    try {
+      const response = await fetch('/api/outlets', {
+        method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store'
+      });
+      if (response.status === 401) {
+        throw new Error('Sesi admin tidak valid. Silakan login kembali.');
+      }
+      const hasil = await response.json();
+      if (!response.ok || !hasil || hasil.success !== true || !Array.isArray(hasil.outlet)) {
+        throw new Error(hasil?.message || 'Data outlet tidak dapat dibaca.');
+      }
 
-}
-
-
-// ==================================================
-// VALIDASI GPS KE SERVER
-// ==================================================
-
-function validasiLokasi(
-  token,
-  latitude,
-  longitude
-) {
-
-  const callbackName =
-    "nahyezGPS_" + Date.now();
-
-  const script =
-    document.createElement("script");
-
-
-  const url =
-    API_URL +
-    "?action=validasiLokasi" +
-    "&token=" +
-    encodeURIComponent(token) +
-    "&latitude=" +
-    encodeURIComponent(latitude) +
-    "&longitude=" +
-    encodeURIComponent(longitude) +
-    "&prefix=" +
-    callbackName;
-
-
-  window[callbackName] =
-    async function(data) {
-
-      console.log(
-        "Hasil validasi lokasi:",
-        data
-      );
-
-
-      delete window[callbackName];
-
-      script.remove();
-
-
-      const gpsStatus =
-        document.getElementById("gpsStatus");
-
-
-      // ==========================================
-      // SERVER ERROR
-      // ==========================================
-
-      if (!data.success) {
-
-        gpsStatus.innerHTML = `
-          ❌ ${data.message}
-        `;
-
-        document.getElementById("status").innerText =
-          "❌ Validasi lokasi gagal.";
-
+      tbody.textContent = '';
+      if (hasil.outlet.length === 0) {
+        loading.textContent = 'Belum ada data outlet.';
+        outletSudahDimuat = true;
         return;
       }
 
-
-      // ==========================================
-      // DALAM AREA
-      // ==========================================
-
-      if (data.dalamArea) {
-
-        gpsStatus.innerHTML = `
-
-          <div style="
-            margin-top:10px;
-            padding:12px;
-            border-radius:12px;
-            background:#e8f7ee;
-            color:#198754;
-          ">
-
-            <b>✅ Lokasi Sesuai</b>
-
-            <br><br>
-
-            Jarak dari outlet:
-            <b>${data.jarak} meter</b>
-
-            <br>
-
-            Radius diizinkan:
-            <b>${data.radius} meter</b>
-
-          </div>
-
-        `;
-
-
-        document.getElementById("status").innerText =
-          "✅ Lokasi sesuai. Karyawan boleh melanjutkan absensi.";
-
-        // Hentikan scanner QR
-        try {
-          await scanner.clear();
-        } catch (error) {
-          console.log("Scanner sudah berhenti.");
-        }
-
-        document.getElementById(
-          "boothEmployee"
-        ).innerHTML = `
-          <b>${data.nama}</b>
-           &nbsp;•&nbsp;
-           ${data.outlet}
-         `;
-
-        document.getElementById(
-          "jenisAbsensiPage"
-        ).style.display = "block";
-        
-      }
-
-
-      // ==========================================
-      // DI LUAR AREA
-      // ==========================================
-
-      else {
-
-        gpsStatus.innerHTML = `
-
-          <div style="
-            margin-top:10px;
-            padding:12px;
-            border-radius:12px;
-            background:#fff0f0;
-            color:#dc3545;
-          ">
-
-            <b>❌ Lokasi Di Luar Area</b>
-
-            <br><br>
-
-            Jarak dari outlet:
-            <b>${data.jarak} meter</b>
-
-            <br>
-
-            Radius diizinkan:
-            <b>${data.radius} meter</b>
-
-          </div>
-
-        `;
-
-
-        document.getElementById("status").innerText =
-          "❌ Karyawan berada di luar area outlet.";
-
-      }
-
-    };
-
-
-  // ==============================================
-  // TIMEOUT GPS API
-  // ==============================================
-
-  window.setTimeout(function() {
-
-    if (window[callbackName]) {
-
-      delete window[callbackName];
-
-      script.remove();
-
-      document.getElementById("status").innerText =
-        "❌ Server tidak merespons.";
-
-    }
-
-  }, 15000);
-
-
-  script.src = url;
-
-  document.body.appendChild(script);
-}
-
-
-  // ==================================================
-// KAMERA BOOTH
-// ==================================================
-
-let cameraStream = null;
-
-
-// ==================================================
-// BUKA KAMERA BELAKANG
-// ==================================================
-
-async function bukaKameraBooth() {
-
-  const cameraPage =
-    document.getElementById("boothCameraPage");
-
-  const video =
-    document.getElementById("cameraPreview");
-
-
-  // Tampilkan halaman kamera sebagai layar penuh
-  cameraPage.style.display = "block";
-
-  document.documentElement.style.overflow = "hidden";
-  document.body.style.overflow = "hidden";
-
-
-  document.getElementById("status").innerText =
-    "📸 Membuka kamera belakang...";
-
-
-  try {
-
-    cameraStream =
-      await navigator.mediaDevices.getUserMedia({
-
-        video: {
-
-          facingMode: {
-            ideal: "environment"
-          },
-
-          width: {
-            ideal: 1920
-          },
-
-          height: {
-            ideal: 1080
-          }
-
-        },
-
-        audio: false
-
+      hasil.outlet.forEach(item => {
+        const row = document.createElement('tr');
+        const values = [item.id, item.nama, item.latitude, item.longitude, item.radius + ' m'];
+        values.forEach(value => {
+          const cell = document.createElement('td');
+          cell.textContent = value == null ? '-' : String(value);
+          row.appendChild(cell);
+        });
+        const statusCell = document.createElement('td');
+        const badge = document.createElement('span');
+        const statusText = String(item.status || 'Tidak diketahui');
+        badge.className = 'outlet-status' + (statusText.toLowerCase() === 'aktif' ? '' : ' nonaktif');
+        badge.textContent = statusText;
+        statusCell.appendChild(badge);
+        row.appendChild(statusCell);
+        tbody.appendChild(row);
       });
-
-
-    video.srcObject =
-      cameraStream;
-
-
-    await video.play();
-
-
-    document.getElementById("status").innerText =
-      "📸 Kamera siap. Foto booth Anda.";
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Kamera error:",
-      error
-    );
-
-
-    cameraPage.innerHTML = `
-
-      <div style="
-        text-align:center;
-        padding:30px;
-      ">
-
-        <h2>❌ Kamera Tidak Dapat Dibuka</h2>
-
-        <p>
-          Pastikan izin kamera diberikan
-          kepada browser.
-        </p>
-
-      </div>
-
-    `;
-
-  }
-
-}
-
-
-// ==================================================
-// AMBIL FOTO BOOTH
-// ==================================================
-
-async function ambilFotoBooth() {
-
-  const video =
-    document.getElementById("cameraPreview");
-
-  const canvas =
-    document.getElementById("photoCanvas");
-
-  if (
-    !video.videoWidth ||
-    !video.videoHeight
-  ) {
-
-    alert(
-      "Kamera belum siap. Tunggu beberapa detik."
-    );
-
-    return;
-
-  }
-
-  // ==========================================
-  // 1. BATASI RESOLUSI FOTO
-  // ==========================================
-
-  const MAX_DIMENSION = 1280;
-
-  const originalWidth =
-    video.videoWidth;
-
-  const originalHeight =
-    video.videoHeight;
-
-  const scale = Math.min(
-    1,
-    MAX_DIMENSION /
-      Math.max(originalWidth, originalHeight)
-  );
-
-  const targetWidth =
-    Math.round(originalWidth * scale);
-
-  const targetHeight =
-    Math.round(originalHeight * scale);
-
-  canvas.width = targetWidth;
-  canvas.height = targetHeight;
-
-  const context =
-    canvas.getContext("2d");
-
-  if (!context) {
-
-    alert(
-      "Gagal memproses foto. Silakan coba kembali."
-    );
-
-    return;
-
-  }
-
-  // ==========================================
-  // 2. GAMBAR ULANG DENGAN RESOLUSI TERBATAS
-  // ==========================================
-
-  context.drawImage(
-    video,
-    0,
-    0,
-    targetWidth,
-    targetHeight
-  );
-
-  // ==========================================
-  // 3. KOMPRESI JPEG OTOMATIS
-  // Target maksimal sekitar 400 KB
-  // ==========================================
-
-  const MAX_SIZE = 400 * 1024;
-
-  const MIN_QUALITY = 0.50;
-
-  let quality = 0.75;
-
-  let imageData =
-    canvas.toDataURL(
-      "image/jpeg",
-      quality
-    );
-
-  while (
-    imageData.length * 0.75 > MAX_SIZE &&
-    quality > MIN_QUALITY
-  ) {
-
-    quality = Math.max(
-      MIN_QUALITY,
-      quality - 0.05
-    );
-
-    imageData =
-      canvas.toDataURL(
-        "image/jpeg",
-        quality
-      );
-
-  }
-
-  // ==========================================
-  // 4. SIMPAN FOTO HASIL KOMPRESI
-  // ==========================================
-
-  window.fotoBoothBase64 =
-    imageData;
-
-  // Estimasi ukuran JPEG dalam KB
-  const estimatedSizeKB =
-    Math.round(
-      imageData.length * 0.75 / 1024
-    );
-
-  console.log(
-    "Foto berhasil dikompresi:",
-    {
-      resolusi:
-        targetWidth + " × " + targetHeight,
-      kualitasJPEG: quality,
-      estimasiUkuranKB: estimatedSizeKB
+      loading.style.display = 'none';
+      tableWrap.style.display = 'block';
+      count.textContent = 'Total outlet: ' + hasil.outlet.length;
+      count.style.display = 'block';
+      outletSudahDimuat = true;
+    } catch (err) {
+      loading.style.display = 'none';
+      error.textContent = err.message || 'Terjadi kesalahan saat memuat daftar outlet.';
+      error.style.display = 'block';
+      outletSudahDimuat = false;
+    } finally {
+      outletSedangDimuat = false;
     }
-  );
-
-  // ==========================================
-  // 5. MATIKAN KAMERA
-  // ==========================================
-
-  matikanKameraBooth();
-
-  // ==========================================
-  // 6. TAMPILKAN PREVIEW
-  // ==========================================
-
-  document.getElementById(
-    "boothCameraPage"
-  ).style.display = "none";
-
-  document.getElementById(
-    "boothPhotoPage"
-  ).style.display = "block";
-
-  document.getElementById(
-    "boothPhotoPreview"
-  ).src = imageData;
-
-  document.getElementById(
-    "status"
-  ).innerText =
-    "📸 Foto siap digunakan (" +
-    estimatedSizeKB +
-    " KB).";
-
-}
-
-// ==================================================
-// MATIKAN KAMERA
-// ==================================================
-
-function matikanKameraBooth() {
-
-  if (cameraStream) {
-
-    cameraStream
-      .getTracks()
-      .forEach(function(track) {
-
-        track.stop();
-
-      });
-
-    cameraStream = null;
   }
 
-}
-
-
-// ==================================================
-// AMBIL ULANG FOTO
-// ==================================================
-
-function ambilUlangFoto() {
-
-  document.getElementById(
-    "boothPhotoPage"
-  ).style.display = "none";
-
-
-  document.getElementById(
-    "boothCameraPage"
-  ).style.display = "block";
-
-
-  bukaKameraBooth();
-
-}
-
-// ==================================================
-// FOTO DIPILIH UNTUK ABSENSI
-// ==================================================
-
-// ==================================================
-// KIRIM ABSENSI KE SERVER
-// ==================================================
-
-async function gunakanFoto() {
-
-  // ==============================================
-  // CEK DATA
-  // ==============================================
-
-  if (!window.fotoBoothBase64) {
-
-    alert(
-      "Foto booth belum tersedia."
-    );
-
-    return;
-
-  }
-
-
-  if (
-    !absensiToken ||
-    absensiLatitude === null ||
-    absensiLongitude === null
-  ) {
-
-    alert(
-      "Data lokasi belum tersedia. Silakan ulangi proses absensi."
-    );
-
-    return;
-
-  }
-
-
-  // ==============================================
-  // UBAH STATUS TOMBOL
-  // ==============================================
-
-  const button =
-    document.querySelector(
-      ".btn-use-photo"
-    );
-
-
-  if (button) {
-
-    button.disabled = true;
-
-    button.innerText =
-      "⏳ MENYIMPAN ABSENSI...";
-
-  }
-
-
-  document.getElementById(
-    "status"
-  ).innerText =
-    "⏳ Mengirim foto dan data absensi ke server...";
-
-
-  try {
-
-    // ==========================================
-    // DATA YANG DIKIRIM
-    // ==========================================
-
-    const data = {
-      token: absensiToken,
-      latitude: absensiLatitude,
-      longitude: absensiLongitude,
-      foto: window.fotoBoothBase64,
-      jenisAbsensi: jenisAbsensi
-    };
-
-
-    console.log(
-      "Mengirim absensi:",
-      {
-        token: data.token,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        ukuranFoto:
-          data.foto.length
-      }
-    );
-
-
-    // ==========================================
-    // KIRIM POST KE APPS SCRIPT
-    // ==========================================
-
-    const response =
-      await fetch(
-        API_URL,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "text/plain;charset=utf-8"
-          },
-
-          body:
-            JSON.stringify(data)
-        }
-      );
-
-
-    // ==========================================
-    // BACA RESPONSE SERVER
-    // ==========================================
-
-    const responseText =
-  await response.text();
-
-console.log(
-  "Response server:",
-  responseText
-);
-
-let hasil;
-
-try {
-
-  // Coba baca response sebagai JSON
-  hasil =
-    JSON.parse(responseText);
-
-} catch (error) {
-
-  console.warn(
-    "Response server bukan JSON:",
-    error
-  );
-
-  // ==========================================
-  // RESPONSE HTML
-  // ==========================================
-  // Apps Script sudah memproses POST,
-  // tetapi browser menerima response HTML.
-  // Gunakan data karyawan yang sudah tampil
-  // di halaman sebagai fallback.
-  
-  const employeeInfo =
-    document.getElementById(
-      "boothEmployee"
-    );
-
-  let nama = "";
-  let outlet = "";
-
-  if (employeeInfo) {
-
-    const teks =
-      employeeInfo.innerText.trim();
-
-    // Format:
-    // Budi • Outlet B
-
-    const bagian =
-      teks.split("•");
-
-    nama =
-      (bagian[0] || "").trim();
-
-    outlet =
-      (bagian[1] || "").trim();
-  }
-
-  hasil = {
-
-    success: true,
-
-    nama: nama,
-
-    outlet: outlet,
-
-    timestamp:
-      "Tersimpan di server",
-
-    jarak:
-      "Data tersimpan"
-
-  };
-
-}
-
-
-    console.log(
-      "Response server:",
-      hasil
-    );
-
-
-    // ==========================================
-    // BERHASIL
-    // ==========================================
-
-    if (hasil.success) {
-
-      // Sembunyikan halaman preview
-      document.getElementById(
-        "boothPhotoPage"
-      ).style.display = "none";
-
-
-      // Tampilkan halaman sukses
-      tampilkanAbsensiBerhasil(
-        hasil
-      );
-
-
-      return;
-
-    }
-
-
-    // ==========================================
-    // SERVER MENOLAK
-    // ==========================================
-
-    throw new Error(
-      hasil.message ||
-      "Absensi gagal disimpan."
-    );
-
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Gagal menyimpan absensi:",
-      error
-    );
-
-
-    document.getElementById(
-      "status"
-    ).innerText =
-      "❌ Absensi gagal disimpan.";
-
-
-    alert(
-      "❌ Absensi gagal disimpan.\n\n" +
-      error.message
-    );
-
-
-    // Aktifkan kembali tombol
-    if (button) {
-
-      button.disabled = false;
-
-      button.innerText =
-        "✅ GUNAKAN FOTO";
-
-    }
-
-  }
-
-}
-
-  // ==================================================
-// TAMPILKAN ABSENSI BERHASIL
-// ==================================================
-
-function tampilkanAbsensiBerhasil(
-  hasil
-) {
-
-  // ==============================================
-  // AMBIL ELEMEN
-  // ==============================================
-
-  const successIcon =
-    document.querySelector(
-      ".success-icon"
-    );
-
-  const successTitle =
-    document.querySelector(
-      ".success-title"
-    );
-
-
-  // ==============================================
-  // ATUR TAMPILAN BERDASARKAN JENIS ABSENSI
-  // ==============================================
-
-  if (successIcon) {
-
-    // Bersihkan class warna sebelumnya
-    successIcon.classList.remove(
-      "masuk",
-      "pulang"
-    );
-
-
-    if (jenisAbsensi === "MASUK") {
-
-      successIcon.classList.add(
-        "masuk"
-      );
-
-    }
-
-    else if (jenisAbsensi === "PULANG") {
-
-      successIcon.classList.add(
-        "pulang"
-      );
-
-    }
-
-  }
-
-
-  // ==============================================
-  // JUDUL ABSENSI
-  // ==============================================
-
-  if (successTitle) {
-
-    if (jenisAbsensi === "MASUK") {
-
-      successTitle.innerText =
-        "ABSEN MASUK BERHASIL";
-
-      successTitle.style.color =
-        "#198754";
-
-    }
-
-    else if (jenisAbsensi === "PULANG") {
-
-      successTitle.innerText =
-        "ABSEN PULANG BERHASIL";
-
-      successTitle.style.color =
-        "#0d6efd";
-
-    }
-
-  }
-
-
-  // ==============================================
-  // NAMA KARYAWAN
-  // ==============================================
-
-  document.getElementById(
-    "successEmployee"
-  ).innerText =
-    hasil.nama;
-
-
-  // ==============================================
-  // OUTLET
-  // ==============================================
-
-  document.getElementById(
-    "successOutlet"
-  ).innerText =
-    hasil.outlet;
-
-
-  // ==============================================
-  // WAKTU DAN JARAK
-  // ==============================================
-
-  document.getElementById(
-    "successTime"
-  ).innerHTML =
-
-    "🕐 Waktu Server<br>" +
-
-    "<b>" +
-    hasil.timestamp +
-    "</b>" +
-
-    "<br><br>" +
-
-    "📍 Jarak dari outlet<br>" +
-
-    "<b>" +
-    hasil.jarak +
-    " meter" +
-    "</b>";
-
-
-  // ==============================================
-  // TAMPILKAN HALAMAN SUKSES
-  // ==============================================
-
-  document.getElementById(
-    "successPage"
-  ).style.display =
-    "block";
-
-}
-
-  function selesaiAbsensi() {
-
-  window.location.reload();
-
-}
-  
-// ==================================================
-// ERROR SCANNER
-// ==================================================
-
-function onScanFailure(error) {
-  // Error sementara diabaikan.
-}
-
-
-// ==================================================
-// QR SCANNER
-// ==================================================
-
-const scanner =
-  new Html5QrcodeScanner(
-    "reader",
-    {
-      fps: 10,
-
-      qrbox: {
-        width: 250,
-        height: 250
-      },
-
-      rememberLastUsedCamera: true,
-
-      supportedScanTypes: [
-        Html5QrcodeScanType.SCAN_TYPE_CAMERA
-      ]
-    },
-    false
-  );
-
-
-scanner.render(
-  onScanSuccess,
-  onScanFailure
-);
+  loadDashboard();
 
 </script>
 
