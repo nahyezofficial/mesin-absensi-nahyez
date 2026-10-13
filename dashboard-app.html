@@ -2562,7 +2562,7 @@ batasJamMasukSudahDimuat = true;
     outletHeading.textContent = '🏪 Pengaturan Outlet';
     const outletIntro = document.createElement('p');
     outletIntro.className = 'outlet-note';
-    outletIntro.textContent = 'Daftar outlet yang terdaftar di database absensi Nahyez Baby Meal. Tambahkan outlet baru melalui formulir di bawah.';
+    outletIntro.textContent = 'Daftar outlet yang terdaftar di database absensi Nahyez Baby Meal. Tambahkan atau edit data outlet melalui formulir.';
     const outletActions = document.createElement('div');
     outletActions.className = 'outlet-actions';
     outletActions.innerHTML = '<button type="button" class="btn-outlet-add" id="btnBukaFormOutlet">＋ Tambah Outlet</button>';
@@ -2572,6 +2572,8 @@ batasJamMasukSudahDimuat = true;
     outletFormPanel.hidden = true;
     outletFormPanel.innerHTML = `
       <form id="formTambahOutlet">
+        <p id="outletFormTitle" class="outlet-form-help" style="font-weight:700;color:#263d59;margin-top:0">Tambah Outlet Baru</p>
+        <input type="hidden" id="outletIdEdit" value="">
         <div class="outlet-form-grid">
           <div class="outlet-form-field">
             <label for="outletNamaBaru">Nama Outlet *</label>
@@ -2597,7 +2599,7 @@ batasJamMasukSudahDimuat = true;
             <input id="outletRadiusBaru" name="radius" type="number" min="1" max="50000" step="1" value="100" required inputmode="numeric">
           </div>
         </div>
-        <p class="outlet-form-help">Pastikan koordinat sesuai lokasi outlet. ID outlet akan dibuat otomatis oleh sistem. Data hanya disimpan setelah tombol simpan dikonfirmasi.</p>
+        <p class="outlet-form-help">Pastikan koordinat sesuai lokasi outlet. Saat mengedit, ID outlet tetap dan tidak berubah. Data hanya disimpan setelah konfirmasi.</p>
         <div class="outlet-form-buttons">
           <button type="submit" class="btn-outlet-add" id="btnSimpanOutlet">💾 Simpan Outlet</button>
           <button type="button" class="btn-outlet-cancel" id="btnBatalOutlet">Batal</button>
@@ -2617,7 +2619,7 @@ batasJamMasukSudahDimuat = true;
     outletTableWrap.style.display = 'none';
     outletTableWrap.innerHTML = `
       <table class="outlet-table">
-        <thead><tr><th>Outlet ID</th><th>Nama Outlet</th><th>Latitude</th><th>Longitude</th><th>Radius</th><th>Status</th></tr></thead>
+        <thead><tr><th>Outlet ID</th><th>Nama Outlet</th><th>Latitude</th><th>Longitude</th><th>Radius</th><th>Status</th><th>Aksi</th></tr></thead>
         <tbody id="outletTableBody"></tbody>
       </table>`;
     const outletCount = document.createElement('p');
@@ -2773,6 +2775,15 @@ batasJamMasukSudahDimuat = true;
         badge.textContent = statusText;
         statusCell.appendChild(badge);
         row.appendChild(statusCell);
+        const actionCell = document.createElement('td');
+        const editButton = document.createElement('button');
+        editButton.type = 'button';
+        editButton.className = 'btn-outlet-cancel';
+        editButton.textContent = '✏️ Edit';
+        editButton.setAttribute('aria-label', 'Edit outlet ' + String(item.id || ''));
+        editButton.addEventListener('click', () => bukaFormEditOutlet(item));
+        actionCell.appendChild(editButton);
+        row.appendChild(actionCell);
         tbody.appendChild(row);
       });
       loading.style.display = 'none';
@@ -2794,6 +2805,27 @@ batasJamMasukSudahDimuat = true;
   // PENGATURAN OUTLET - TAMBAH OUTLET
   // Endpoint Worker: POST /api/outlets
   // ==========================================
+  let outletIdSedangDiedit = '';
+  function bukaFormEditOutlet(item) {
+    const panel = document.getElementById('outletFormPanel');
+    const form = document.getElementById('formTambahOutlet');
+    const status = document.getElementById('outletFormStatus');
+    if (!panel || !form) return;
+    outletIdSedangDiedit = String(item.id || '').trim();
+    document.getElementById('outletIdEdit').value = outletIdSedangDiedit;
+    document.getElementById('outletFormTitle').textContent = 'Edit Outlet — ' + outletIdSedangDiedit;
+    document.getElementById('outletNamaBaru').value = item.nama ?? '';
+    document.getElementById('outletLatitudeBaru').value = item.latitude ?? '';
+    document.getElementById('outletLongitudeBaru').value = item.longitude ?? '';
+    document.getElementById('outletRadiusBaru').value = item.radius ?? 100;
+    document.getElementById('outletStatusBaru').value = item.status === 'Nonaktif' ? 'Nonaktif' : 'Aktif';
+    document.getElementById('btnSimpanOutlet').textContent = '💾 Simpan Perubahan';
+    status.style.display = 'none';
+    panel.hidden = false;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('outletNamaBaru').focus();
+  }
+
   (function siapkanFormTambahOutlet() {
     const tombolBuka = document.getElementById('btnBukaFormOutlet');
     const panel = document.getElementById('outletFormPanel');
@@ -2813,6 +2845,12 @@ batasJamMasukSudahDimuat = true;
     tombolBuka.addEventListener('click', () => {
       panel.hidden = !panel.hidden;
       if (!panel.hidden) {
+        outletIdSedangDiedit = '';
+        document.getElementById('outletIdEdit').value = '';
+        document.getElementById('outletFormTitle').textContent = 'Tambah Outlet Baru';
+        tombolSimpan.textContent = '💾 Simpan Outlet';
+        form.reset();
+        document.getElementById('outletRadiusBaru').value = '100';
         status.style.display = 'none';
         document.getElementById('outletNamaBaru').focus();
       }
@@ -2821,7 +2859,11 @@ batasJamMasukSudahDimuat = true;
     tombolBatal.addEventListener('click', () => {
       if (tombolSimpan.disabled) return;
       form.reset();
+      outletIdSedangDiedit = '';
+      document.getElementById('outletIdEdit').value = '';
+      document.getElementById('outletFormTitle').textContent = 'Tambah Outlet Baru';
       document.getElementById('outletRadiusBaru').value = '100';
+      tombolSimpan.textContent = '💾 Simpan Outlet';
       status.style.display = 'none';
       panel.hidden = true;
     });
@@ -2860,29 +2902,32 @@ batasJamMasukSudahDimuat = true;
         return;
       }
 
+      const sedangEdit = Boolean(outletIdSedangDiedit);
       const konfirmasi = confirm(
-        'Simpan outlet baru dengan data berikut?\n\n' +
+        (sedangEdit ? 'Simpan perubahan outlet ' + outletIdSedangDiedit + '?' : 'Simpan outlet baru dengan data berikut?') + '\n\n' +
         'Nama: ' + nama + '\n' +
         'Latitude: ' + latitude + '\n' +
         'Longitude: ' + longitude + '\n' +
         'Radius: ' + radius + ' meter\n' +
         'Status: ' + statusOutlet + '\n\n' +
-        'Data akan ditambahkan ke database setelah Anda memilih OK.'
+        (sedangEdit ? 'Perubahan akan memperbarui data outlet yang dipilih.' : 'Data akan ditambahkan ke database setelah Anda memilih OK.')
       );
       if (!konfirmasi) return;
 
       tombolSimpan.disabled = true;
       tombolBatal.disabled = true;
-      tombolSimpan.textContent = '⏳ Menyimpan...';
-      tampilkanStatusForm('Mengirim data outlet ke server...', true);
+      tombolSimpan.textContent = sedangEdit ? '⏳ Memperbarui...' : '⏳ Menyimpan...';
+      tampilkanStatusForm(sedangEdit ? 'Mengirim perubahan outlet ke server...' : 'Mengirim data outlet ke server...', true);
 
       try {
-        const response = await fetch('/api/outlets', {
+        const payload = { nama, latitude, longitude, radius, status: statusOutlet };
+        if (sedangEdit) payload.id = outletIdSedangDiedit;
+        const response = await fetch(sedangEdit ? '/api/outlets/edit' : '/api/outlets', {
           method: 'POST',
           credentials: 'same-origin',
           cache: 'no-store',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nama, latitude, longitude, radius, status: statusOutlet })
+          body: JSON.stringify(payload)
         });
 
         let hasil;
@@ -2896,16 +2941,20 @@ batasJamMasukSudahDimuat = true;
           throw new Error('Sesi admin tidak valid. Silakan login kembali.');
         }
         if (!response.ok || !hasil || hasil.success !== true) {
-          throw new Error((hasil && hasil.message) || 'Outlet gagal ditambahkan.');
+          throw new Error((hasil && hasil.message) || (sedangEdit ? 'Outlet gagal diperbarui.' : 'Outlet gagal ditambahkan.'));
         }
 
         tampilkanStatusForm(
-          '✅ ' + (hasil.message || 'Outlet berhasil ditambahkan.') +
+          '✅ ' + (hasil.message || (sedangEdit ? 'Outlet berhasil diperbarui.' : 'Outlet berhasil ditambahkan.')) +
           (hasil.outlet && hasil.outlet.id ? ' ID outlet: ' + hasil.outlet.id + '.' : ''),
           true
         );
         form.reset();
+        outletIdSedangDiedit = '';
+        document.getElementById('outletIdEdit').value = '';
+        document.getElementById('outletFormTitle').textContent = 'Tambah Outlet Baru';
         document.getElementById('outletRadiusBaru').value = '100';
+        tombolSimpan.textContent = '💾 Simpan Outlet';
         outletSudahDimuat = false;
         await muatDaftarOutlet();
       } catch (error) {
@@ -2913,7 +2962,7 @@ batasJamMasukSudahDimuat = true;
       } finally {
         tombolSimpan.disabled = false;
         tombolBatal.disabled = false;
-        tombolSimpan.textContent = '💾 Simpan Outlet';
+        tombolSimpan.textContent = outletIdSedangDiedit ? '💾 Simpan Perubahan' : '💾 Simpan Outlet';
       }
     });
   })();
