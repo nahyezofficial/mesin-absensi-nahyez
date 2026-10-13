@@ -954,6 +954,22 @@
     .outlet-status.nonaktif { background:#fdecec; color:#b42318; }
     .outlet-note { margin:0 0 16px; color:#64748b; font-size:13px; line-height:1.6; }
     .outlet-count { color:#64748b; font-size:13px; }
+
+    .outlet-actions { display:flex; gap:10px; flex-wrap:wrap; margin:0 0 16px; }
+    .btn-outlet-add { border:0; border-radius:10px; padding:11px 16px; background:#365b82; color:#fff; font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+    .btn-outlet-add:hover { background:#294968; }
+    .outlet-form-panel { margin:0 0 18px; padding:18px; border:1px solid #dce5ef; border-radius:14px; background:#f8fafc; }
+    .outlet-form-panel[hidden] { display:none !important; }
+    .outlet-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .outlet-form-field label { display:block; margin-bottom:6px; color:#334155; font-size:13px; font-weight:700; }
+    .outlet-form-field input, .outlet-form-field select { width:100%; min-height:44px; padding:10px 12px; border:1px solid #cbd5e1; border-radius:9px; background:#fff; color:#1e293b; font:inherit; font-size:15px; }
+    .outlet-form-help { margin:12px 0 0; color:#64748b; font-size:12px; line-height:1.5; }
+    .outlet-form-status { display:none; margin-top:12px; padding:10px 12px; border-radius:9px; font-size:13px; line-height:1.5; }
+    .outlet-form-buttons { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
+    .btn-outlet-cancel { border:1px solid #cbd5e1; border-radius:10px; padding:11px 16px; background:#fff; color:#334155; font:inherit; font-weight:700; cursor:pointer; }
+    .btn-outlet-add:disabled, .btn-outlet-cancel:disabled { opacity:.6; cursor:not-allowed; }
+    @media (max-width:600px) { .outlet-form-grid { grid-template-columns:1fr; } .outlet-form-panel { padding:14px; } }
+
     .nav-logout { margin-top:20px; color:#b91c1c; }
     .main-content { flex:1; min-width:0; max-width:none; margin:0; padding:0; }
     .page-panel { min-width:0; }
@@ -2546,7 +2562,48 @@ batasJamMasukSudahDimuat = true;
     outletHeading.textContent = '🏪 Pengaturan Outlet';
     const outletIntro = document.createElement('p');
     outletIntro.className = 'outlet-note';
-    outletIntro.textContent = 'Daftar outlet yang terdaftar di database absensi Nahyez Baby Meal.';
+    outletIntro.textContent = 'Daftar outlet yang terdaftar di database absensi Nahyez Baby Meal. Tambahkan outlet baru melalui formulir di bawah.';
+    const outletActions = document.createElement('div');
+    outletActions.className = 'outlet-actions';
+    outletActions.innerHTML = '<button type="button" class="btn-outlet-add" id="btnBukaFormOutlet">＋ Tambah Outlet</button>';
+    const outletFormPanel = document.createElement('div');
+    outletFormPanel.className = 'outlet-form-panel';
+    outletFormPanel.id = 'outletFormPanel';
+    outletFormPanel.hidden = true;
+    outletFormPanel.innerHTML = `
+      <form id="formTambahOutlet">
+        <div class="outlet-form-grid">
+          <div class="outlet-form-field">
+            <label for="outletNamaBaru">Nama Outlet *</label>
+            <input id="outletNamaBaru" name="nama" type="text" maxlength="100" required autocomplete="organization" placeholder="Contoh: Outlet Kelapa Gading">
+          </div>
+          <div class="outlet-form-field">
+            <label for="outletStatusBaru">Status Outlet *</label>
+            <select id="outletStatusBaru" name="status" required>
+              <option value="Aktif">Aktif</option>
+              <option value="Nonaktif">Nonaktif</option>
+            </select>
+          </div>
+          <div class="outlet-form-field">
+            <label for="outletLatitudeBaru">Latitude *</label>
+            <input id="outletLatitudeBaru" name="latitude" type="number" min="-90" max="90" step="any" required inputmode="decimal" placeholder="Contoh: -6.1577928">
+          </div>
+          <div class="outlet-form-field">
+            <label for="outletLongitudeBaru">Longitude *</label>
+            <input id="outletLongitudeBaru" name="longitude" type="number" min="-180" max="180" step="any" required inputmode="decimal" placeholder="Contoh: 106.9542214">
+          </div>
+          <div class="outlet-form-field">
+            <label for="outletRadiusBaru">Radius Absensi (meter) *</label>
+            <input id="outletRadiusBaru" name="radius" type="number" min="1" max="50000" step="1" value="100" required inputmode="numeric">
+          </div>
+        </div>
+        <p class="outlet-form-help">Pastikan koordinat sesuai lokasi outlet. ID outlet akan dibuat otomatis oleh sistem. Data hanya disimpan setelah tombol simpan dikonfirmasi.</p>
+        <div class="outlet-form-buttons">
+          <button type="submit" class="btn-outlet-add" id="btnSimpanOutlet">💾 Simpan Outlet</button>
+          <button type="button" class="btn-outlet-cancel" id="btnBatalOutlet">Batal</button>
+        </div>
+        <div id="outletFormStatus" class="outlet-form-status" role="status" aria-live="polite"></div>
+      </form>`;
     const outletStatus = document.createElement('div');
     outletStatus.className = 'loading';
     outletStatus.id = 'outletLoading';
@@ -2569,6 +2626,8 @@ batasJamMasukSudahDimuat = true;
     outletCount.style.display = 'none';
     outletPage.appendChild(outletHeading);
     outletPage.appendChild(outletIntro);
+    outletPage.appendChild(outletActions);
+    outletPage.appendChild(outletFormPanel);
     outletPage.appendChild(outletError);
     outletPage.appendChild(outletStatus);
     outletPage.appendChild(outletTableWrap);
@@ -2730,6 +2789,134 @@ batasJamMasukSudahDimuat = true;
       outletSedangDimuat = false;
     }
   }
+
+  // ==========================================
+  // PENGATURAN OUTLET - TAMBAH OUTLET
+  // Endpoint Worker: POST /api/outlets
+  // ==========================================
+  (function siapkanFormTambahOutlet() {
+    const tombolBuka = document.getElementById('btnBukaFormOutlet');
+    const panel = document.getElementById('outletFormPanel');
+    const form = document.getElementById('formTambahOutlet');
+    const tombolSimpan = document.getElementById('btnSimpanOutlet');
+    const tombolBatal = document.getElementById('btnBatalOutlet');
+    const status = document.getElementById('outletFormStatus');
+    if (!tombolBuka || !panel || !form || !tombolSimpan || !tombolBatal || !status) return;
+
+    function tampilkanStatusForm(pesan, berhasil) {
+      status.textContent = pesan;
+      status.style.display = 'block';
+      status.style.background = berhasil ? '#dcfce7' : '#fee2e2';
+      status.style.color = berhasil ? '#166534' : '#991b1b';
+    }
+
+    tombolBuka.addEventListener('click', () => {
+      panel.hidden = !panel.hidden;
+      if (!panel.hidden) {
+        status.style.display = 'none';
+        document.getElementById('outletNamaBaru').focus();
+      }
+    });
+
+    tombolBatal.addEventListener('click', () => {
+      if (tombolSimpan.disabled) return;
+      form.reset();
+      document.getElementById('outletRadiusBaru').value = '100';
+      status.style.display = 'none';
+      panel.hidden = true;
+    });
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const nama = document.getElementById('outletNamaBaru').value.trim();
+      const latitudeText = document.getElementById('outletLatitudeBaru').value;
+      const longitudeText = document.getElementById('outletLongitudeBaru').value;
+      const radiusText = document.getElementById('outletRadiusBaru').value;
+      const statusOutlet = document.getElementById('outletStatusBaru').value;
+      const latitude = Number(latitudeText);
+      const longitude = Number(longitudeText);
+      const radius = Number(radiusText);
+
+      if (!nama || nama.length > 100) {
+        tampilkanStatusForm('Nama outlet wajib diisi, maksimal 100 karakter.', false);
+        return;
+      }
+      if (latitudeText === '' || !Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+        tampilkanStatusForm('Latitude harus berupa angka antara -90 dan 90.', false);
+        return;
+      }
+      if (longitudeText === '' || !Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+        tampilkanStatusForm('Longitude harus berupa angka antara -180 dan 180.', false);
+        return;
+      }
+      if (radiusText === '' || !Number.isInteger(radius) || radius < 1 || radius > 50000) {
+        tampilkanStatusForm('Radius harus bilangan bulat antara 1 dan 50000 meter.', false);
+        return;
+      }
+      if (!['Aktif', 'Nonaktif'].includes(statusOutlet)) {
+        tampilkanStatusForm('Silakan pilih status outlet yang valid.', false);
+        return;
+      }
+
+      const konfirmasi = confirm(
+        'Simpan outlet baru dengan data berikut?\n\n' +
+        'Nama: ' + nama + '\n' +
+        'Latitude: ' + latitude + '\n' +
+        'Longitude: ' + longitude + '\n' +
+        'Radius: ' + radius + ' meter\n' +
+        'Status: ' + statusOutlet + '\n\n' +
+        'Data akan ditambahkan ke database setelah Anda memilih OK.'
+      );
+      if (!konfirmasi) return;
+
+      tombolSimpan.disabled = true;
+      tombolBatal.disabled = true;
+      tombolSimpan.textContent = '⏳ Menyimpan...';
+      tampilkanStatusForm('Mengirim data outlet ke server...', true);
+
+      try {
+        const response = await fetch('/api/outlets', {
+          method: 'POST',
+          credentials: 'same-origin',
+          cache: 'no-store',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nama, latitude, longitude, radius, status: statusOutlet })
+        });
+
+        let hasil;
+        try {
+          hasil = await response.json();
+        } catch {
+          throw new Error('Respons server tidak valid. Periksa deployment Worker dan Apps Script.');
+        }
+
+        if (response.status === 401) {
+          throw new Error('Sesi admin tidak valid. Silakan login kembali.');
+        }
+        if (!response.ok || !hasil || hasil.success !== true) {
+          throw new Error((hasil && hasil.message) || 'Outlet gagal ditambahkan.');
+        }
+
+        tampilkanStatusForm(
+          '✅ ' + (hasil.message || 'Outlet berhasil ditambahkan.') +
+          (hasil.outlet && hasil.outlet.id ? ' ID outlet: ' + hasil.outlet.id + '.' : ''),
+          true
+        );
+        form.reset();
+        document.getElementById('outletRadiusBaru').value = '100';
+        outletSudahDimuat = false;
+        await muatDaftarOutlet();
+      } catch (error) {
+        tampilkanStatusForm('❌ ' + (error.message || 'Terjadi kesalahan saat menambahkan outlet.'), false);
+      } finally {
+        tombolSimpan.disabled = false;
+        tombolBatal.disabled = false;
+        tombolSimpan.textContent = '💾 Simpan Outlet';
+      }
+    });
+  })();
 
   loadDashboard();
 
