@@ -939,7 +939,21 @@
     .nav-btn { display:flex; align-items:center; gap:10px; width:100%; min-height:45px; margin:3px 0; padding:11px 12px; border:0; border-radius:11px; background:transparent; color:#475569; font-family:inherit; font-size:14px; font-weight:600; text-align:left; cursor:pointer; }
     .nav-btn:hover { background:#f1f5f9; }
     .nav-btn.active { background:#eaf1f9; color:#365b82; }
-    .nav-sub { padding-left:16px; font-size:13px; }
+    .nav-sub { padding-left:16px; font-size:13px; min-height:40px; margin:2px 0; }
+    .nav-submenu { margin:2px 0 8px; padding-left:8px; border-left:2px solid #e2e8f0; }
+    .nav-submenu[hidden] { display:none !important; }
+    .nav-parent { justify-content:space-between; }
+    .nav-parent .nav-parent-label { display:flex; align-items:center; gap:10px; }
+    .nav-chevron { transition:transform .2s ease; font-size:12px; }
+    .outlet-table-wrap { width:100%; overflow-x:auto; border:1px solid #e8edf4; border-radius:12px; }
+    .outlet-table { min-width:760px; width:100%; border-collapse:collapse; }
+    .outlet-table th, .outlet-table td { padding:12px; border-bottom:1px solid #edf0f4; text-align:left; font-size:13px; white-space:nowrap; }
+    .outlet-table th { background:#f5f7fa; color:#687386; font-size:12px; }
+    .outlet-table tr:last-child td { border-bottom:0; }
+    .outlet-status { display:inline-block; padding:5px 9px; border-radius:8px; background:#e8f7ef; color:#198754; font-size:11px; font-weight:700; }
+    .outlet-status.nonaktif { background:#fdecec; color:#b42318; }
+    .outlet-note { margin:0 0 16px; color:#64748b; font-size:13px; line-height:1.6; }
+    .outlet-count { color:#64748b; font-size:13px; }
     .nav-logout { margin-top:20px; color:#b91c1c; }
     .main-content { flex:1; min-width:0; max-width:none; margin:0; padding:0; }
     .page-panel { min-width:0; }
@@ -2464,8 +2478,8 @@ batasJamMasukSudahDimuat = true;
 
 
   // ==========================================
-  // NAVIGASI SIDEBAR - TAHAP 1
-  // Hanya menata tampilan; alur API dan data lama dipertahankan.
+  // NAVIGASI SIDEBAR - TAHAP 3
+  // Menambahkan submenu Pengaturan dan daftar outlet.
   // ==========================================
   (function siapkanNavigasiSidebar() {
     const container = document.querySelector('body > .container');
@@ -2490,7 +2504,14 @@ batasJamMasukSudahDimuat = true;
       <div class="sidebar-brand"><strong>NAHYEZ BABY MEAL</strong><span>Panel Administrasi</span></div>
       <div class="nav-label">Menu Utama</div>
       <button type="button" class="nav-btn active" data-page="dashboard">🏠 <span>Dashboard</span></button>
-      <button type="button" class="nav-btn" data-page="settings">⚙️ <span>Pengaturan</span></button>
+      <button type="button" class="nav-btn nav-parent" id="navSettingsToggle" aria-expanded="false" aria-controls="settingsSubmenu">
+        <span class="nav-parent-label">⚙️ <span>Pengaturan</span></span><span class="nav-chevron" id="navSettingsChevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="nav-submenu" id="settingsSubmenu" hidden>
+        <button type="button" class="nav-btn nav-sub" data-page="outlets">🏪 <span>Pengaturan Outlet</span></button>
+        <button type="button" class="nav-btn nav-sub" data-page="employees">👥 <span>Pengaturan Karyawan</span></button>
+        <button type="button" class="nav-btn nav-sub" data-page="attendance">🕒 <span>Pengaturan Absensi</span></button>
+      </div>
       <button type="button" class="nav-btn" data-page="performance">📊 <span>Kinerja Karyawan</span></button>
       <button type="button" class="nav-btn nav-logout" id="navLogout">🚪 <span>Logout</span></button>
     `;
@@ -2507,20 +2528,64 @@ batasJamMasukSudahDimuat = true;
     const dashboardPage = document.createElement('section');
     dashboardPage.className = 'page-panel';
     dashboardPage.id = 'page-dashboard';
-    const settingsPage = document.createElement('section');
-    settingsPage.className = 'page-panel';
-    settingsPage.id = 'page-settings';
+    const outletPage = document.createElement('section');
+    outletPage.className = 'page-panel';
+    outletPage.id = 'page-outlets';
+    const employeePage = document.createElement('section');
+    employeePage.className = 'page-panel';
+    employeePage.id = 'page-employees';
+    const attendancePage = document.createElement('section');
+    attendancePage.className = 'page-panel';
+    attendancePage.id = 'page-attendance';
     const performancePage = document.createElement('section');
     performancePage.className = 'page-panel';
     performancePage.id = 'page-performance';
 
-    const settingsHeading = document.createElement('h2');
-    settingsHeading.className = 'page-heading';
-    settingsHeading.textContent = '⚙️ Pengaturan';
+    const outletHeading = document.createElement('h2');
+    outletHeading.className = 'page-heading';
+    outletHeading.textContent = '🏪 Pengaturan Outlet';
+    const outletIntro = document.createElement('p');
+    outletIntro.className = 'outlet-note';
+    outletIntro.textContent = 'Daftar outlet yang terdaftar di database absensi Nahyez Baby Meal.';
+    const outletStatus = document.createElement('div');
+    outletStatus.className = 'loading';
+    outletStatus.id = 'outletLoading';
+    outletStatus.textContent = 'Memuat daftar outlet...';
+    const outletError = document.createElement('div');
+    outletError.className = 'error';
+    outletError.id = 'outletError';
+    const outletTableWrap = document.createElement('div');
+    outletTableWrap.className = 'outlet-table-wrap';
+    outletTableWrap.id = 'outletTableWrap';
+    outletTableWrap.style.display = 'none';
+    outletTableWrap.innerHTML = `
+      <table class="outlet-table">
+        <thead><tr><th>Outlet ID</th><th>Nama Outlet</th><th>Latitude</th><th>Longitude</th><th>Radius</th><th>Status</th></tr></thead>
+        <tbody id="outletTableBody"></tbody>
+      </table>`;
+    const outletCount = document.createElement('p');
+    outletCount.className = 'outlet-count';
+    outletCount.id = 'outletCount';
+    outletCount.style.display = 'none';
+    outletPage.appendChild(outletHeading);
+    outletPage.appendChild(outletIntro);
+    outletPage.appendChild(outletError);
+    outletPage.appendChild(outletStatus);
+    outletPage.appendChild(outletTableWrap);
+    outletPage.appendChild(outletCount);
+
+    const employeeHeading = document.createElement('h2');
+    employeeHeading.className = 'page-heading';
+    employeeHeading.textContent = '👥 Pengaturan Karyawan';
+    const employeePlaceholder = document.createElement('div');
+    employeePlaceholder.className = 'section';
+    employeePlaceholder.textContent = 'Halaman ini akan kita bangun pada tahap berikutnya. Data karyawan yang ada tetap aman.';
+    employeePage.appendChild(employeeHeading);
+    employeePage.appendChild(employeePlaceholder);
+
     const performanceHeading = document.createElement('h2');
     performanceHeading.className = 'page-heading';
     performanceHeading.textContent = '📊 Kinerja Karyawan';
-    settingsPage.appendChild(settingsHeading);
     performancePage.appendChild(performanceHeading);
 
     // Pertahankan header dan pesan error sebagai elemen global.
@@ -2531,36 +2596,44 @@ batasJamMasukSudahDimuat = true;
     main.appendChild(header);
     main.appendChild(error);
     main.appendChild(dashboardPage);
-    main.appendChild(settingsPage);
+    main.appendChild(outletPage);
+    main.appendChild(employeePage);
+    main.appendChild(attendancePage);
     main.appendChild(performancePage);
 
     dashboardPage.appendChild(stats);
     dashboardPage.appendChild(attendanceSection);
-    settingsPage.appendChild(settings);
+    attendancePage.appendChild(settings);
     performancePage.appendChild(filter);
     performancePage.appendChild(performanceSection);
     container.remove();
 
-    // Menu Pengaturan memuat pengaturan absensi termasuk batas jam masuk.
+    const navSettingsToggle = document.getElementById('navSettingsToggle');
+    const settingsSubmenu = document.getElementById('settingsSubmenu');
+    const navSettingsChevron = document.getElementById('navSettingsChevron');
+    navSettingsToggle?.addEventListener('click', () => {
+      const open = navSettingsToggle.getAttribute('aria-expanded') === 'true';
+      navSettingsToggle.setAttribute('aria-expanded', String(!open));
+      settingsSubmenu.hidden = open;
+      navSettingsChevron.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
+
     function bukaHalaman(page) {
-      const target = page;
-      dashboardPage.hidden = target !== 'dashboard';
-      settingsPage.hidden = target !== 'settings';
-      performancePage.hidden = target !== 'performance';
+      const pages = {
+        dashboard: dashboardPage,
+        outlets: outletPage,
+        employees: employeePage,
+        attendance: attendancePage,
+        performance: performancePage
+      };
+      Object.entries(pages).forEach(([key, element]) => {
+        element.hidden = key !== page;
+      });
       sidebar.querySelectorAll('[data-page]').forEach(button => {
         button.classList.toggle('active', button.dataset.page === page);
       });
-      if (target === 'settings') {
-        const isi = document.getElementById('isiPengaturanAbsensi');
-        const toggle = document.getElementById('togglePengaturanAbsensi');
-        const ikon = document.getElementById('ikonPengaturanAbsensi');
-        if (isi && toggle && isi.hidden) {
-          isi.hidden = false;
-          toggle.setAttribute('aria-expanded', 'true');
-          if (ikon) ikon.style.transform = 'rotate(180deg)';
-          muatBatasJamMasuk();
-        }
-      }
+      if (page === 'outlets') muatDaftarOutlet();
+      if (page === 'attendance') muatBatasJamMasuk();
       mobileToggle.textContent = '☰  Menu';
       sidebar.classList.remove('open');
       main.classList.remove('nav-open');
@@ -2574,13 +2647,89 @@ batasJamMasukSudahDimuat = true;
       const opened = sidebar.classList.toggle('open');
       mobileToggle.setAttribute('aria-expanded', String(opened));
       mobileToggle.textContent = opened ? '✕  Tutup Menu' : '☰  Buka Menu';
-      // Pada layar HP, saat menu dibuka fokuskan tampilan ke menu agar
-      // halaman aktif tidak terlihat seolah-olah masih menjadi isi menu.
       main.classList.toggle('nav-open', opened);
     });
     document.getElementById('navLogout')?.addEventListener('click', () => btnLogout.click());
     bukaHalaman('dashboard');
   })();
+
+  // ==========================================
+  // PENGATURAN OUTLET - BACA DAFTAR
+  // Endpoint Worker: GET /api/outlets
+  // ==========================================
+  let outletSedangDimuat = false;
+  let outletSudahDimuat = false;
+
+  async function muatDaftarOutlet() {
+    if (outletSedangDimuat) return;
+    outletSedangDimuat = true;
+    const loading = document.getElementById('outletLoading');
+    const error = document.getElementById('outletError');
+    const tableWrap = document.getElementById('outletTableWrap');
+    const tbody = document.getElementById('outletTableBody');
+    const count = document.getElementById('outletCount');
+    if (!loading || !error || !tableWrap || !tbody || !count) {
+      outletSedangDimuat = false;
+      return;
+    }
+    loading.style.display = 'block';
+    loading.textContent = 'Memuat daftar outlet...';
+    error.style.display = 'none';
+    tableWrap.style.display = 'none';
+    count.style.display = 'none';
+
+    try {
+      const response = await fetch('/api/outlets', {
+        method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store'
+      });
+      if (response.status === 401) {
+        throw new Error('Sesi admin tidak valid. Silakan login kembali.');
+      }
+      const hasil = await response.json();
+      if (!response.ok || !hasil || hasil.success !== true || !Array.isArray(hasil.outlet)) {
+        throw new Error(hasil?.message || 'Data outlet tidak dapat dibaca.');
+      }
+
+      tbody.textContent = '';
+      if (hasil.outlet.length === 0) {
+        loading.textContent = 'Belum ada data outlet.';
+        outletSudahDimuat = true;
+        return;
+      }
+
+      hasil.outlet.forEach(item => {
+        const row = document.createElement('tr');
+        const values = [item.id, item.nama, item.latitude, item.longitude, item.radius + ' m'];
+        values.forEach(value => {
+          const cell = document.createElement('td');
+          cell.textContent = value == null ? '-' : String(value);
+          row.appendChild(cell);
+        });
+        const statusCell = document.createElement('td');
+        const badge = document.createElement('span');
+        const statusText = String(item.status || 'Tidak diketahui');
+        badge.className = 'outlet-status' + (statusText.toLowerCase() === 'aktif' ? '' : ' nonaktif');
+        badge.textContent = statusText;
+        statusCell.appendChild(badge);
+        row.appendChild(statusCell);
+        tbody.appendChild(row);
+      });
+      loading.style.display = 'none';
+      tableWrap.style.display = 'block';
+      count.textContent = 'Total outlet: ' + hasil.outlet.length;
+      count.style.display = 'block';
+      outletSudahDimuat = true;
+    } catch (err) {
+      loading.style.display = 'none';
+      error.textContent = err.message || 'Terjadi kesalahan saat memuat daftar outlet.';
+      error.style.display = 'block';
+      outletSudahDimuat = false;
+    } finally {
+      outletSedangDimuat = false;
+    }
+  }
 
   loadDashboard();
 
