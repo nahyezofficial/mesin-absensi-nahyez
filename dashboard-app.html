@@ -2640,52 +2640,22 @@ batasJamMasukSudahDimuat = true;
     employeeHeading.textContent = '👥 Pengaturan Karyawan';
     const employeeIntro = document.createElement('p');
     employeeIntro.className = 'outlet-note';
-    employeeIntro.textContent = 'Daftar karyawan dari database absensi Nahyez Baby Meal. Pada tahap ini halaman hanya membaca data; penambahan dan pengeditan akan dibuat setelah daftar berhasil diuji.';
+    employeeIntro.textContent = 'Tambahkan karyawan baru. ID karyawan dan QR Token dibuat otomatis; token tidak ditampilkan di dashboard.';
+    const employeeActions = document.createElement('div');
+    employeeActions.className = 'outlet-actions';
+    employeeActions.innerHTML = '<button type="button" class="btn-outlet-add" id="btnBukaFormKaryawan">＋ Tambah Karyawan</button> <button type="button" class="btn-outlet-cancel" id="btnRefreshKaryawan">↻ Muat Ulang</button>';
+    const employeeFormPanel = document.createElement('div');
+    employeeFormPanel.className = 'outlet-form-panel';
+    employeeFormPanel.id = 'employeeFormPanel';
+    employeeFormPanel.hidden = true;
+    employeeFormPanel.innerHTML = `<form id="formTambahKaryawan"><p class="outlet-form-help" style="font-weight:700;color:#263d59;margin-top:0">Tambah Karyawan Baru</p><div class="outlet-form-grid"><div class="outlet-form-field"><label for="employeeNama">Nama Karyawan *</label><input id="employeeNama" name="nama" type="text" maxlength="100" required autocomplete="name" placeholder="Masukkan nama lengkap"></div><div class="outlet-form-field"><label for="employeeOutlet">Outlet Aktif *</label><select id="employeeOutlet" name="outletId" required><option value="">Memuat outlet...</option></select></div><div class="outlet-form-field"><label for="employeeStatus">Status *</label><select id="employeeStatus" name="status" required><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></div></div><p class="outlet-form-help">ID dan QR Token dibuat otomatis setelah data disimpan. Data karyawan lama dan riwayat absensi tidak diubah.</p><div class="outlet-form-buttons"><button type="submit" class="btn-outlet-add" id="btnSimpanKaryawan">💾 Simpan Karyawan</button><button type="button" class="btn-outlet-cancel" id="btnBatalKaryawan">Batal</button></div><div id="employeeFormStatus" class="outlet-form-status" role="status" aria-live="polite"></div></form>`;
     const employeeLoading = document.createElement('div');
-    employeeLoading.className = 'loading';
-    employeeLoading.id = 'employeeLoading';
-    employeeLoading.textContent = 'Memuat daftar karyawan...';
-    const employeeError = document.createElement('div');
-    employeeError.className = 'error';
-    employeeError.id = 'employeeError';
-    employeeError.style.display = 'none';
-    const employeeTools = document.createElement('div');
-    employeeTools.className = 'outlet-actions';
-    employeeTools.style.alignItems = 'center';
-    employeeTools.innerHTML = `
-      <input id="employeeSearch" type="search" aria-label="Cari karyawan" placeholder="Cari nama, ID, atau outlet..." style="flex:1;min-width:220px;min-height:44px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#1e293b;font:inherit;font-size:14px">
-      <select id="employeeFilter" aria-label="Filter daftar karyawan" style="min-height:44px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#1e293b;font:inherit;font-size:14px">
-        <option value="semua">Semua karyawan</option>
-        <option value="Aktif">Aktif</option>
-        <option value="Nonaktif">Nonaktif</option>
-        <option value="qrKosong">QR Token belum tersedia</option>
-      </select>`;
-    const employeeTableWrap = document.createElement('div');
-    employeeTableWrap.className = 'outlet-table-wrap';
-    employeeTableWrap.id = 'employeeTableWrap';
-    employeeTableWrap.style.display = 'none';
-    employeeTableWrap.innerHTML = `
-      <table class="outlet-table" style="min-width:680px">
-        <thead><tr><th>ID Karyawan</th><th>Nama Karyawan</th><th>Outlet</th><th>Status</th><th>QR Token</th></tr></thead>
-        <tbody id="employeeTableBody"></tbody>
-      </table>`;
-    const employeeCount = document.createElement('p');
-    employeeCount.className = 'outlet-count';
-    employeeCount.id = 'employeeCount';
-    employeeCount.style.display = 'none';
-    const employeeEmpty = document.createElement('p');
-    employeeEmpty.className = 'outlet-note';
-    employeeEmpty.id = 'employeeEmpty';
-    employeeEmpty.textContent = 'Tidak ada karyawan yang cocok dengan pencarian.';
-    employeeEmpty.style.display = 'none';
-    employeePage.appendChild(employeeHeading);
-    employeePage.appendChild(employeeIntro);
-    employeePage.appendChild(employeeTools);
-    employeePage.appendChild(employeeError);
-    employeePage.appendChild(employeeLoading);
-    employeePage.appendChild(employeeTableWrap);
-    employeePage.appendChild(employeeEmpty);
-    employeePage.appendChild(employeeCount);
+    employeeLoading.className = 'loading'; employeeLoading.id = 'employeeLoading'; employeeLoading.textContent = 'Memuat daftar karyawan...';
+    const employeeError = document.createElement('div'); employeeError.className = 'error'; employeeError.id = 'employeeError';
+    const employeeTableWrap = document.createElement('div'); employeeTableWrap.className = 'outlet-table-wrap'; employeeTableWrap.id = 'employeeTableWrap'; employeeTableWrap.style.display = 'none';
+    employeeTableWrap.innerHTML = '<table class="outlet-table"><thead><tr><th>ID Karyawan</th><th>Nama</th><th>Outlet</th><th>QR Token</th><th>Status</th></tr></thead><tbody id="employeeTableBody"></tbody></table>';
+    const employeeCount = document.createElement('p'); employeeCount.className = 'outlet-count'; employeeCount.id = 'employeeCount'; employeeCount.style.display = 'none';
+    employeePage.appendChild(employeeHeading); employeePage.appendChild(employeeIntro); employeePage.appendChild(employeeActions); employeePage.appendChild(employeeFormPanel); employeePage.appendChild(employeeError); employeePage.appendChild(employeeLoading); employeePage.appendChild(employeeTableWrap); employeePage.appendChild(employeeCount);
 
     const performanceHeading = document.createElement('h2');
     performanceHeading.className = 'page-heading';
@@ -2737,7 +2707,6 @@ batasJamMasukSudahDimuat = true;
         button.classList.toggle('active', button.dataset.page === page);
       });
       if (page === 'outlets') muatDaftarOutlet();
-      if (page === 'employees') muatDaftarKaryawan();
       if (page === 'attendance') muatBatasJamMasuk();
       mobileToggle.textContent = '☰  Menu';
       sidebar.classList.remove('open');
@@ -2746,7 +2715,7 @@ batasJamMasukSudahDimuat = true;
     }
 
     sidebar.querySelectorAll('[data-page]').forEach(button => {
-      button.addEventListener('click', () => bukaHalaman(button.dataset.page));
+      button.addEventListener('click', () => { bukaHalaman(button.dataset.page); if (button.dataset.page === 'employees') muatDaftarKaryawan(); });
     });
     mobileToggle.addEventListener('click', () => {
       const opened = sidebar.classList.toggle('open');
@@ -2842,131 +2811,6 @@ batasJamMasukSudahDimuat = true;
       outletSudahDimuat = false;
     } finally {
       outletSedangDimuat = false;
-    }
-  }
-
-  // ==========================================
-  // PENGATURAN KARYAWAN - BACA DAFTAR
-  // Endpoint Worker: GET /api/employees
-  // Tahap ini hanya membaca; tidak mengubah data.
-  // ==========================================
-  let karyawanSedangDimuat = false;
-  let karyawanSudahDimuat = false;
-  let daftarKaryawanTersimpan = [];
-
-  async function muatDaftarKaryawan(forceReload = false) {
-    if (karyawanSedangDimuat) return;
-    if (karyawanSudahDimuat && !forceReload) return;
-
-    const loading = document.getElementById('employeeLoading');
-    const error = document.getElementById('employeeError');
-    const tableWrap = document.getElementById('employeeTableWrap');
-    const tbody = document.getElementById('employeeTableBody');
-    const count = document.getElementById('employeeCount');
-    const empty = document.getElementById('employeeEmpty');
-    const search = document.getElementById('employeeSearch');
-    const filter = document.getElementById('employeeFilter');
-    if (!loading || !error || !tableWrap || !tbody || !count || !empty || !search || !filter) return;
-
-    karyawanSedangDimuat = true;
-    loading.style.display = 'block';
-    loading.textContent = 'Memuat daftar karyawan...';
-    error.style.display = 'none';
-    tableWrap.style.display = 'none';
-    count.style.display = 'none';
-    empty.style.display = 'none';
-
-    try {
-      const response = await fetch('/api/employees', {
-        method: 'GET',
-        credentials: 'same-origin',
-        cache: 'no-store'
-      });
-      if (response.status === 401) {
-        throw new Error('Sesi admin tidak valid. Silakan login kembali.');
-      }
-      let hasil;
-      try {
-        hasil = await response.json();
-      } catch {
-        throw new Error('Respons server tidak valid. Periksa deployment Worker dan Apps Script.');
-      }
-      if (!response.ok || !hasil || hasil.success !== true || !Array.isArray(hasil.karyawan)) {
-        throw new Error(hasil?.message || 'Data karyawan tidak dapat dibaca.');
-      }
-
-      // Ambil hanya properti yang memang diperlukan dashboard. Jangan menyimpan atau menampilkan token QR.
-      daftarKaryawanTersimpan = hasil.karyawan.map(item => ({
-        id: String(item?.id ?? ''),
-        nama: String(item?.nama ?? ''),
-        outletId: String(item?.outletId ?? ''),
-        outlet: String(item?.outlet ?? ''),
-        qrTokenTersedia: item?.qrTokenTersedia === true,
-        status: String(item?.status ?? 'Tidak diketahui')
-      }));
-
-      function renderDaftarKaryawan() {
-        const query = search.value.trim().toLocaleLowerCase('id');
-        const pilihan = filter.value;
-        const cocok = daftarKaryawanTersimpan.filter(item => {
-          const cocokTeks = [item.id, item.nama, item.outletId, item.outlet]
-            .join(' ').toLocaleLowerCase('id').includes(query);
-          const cocokFilter = pilihan === 'semua' ||
-            item.status.toLocaleLowerCase('id') === pilihan.toLocaleLowerCase('id') ||
-            (pilihan === 'qrKosong' && !item.qrTokenTersedia);
-          return cocokTeks && cocokFilter;
-        });
-
-        tbody.textContent = '';
-        cocok.forEach(item => {
-          const row = document.createElement('tr');
-          [item.id, item.nama, item.outlet || item.outletId || 'Belum ditetapkan'].forEach(value => {
-            const cell = document.createElement('td');
-            cell.textContent = value || '-';
-            row.appendChild(cell);
-          });
-          const statusCell = document.createElement('td');
-          const statusBadge = document.createElement('span');
-          statusBadge.className = 'outlet-status' + (item.status.toLowerCase() === 'aktif' ? '' : ' nonaktif');
-          statusBadge.textContent = item.status;
-          statusCell.appendChild(statusBadge);
-          row.appendChild(statusCell);
-
-          const qrCell = document.createElement('td');
-          const qrBadge = document.createElement('span');
-          qrBadge.className = 'outlet-status' + (item.qrTokenTersedia ? '' : ' nonaktif');
-          qrBadge.textContent = item.qrTokenTersedia ? 'Tersedia' : 'Belum tersedia';
-          if (!item.qrTokenTersedia) {
-            qrBadge.style.background = '#fff4d6';
-            qrBadge.style.color = '#8a5a00';
-          }
-          qrCell.appendChild(qrBadge);
-          row.appendChild(qrCell);
-          tbody.appendChild(row);
-        });
-
-        tableWrap.style.display = cocok.length ? 'block' : 'none';
-        empty.style.display = cocok.length ? 'none' : 'block';
-        count.textContent = 'Menampilkan ' + cocok.length + ' dari ' + daftarKaryawanTersimpan.length + ' karyawan. QR Token lengkap tidak ditampilkan.';
-        count.style.display = 'block';
-      }
-
-      search.removeEventListener('input', search._nahyezEmployeeHandler || (() => {}));
-      filter.removeEventListener('change', filter._nahyezEmployeeHandler || (() => {}));
-      search._nahyezEmployeeHandler = renderDaftarKaryawan;
-      filter._nahyezEmployeeHandler = renderDaftarKaryawan;
-      search.addEventListener('input', renderDaftarKaryawan);
-      filter.addEventListener('change', renderDaftarKaryawan);
-      loading.style.display = 'none';
-      renderDaftarKaryawan();
-      karyawanSudahDimuat = true;
-    } catch (err) {
-      loading.style.display = 'none';
-      error.textContent = err.message || 'Terjadi kesalahan saat memuat daftar karyawan.';
-      error.style.display = 'block';
-      karyawanSudahDimuat = false;
-    } finally {
-      karyawanSedangDimuat = false;
     }
   }
 
@@ -3137,6 +2981,70 @@ batasJamMasukSudahDimuat = true;
   })();
 
   loadDashboard();
+
+
+
+  // ==========================================
+  // PENGATURAN KARYAWAN — LIST & TAMBAH
+  // ==========================================
+  let daftarKaryawanSudahDimuat = false;
+  let daftarOutletAktifKaryawan = [];
+  async function muatOutletUntukKaryawan() {
+    const select = document.getElementById('employeeOutlet');
+    if (!select) return;
+    select.innerHTML = '<option value="">Memuat outlet...</option>';
+    const response = await fetch('/api/outlets', { method: 'GET', credentials: 'same-origin', cache: 'no-store' });
+    if (response.status === 401) throw new Error('Sesi admin tidak valid. Silakan login kembali.');
+    const hasil = await response.json();
+    if (!response.ok || hasil?.success !== true || !Array.isArray(hasil.outlet)) throw new Error(hasil?.message || 'Daftar outlet tidak dapat dibaca.');
+    daftarOutletAktifKaryawan = hasil.outlet.filter(o => String(o.status || '').trim() === 'Aktif');
+    select.textContent = '';
+    const placeholder = document.createElement('option'); placeholder.value = ''; placeholder.textContent = 'Pilih outlet'; select.appendChild(placeholder);
+    daftarOutletAktifKaryawan.forEach(o => { const option = document.createElement('option'); option.value = String(o.id || ''); option.textContent = String(o.nama || o.id || 'Outlet'); select.appendChild(option); });
+    if (!daftarOutletAktifKaryawan.length) { placeholder.textContent = 'Tidak ada outlet aktif'; select.disabled = true; }
+    else select.disabled = false;
+  }
+  async function muatDaftarKaryawan(force = false) {
+    if (daftarKaryawanSudahDimuat && !force) return;
+    const loading = document.getElementById('employeeLoading'); const error = document.getElementById('employeeError'); const wrap = document.getElementById('employeeTableWrap'); const tbody = document.getElementById('employeeTableBody'); const count = document.getElementById('employeeCount');
+    if (!loading || !error || !wrap || !tbody || !count) return;
+    loading.style.display = 'block'; loading.textContent = 'Memuat daftar karyawan...'; error.style.display = 'none'; wrap.style.display = 'none'; count.style.display = 'none';
+    try {
+      const response = await fetch('/api/employees', { method: 'GET', credentials: 'same-origin', cache: 'no-store' });
+      if (response.status === 401) throw new Error('Sesi admin tidak valid. Silakan login kembali.');
+      const hasil = await response.json();
+      if (!response.ok || hasil?.success !== true || !Array.isArray(hasil.karyawan)) throw new Error(hasil?.message || 'Daftar karyawan tidak dapat dibaca.');
+      tbody.textContent = '';
+      hasil.karyawan.forEach(item => {
+        const row = document.createElement('tr');
+        [item.id, item.nama, item.outlet].forEach(v => { const td = document.createElement('td'); td.textContent = v == null ? '-' : String(v); row.appendChild(td); });
+        const tokenCell = document.createElement('td'); const tokenBadge = document.createElement('span'); tokenBadge.className = 'outlet-status' + (item.qrTokenTersedia ? '' : ' nonaktif'); tokenBadge.textContent = item.qrTokenTersedia ? 'Tersedia' : 'Belum ada'; tokenCell.appendChild(tokenBadge); row.appendChild(tokenCell);
+        const statusCell = document.createElement('td'); const badge = document.createElement('span'); badge.className = 'outlet-status' + (String(item.status).toLowerCase() === 'aktif' ? '' : ' nonaktif'); badge.textContent = String(item.status || 'Tidak diketahui'); statusCell.appendChild(badge); row.appendChild(statusCell); tbody.appendChild(row);
+      });
+      loading.style.display = hasil.karyawan.length ? 'none' : 'block'; if (!hasil.karyawan.length) loading.textContent = 'Belum ada data karyawan.'; else wrap.style.display = 'block';
+      count.textContent = 'Total karyawan: ' + hasil.karyawan.length; count.style.display = 'block'; daftarKaryawanSudahDimuat = true;
+    } catch (err) { loading.style.display = 'none'; error.textContent = err.message || 'Terjadi kesalahan saat memuat karyawan.'; error.style.display = 'block'; daftarKaryawanSudahDimuat = false; }
+  }
+  (function siapkanFormTambahKaryawan() {
+    const buka = document.getElementById('btnBukaFormKaryawan'); const panel = document.getElementById('employeeFormPanel'); const form = document.getElementById('formTambahKaryawan'); const batal = document.getElementById('btnBatalKaryawan'); const statusBox = document.getElementById('employeeFormStatus'); const save = document.getElementById('btnSimpanKaryawan');
+    if (!buka || !panel || !form) return;
+    buka.addEventListener('click', async () => { panel.hidden = false; statusBox.style.display = 'none'; try { await muatOutletUntukKaryawan(); } catch (err) { statusBox.textContent = err.message || 'Gagal memuat outlet.'; statusBox.style.display = 'block'; } panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('employeeNama').focus(); });
+    batal.addEventListener('click', () => { form.reset(); panel.hidden = true; statusBox.style.display = 'none'; });
+    document.getElementById('btnRefreshKaryawan')?.addEventListener('click', () => muatDaftarKaryawan(true));
+    form.addEventListener('submit', async event => {
+      event.preventDefault(); const nama = document.getElementById('employeeNama').value.trim(); const outletId = document.getElementById('employeeOutlet').value; const status = document.getElementById('employeeStatus').value;
+      if (!nama || !outletId) { statusBox.textContent = 'Nama dan outlet wajib diisi.'; statusBox.style.display = 'block'; return; }
+      if (!window.confirm('Simpan karyawan baru “' + nama + '” pada outlet yang dipilih? ID dan QR Token akan dibuat otomatis.')) return;
+      save.disabled = true; save.textContent = 'Menyimpan...'; statusBox.style.display = 'none';
+      try {
+        const response = await fetch('/api/employees', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nama, outletId, status }) });
+        if (response.status === 401) throw new Error('Sesi admin tidak valid. Silakan login kembali.');
+        const hasil = await response.json(); if (!response.ok || hasil?.success !== true) throw new Error(hasil?.message || 'Gagal menambahkan karyawan.');
+        statusBox.textContent = 'Berhasil! ID karyawan: ' + hasil.id + '. QR Token telah dibuat otomatis dan tidak ditampilkan di dashboard.'; statusBox.style.display = 'block'; form.reset(); daftarKaryawanSudahDimuat = false; await muatDaftarKaryawan(true);
+      } catch (err) { statusBox.textContent = err.message || 'Gagal menyimpan karyawan.'; statusBox.style.display = 'block'; }
+      finally { save.disabled = false; save.textContent = '💾 Simpan Karyawan'; }
+    });
+  })();
 
 </script>
 
