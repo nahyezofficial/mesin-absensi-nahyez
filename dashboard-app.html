@@ -2671,7 +2671,7 @@ batasJamMasukSudahDimuat = true;
     employeeFormPanel.className = 'outlet-form-panel';
     employeeFormPanel.id = 'employeeFormPanel';
     employeeFormPanel.hidden = true;
-    employeeFormPanel.innerHTML = `<form id="formTambahKaryawan"><p class="outlet-form-help" style="font-weight:700;color:#263d59;margin-top:0">Tambah Karyawan Baru</p><div class="outlet-form-grid"><div class="outlet-form-field"><label for="employeeNama">Nama Karyawan *</label><input id="employeeNama" name="nama" type="text" maxlength="100" required autocomplete="name" placeholder="Masukkan nama lengkap"></div><div class="outlet-form-field"><label for="employeeOutlet">Outlet Aktif *</label><select id="employeeOutlet" name="outletId" required><option value="">Memuat outlet...</option></select></div><div class="outlet-form-field"><label for="employeeStatus">Status *</label><select id="employeeStatus" name="status" required><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></div></div><p class="outlet-form-help">ID dan QR Token dibuat otomatis setelah data disimpan. Data karyawan lama dan riwayat absensi tidak diubah.</p><div class="outlet-form-buttons"><button type="submit" class="btn-outlet-add" id="btnSimpanKaryawan">💾 Simpan Karyawan</button><button type="button" class="btn-outlet-cancel" id="btnBatalKaryawan">Batal</button></div><div id="employeeFormStatus" class="outlet-form-status" role="status" aria-live="polite"></div></form>`;
+    employeeFormPanel.innerHTML = `<form id="formTambahKaryawan"><input type="hidden" id="employeeIdEdit" value=""><p class="outlet-form-help" id="employeeFormTitle" style="font-weight:700;color:#263d59;margin-top:0">Tambah Karyawan Baru</p><div class="outlet-form-grid"><div class="outlet-form-field"><label for="employeeNama">Nama Karyawan *</label><input id="employeeNama" name="nama" type="text" maxlength="100" required autocomplete="name" placeholder="Masukkan nama lengkap"></div><div class="outlet-form-field"><label for="employeeOutlet">Outlet Aktif *</label><select id="employeeOutlet" name="outletId" required><option value="">Memuat outlet...</option></select></div><div class="outlet-form-field"><label for="employeeStatus">Status *</label><select id="employeeStatus" name="status" required><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></div></div><p class="outlet-form-help">ID dan QR Token dibuat otomatis setelah data disimpan. Data karyawan lama dan riwayat absensi tidak diubah.</p><div class="outlet-form-buttons"><button type="submit" class="btn-outlet-add" id="btnSimpanKaryawan">💾 Simpan Karyawan</button><button type="button" class="btn-outlet-cancel" id="btnBatalKaryawan">Batal</button></div><div id="employeeFormStatus" class="outlet-form-status" role="status" aria-live="polite"></div></form>`;
     const employeeLoading = document.createElement('div');
     employeeLoading.className = 'loading'; employeeLoading.id = 'employeeLoading'; employeeLoading.textContent = 'Memuat daftar karyawan...';
     const employeeError = document.createElement('div'); employeeError.className = 'error'; employeeError.id = 'employeeError';
@@ -3042,7 +3042,7 @@ batasJamMasukSudahDimuat = true;
         const row = document.createElement('tr');
         [item.id, item.nama, item.outlet].forEach(v => { const td = document.createElement('td'); td.textContent = v == null ? '-' : String(v); row.appendChild(td); });
         const tokenCell = document.createElement('td'); const tokenBadge = document.createElement('span'); tokenBadge.className = 'outlet-status' + (item.qrTokenTersedia ? '' : ' nonaktif'); tokenBadge.textContent = item.qrTokenTersedia ? 'Tersedia' : 'Belum ada'; tokenCell.appendChild(tokenBadge); row.appendChild(tokenCell);
-        const statusCell = document.createElement('td'); const badge = document.createElement('span'); badge.className = 'outlet-status' + (String(item.status).toLowerCase() === 'aktif' ? '' : ' nonaktif'); badge.textContent = String(item.status || 'Tidak diketahui'); statusCell.appendChild(badge); row.appendChild(statusCell); const actionCell = document.createElement('td'); const cardButton = document.createElement('button'); cardButton.type = 'button'; cardButton.className = 'btn-outlet-add'; cardButton.textContent = '🪪 Kartu ID'; cardButton.disabled = !item.qrTokenTersedia; cardButton.title = item.qrTokenTersedia ? 'Lihat dan cetak kartu ID' : 'QR Token belum tersedia'; cardButton.addEventListener('click', () => bukaKartuKaryawan(item.id)); actionCell.appendChild(cardButton); row.appendChild(actionCell); tbody.appendChild(row);
+        const statusCell = document.createElement('td'); const badge = document.createElement('span'); badge.className = 'outlet-status' + (String(item.status).toLowerCase() === 'aktif' ? '' : ' nonaktif'); badge.textContent = String(item.status || 'Tidak diketahui'); statusCell.appendChild(badge); row.appendChild(statusCell); const actionCell = document.createElement('td'); const editButton = document.createElement('button'); editButton.type = 'button'; editButton.className = 'btn-outlet-cancel'; editButton.style.marginRight = '6px'; editButton.textContent = '✏️ Edit'; editButton.title = 'Edit data karyawan'; editButton.addEventListener('click', () => mulaiEditKaryawan(item)); actionCell.appendChild(editButton); const cardButton = document.createElement('button'); cardButton.type = 'button'; cardButton.className = 'btn-outlet-add'; cardButton.textContent = '🪪 Kartu ID'; cardButton.disabled = !item.qrTokenTersedia; cardButton.title = item.qrTokenTersedia ? 'Lihat dan cetak kartu ID' : 'QR Token belum tersedia'; cardButton.addEventListener('click', () => bukaKartuKaryawan(item.id)); actionCell.appendChild(cardButton); row.appendChild(actionCell); tbody.appendChild(row);
       });
       loading.style.display = hasil.karyawan.length ? 'none' : 'block'; if (!hasil.karyawan.length) loading.textContent = 'Belum ada data karyawan.'; else wrap.style.display = 'block';
       count.textContent = 'Total karyawan: ' + hasil.karyawan.length; count.style.display = 'block'; daftarKaryawanSudahDimuat = true;
@@ -3093,24 +3093,68 @@ batasJamMasukSudahDimuat = true;
     }
   }
 
+  let karyawanSedangDiedit = '';
+  async function mulaiEditKaryawan(item) {
+    const panel = document.getElementById('employeeFormPanel');
+    const form = document.getElementById('formTambahKaryawan');
+    const statusBox = document.getElementById('employeeFormStatus');
+    if (!panel || !form) return;
+    try {
+      await muatOutletUntukKaryawan();
+      const id = String(item.id || '').trim();
+      const nama = String(item.nama || '').trim();
+      const outletId = String(item.outletId || '').trim();
+      const status = String(item.status || 'Aktif').trim();
+      const outletSelect = document.getElementById('employeeOutlet');
+      if (outletId && !Array.from(outletSelect.options).some(o => o.value === outletId)) {
+        throw new Error('Outlet karyawan saat ini tidak aktif atau tidak tersedia. Pilih outlet aktif sebelum menyimpan perubahan.');
+      }
+      karyawanSedangDiedit = id;
+      document.getElementById('employeeIdEdit').value = id;
+      document.getElementById('employeeNama').value = nama;
+      outletSelect.value = outletId;
+      document.getElementById('employeeStatus').value = status;
+      document.getElementById('employeeFormTitle').textContent = 'Edit Karyawan — ' + id;
+      document.getElementById('btnSimpanKaryawan').textContent = '💾 Simpan Perubahan';
+      document.getElementById('btnBukaFormKaryawan').textContent = '＋ Tambah Karyawan';
+      panel.hidden = false; statusBox.style.display = 'none';
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('employeeNama').focus();
+    } catch (err) {
+      statusBox.textContent = err.message || 'Form edit karyawan gagal dibuka.';
+      statusBox.style.display = 'block'; panel.hidden = false;
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+  function resetFormKaryawan() {
+    const form = document.getElementById('formTambahKaryawan');
+    form?.reset();
+    karyawanSedangDiedit = '';
+    const id = document.getElementById('employeeIdEdit'); if (id) id.value = '';
+    const title = document.getElementById('employeeFormTitle'); if (title) title.textContent = 'Tambah Karyawan Baru';
+    const save = document.getElementById('btnSimpanKaryawan'); if (save) save.textContent = '💾 Simpan Karyawan';
+  }
+
   (function siapkanFormTambahKaryawan() {
     const buka = document.getElementById('btnBukaFormKaryawan'); const panel = document.getElementById('employeeFormPanel'); const form = document.getElementById('formTambahKaryawan'); const batal = document.getElementById('btnBatalKaryawan'); const statusBox = document.getElementById('employeeFormStatus'); const save = document.getElementById('btnSimpanKaryawan');
     if (!buka || !panel || !form) return;
-    buka.addEventListener('click', async () => { panel.hidden = false; statusBox.style.display = 'none'; try { await muatOutletUntukKaryawan(); } catch (err) { statusBox.textContent = err.message || 'Gagal memuat outlet.'; statusBox.style.display = 'block'; } panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('employeeNama').focus(); });
-    batal.addEventListener('click', () => { form.reset(); panel.hidden = true; statusBox.style.display = 'none'; });
+    buka.addEventListener('click', async () => { resetFormKaryawan(); panel.hidden = false; statusBox.style.display = 'none'; try { await muatOutletUntukKaryawan(); } catch (err) { statusBox.textContent = err.message || 'Gagal memuat outlet.'; statusBox.style.display = 'block'; } panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('employeeNama').focus(); });
+    batal.addEventListener('click', () => { resetFormKaryawan(); panel.hidden = true; statusBox.style.display = 'none'; });
     document.getElementById('btnRefreshKaryawan')?.addEventListener('click', () => muatDaftarKaryawan(true));
     form.addEventListener('submit', async event => {
-      event.preventDefault(); const nama = document.getElementById('employeeNama').value.trim(); const outletId = document.getElementById('employeeOutlet').value; const status = document.getElementById('employeeStatus').value;
+      event.preventDefault(); const nama = document.getElementById('employeeNama').value.trim(); const outletId = document.getElementById('employeeOutlet').value; const status = document.getElementById('employeeStatus').value; const sedangEdit = Boolean(karyawanSedangDiedit);
       if (!nama || !outletId) { statusBox.textContent = 'Nama dan outlet wajib diisi.'; statusBox.style.display = 'block'; return; }
-      if (!window.confirm('Simpan karyawan baru “' + nama + '” pada outlet yang dipilih? ID dan QR Token akan dibuat otomatis.')) return;
-      save.disabled = true; save.textContent = 'Menyimpan...'; statusBox.style.display = 'none';
+      const konfirmasi = sedangEdit ? 'Simpan perubahan data karyawan ' + karyawanSedangDiedit + '? ID dan QR Token tidak akan berubah.' : 'Simpan karyawan baru “' + nama + '” pada outlet yang dipilih? ID dan QR Token akan dibuat otomatis.';
+      if (!window.confirm(konfirmasi)) return;
+      save.disabled = true; save.textContent = sedangEdit ? 'Menyimpan perubahan...' : 'Menyimpan...'; statusBox.style.display = 'none';
       try {
-        const response = await fetch('/api/employees', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nama, outletId, status }) });
+        const body = sedangEdit ? { id: karyawanSedangDiedit, nama, outletId, status } : { nama, outletId, status };
+        const response = await fetch(sedangEdit ? '/api/employees/edit' : '/api/employees', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
         if (response.status === 401) throw new Error('Sesi admin tidak valid. Silakan login kembali.');
-        const hasil = await response.json(); if (!response.ok || hasil?.success !== true) throw new Error(hasil?.message || 'Gagal menambahkan karyawan.');
-        statusBox.textContent = 'Berhasil! ID karyawan: ' + hasil.id + '. QR Token telah dibuat otomatis dan tidak ditampilkan di dashboard.'; statusBox.style.display = 'block'; form.reset(); daftarKaryawanSudahDimuat = false; await muatDaftarKaryawan(true);
-      } catch (err) { statusBox.textContent = err.message || 'Gagal menyimpan karyawan.'; statusBox.style.display = 'block'; }
-      finally { save.disabled = false; save.textContent = '💾 Simpan Karyawan'; }
+        const hasil = await response.json(); if (!response.ok || hasil?.success !== true) throw new Error(hasil?.message || (sedangEdit ? 'Gagal memperbarui karyawan.' : 'Gagal menambahkan karyawan.'));
+        statusBox.textContent = sedangEdit ? '✅ Data karyawan ' + karyawanSedangDiedit + ' berhasil diperbarui. ID dan QR Token tetap.' : 'Berhasil! ID karyawan: ' + hasil.id + '. QR Token telah dibuat otomatis dan tidak ditampilkan di dashboard.'; statusBox.style.display = 'block'; resetFormKaryawan(); panel.hidden = true; daftarKaryawanSudahDimuat = false; await muatDaftarKaryawan(true);
+      } catch (err) { statusBox.textContent = err.message || 'Gagal menyimpan data karyawan.'; statusBox.style.display = 'block'; }
+      finally { save.disabled = false; save.textContent = karyawanSedangDiedit ? '💾 Simpan Perubahan' : '💾 Simpan Karyawan'; }
     });
   })();
 
