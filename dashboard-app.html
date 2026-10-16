@@ -1211,36 +1211,10 @@
       "
     ></div>
 
-    <!-- SPOILER JADWAL LIBUR BULANAN -->
-    <div style="margin-top:22px;border:1px solid #dbe3ee;border-radius:14px;overflow:hidden;background:#fff;">
-      <button type="button" id="toggleJadwalLibur" aria-expanded="false" aria-controls="isiJadwalLibur" style="width:100%;min-height:54px;padding:14px 16px;border:0;background:#f8fafc;color:#1e293b;display:flex;justify-content:space-between;align-items:center;gap:12px;font:700 15px inherit;text-align:left;cursor:pointer;">
-        <span>📅 Jadwal Libur Karyawan Bulanan</span><span id="ikonJadwalLibur">▼</span>
-      </button>
-      <div id="isiJadwalLibur" hidden style="padding:16px;">
-        <p style="margin:0 0 14px;color:#64748b;font-size:13px;line-height:1.6;">Atur tanggal libur per karyawan untuk bulan berjalan maupun bulan berikutnya. Jumlah hari libur fleksibel. Pilihan tanggal disimpan untuk karyawan yang dipilih saja.</p>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;">
-          <div><label for="jadwalLiburBulan" style="display:block;font-size:13px;font-weight:700;margin-bottom:6px;">Bulan</label><select id="jadwalLiburBulan" style="width:100%;min-height:44px;padding:9px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px;"></select></div>
-          <div><label for="jadwalLiburTahun" style="display:block;font-size:13px;font-weight:700;margin-bottom:6px;">Tahun</label><select id="jadwalLiburTahun" style="width:100%;min-height:44px;padding:9px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px;"></select></div>
-          <div style="grid-column:1/-1;"><label for="jadwalLiburKaryawan" style="display:block;font-size:13px;font-weight:700;margin-bottom:6px;">Karyawan</label><select id="jadwalLiburKaryawan" style="width:100%;min-height:44px;padding:9px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px;"><option value="">Memuat karyawan...</option></select></div>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin:16px 0 10px;"><strong id="judulKalenderLibur">Pilih periode dan karyawan</strong><span id="jumlahPilihanLibur" style="font-size:13px;color:#64748b;">0 tanggal dipilih</span></div>
-        <div id="kalenderLiburBulanan" style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;"></div>
-        <p style="font-size:12px;color:#64748b;margin:10px 0 0;">Ketuk tanggal untuk menandai atau membatalkan libur. Tanggal libur yang disimpan oleh panel ini dapat dibatalkan kembali dari kalender.</p>
-        <div id="statusJadwalLibur" role="status" aria-live="polite" style="display:none;margin-top:12px;padding:10px 12px;border-radius:8px;font-size:13px;line-height:1.5;"></div>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;"><button type="button" id="btnMuatJadwalLibur" class="btn-refresh" style="min-height:44px;border:0;cursor:pointer;">↻ Muat Jadwal</button><button type="button" id="btnSimpanJadwalLibur" class="btn-refresh" style="min-height:44px;border:0;cursor:pointer;background:#ea8a32;color:#fff;">💾 Simpan Jadwal Libur</button></div>
-      </div>
-    </div>
-
   </div>
 
 </div>
 
-
-  </div>
-
-</div>
-
-<!-- AKHIR PENGATURAN ABSENSI -->
 <!-- AKHIR PENGATURAN ABSENSI -->
     <!-- ERROR -->
 
@@ -2220,8 +2194,6 @@ absensi.data.forEach(function(item) {
                   item.idKaryawan +
 
                 '</div>' +
-                (item.karyawanBaru ? '<div style="margin-top:5px;"><span style="display:inline-block;padding:3px 7px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:800;">KARYAWAN BARU</span></div>' : '') +
-                (item.layakReward === false ? '<div style="margin-top:4px;color:#b45309;font-size:11px;font-weight:700;">Reward mulai bulan berikutnya</div>' : '') +
 
               '</td>' +
 
@@ -2375,32 +2347,6 @@ btnLogout.addEventListener(
 
 
   // ==========================================
-// ========================================
-// JADWAL LIBUR BULANAN — KALENDER INTERAKTIF
-// ========================================
-const toggleJadwalLibur=document.getElementById("toggleJadwalLibur");
-const isiJadwalLibur=document.getElementById("isiJadwalLibur");
-const bulanLibur=document.getElementById("jadwalLiburBulan");
-const tahunLibur=document.getElementById("jadwalLiburTahun");
-const karyawanLibur=document.getElementById("jadwalLiburKaryawan");
-const kalenderLibur=document.getElementById("kalenderLiburBulanan");
-const statusJadwalLibur=document.getElementById("statusJadwalLibur");
-const jumlahPilihanLibur=document.getElementById("jumlahPilihanLibur");
-let tanggalLiburDipilih=new Set();
-let tanggalLiburAwal=new Set();
-let daftarKaryawanLibur=[];
-let jadwalLiburLoaded=false;
-const namaBulanLibur=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-function escapeHtmlLibur(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
-function statusLibur(pesan,ok){statusJadwalLibur.textContent=pesan;statusJadwalLibur.style.display="block";statusJadwalLibur.style.background=ok?"#dcfce7":"#fee2e2";statusJadwalLibur.style.color=ok?"#166534":"#991b1b";}
-function kunciTanggalLibur(y,m,d){return `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;}
-function isiPilihanPeriodeLibur(){const now=new Date();bulanLibur.innerHTML=namaBulanLibur.map((n,i)=>`<option value="${i+1}">${n}</option>`).join("");const currentYear=now.getFullYear();tahunLibur.innerHTML="";for(let y=currentYear-1;y<=currentYear+3;y++)tahunLibur.add(new Option(String(y),String(y)));bulanLibur.value=String(now.getMonth()+1);tahunLibur.value=String(currentYear);}
-async function muatKaryawanUntukLibur(){try{const r=await fetch("/api/employees",{credentials:"same-origin",cache:"no-store"});const d=await r.json();if(!r.ok||!d.success)throw new Error(d.message||"Daftar karyawan gagal dimuat.");daftarKaryawanLibur=(d.karyawan||d.data||[]).filter(k=>String(k.status||"").toLowerCase()==="aktif");karyawanLibur.innerHTML='<option value="">Pilih karyawan aktif...</option>'+daftarKaryawanLibur.map(k=>`<option value="${String(k.id).replace(/[^A-Za-z0-9_-]/g,"")}">${escapeHtmlLibur(String(k.nama||""))} (${escapeHtmlLibur(String(k.id||""))})</option>`).join("");}catch(e){karyawanLibur.innerHTML='<option value="">Gagal memuat karyawan</option>';statusLibur("❌ "+(e.message||"Gagal memuat karyawan."),false);}}
-function gambarKalenderLibur(){const y=Number(tahunLibur.value),m=Number(bulanLibur.value),id=karyawanLibur.value;kalenderLibur.innerHTML="";if(!y||!m||!id){kalenderLibur.innerHTML='<p style="grid-column:1/-1;color:#64748b;font-size:13px;">Pilih bulan, tahun, dan karyawan untuk menampilkan kalender.</p>';jumlahPilihanLibur.textContent="0 tanggal dipilih";return;}const days=["Min","Sen","Sel","Rab","Kam","Jum","Sab"];days.forEach(n=>{const e=document.createElement("div");e.textContent=n;e.style.cssText="text-align:center;font-size:12px;font-weight:700;color:#64748b;padding:5px 0;";kalenderLibur.appendChild(e);});const first=new Date(y,m-1,1).getDay(),count=new Date(y,m,0).getDate();for(let i=0;i<first;i++){const e=document.createElement("div");kalenderLibur.appendChild(e);}for(let d=1;d<=count;d++){const key=kunciTanggalLibur(y,m,d),chosen=tanggalLiburDipilih.has(key);const b=document.createElement("button");b.type="button";b.textContent=String(d);b.setAttribute("aria-pressed",String(chosen));b.style.cssText="min-width:0;min-height:42px;border:1px solid "+(chosen?"#ea8a32":"#cbd5e1")+";border-radius:8px;background:"+(chosen?"#fff0df":"#fff")+";color:"+(chosen?"#9a4b08":"#334155")+";font-weight:"+(chosen?"800":"500")+";cursor:pointer;";if(chosen)b.title="LIBUR — klik untuk membatalkan";b.addEventListener("click",()=>{if(tanggalLiburDipilih.has(key))tanggalLiburDipilih.delete(key);else tanggalLiburDipilih.add(key);gambarKalenderLibur();});kalenderLibur.appendChild(b);}jumlahPilihanLibur.textContent=`${tanggalLiburDipilih.size} tanggal dipilih`;document.getElementById("judulKalenderLibur").textContent=`${namaBulanLibur[m-1]} ${y} — ${karyawanLibur.selectedOptions[0]?.textContent||""}`;}
-async function muatJadwalLibur(){const id=karyawanLibur.value;if(!id){gambarKalenderLibur();return;}const y=Number(tahunLibur.value),m=Number(bulanLibur.value);try{statusLibur("⏳ Memuat jadwal libur...",true);const qs=new URLSearchParams({year:String(y),month:String(m),employeeId:id});const r=await fetch("/api/schedule/holidays?"+qs.toString(),{credentials:"same-origin",cache:"no-store"});const d=await r.json();if(!r.ok||!d.success)throw new Error(d.message||"Gagal membaca jadwal libur.");tanggalLiburAwal=new Set(d.tanggalLibur||[]);tanggalLiburDipilih=new Set(tanggalLiburAwal);gambarKalenderLibur();statusLibur(`✅ Jadwal ${namaBulanLibur[m-1]} ${y} dimuat. ${d.jadwalSudahDibuat?"Data jadwal bulan ini sudah tersedia.":"Jadwal tanggal yang belum ada akan dilengkapi saat disimpan."}`,true);}catch(e){statusLibur("❌ "+(e.message||"Gagal membaca jadwal."),false);}}
-async function simpanJadwalLibur(){const id=karyawanLibur.value;if(!id){statusLibur("Pilih karyawan terlebih dahulu.",false);return;}const y=Number(tahunLibur.value),m=Number(bulanLibur.value);const dates=[...tanggalLiburDipilih].sort();if(!confirm(`Simpan ${dates.length} tanggal libur untuk ${karyawanLibur.selectedOptions[0]?.textContent} pada ${namaBulanLibur[m-1]} ${y}?`))return;const btn=document.getElementById("btnSimpanJadwalLibur");btn.disabled=true;btn.textContent="⏳ Menyimpan...";try{const r=await fetch("/api/schedule/holidays",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({tahun:y,bulan:m,idKaryawan:id,tanggalLibur:dates})});const d=await r.json();if(!r.ok||!d.success)throw new Error(d.message||"Jadwal libur gagal disimpan.");tanggalLiburAwal=new Set(d.tanggalLibur||dates);tanggalLiburDipilih=new Set(tanggalLiburAwal);gambarKalenderLibur();statusLibur(`✅ ${d.message||"Jadwal libur tersimpan."} Total: ${dates.length} hari.`,true);}catch(e){statusLibur("❌ "+(e.message||"Gagal menyimpan jadwal libur."),false);}finally{btn.disabled=false;btn.textContent="💾 Simpan Jadwal Libur";}}
-if(toggleJadwalLibur&&isiJadwalLibur){isiPilihanPeriodeLibur();toggleJadwalLibur.addEventListener("click",async()=>{const open=toggleJadwalLibur.getAttribute("aria-expanded")==="true";toggleJadwalLibur.setAttribute("aria-expanded",String(!open));isiJadwalLibur.hidden=open;document.getElementById("ikonJadwalLibur").style.transform=open?"rotate(0deg)":"rotate(180deg)";if(!open&&!jadwalLiburLoaded){await muatKaryawanUntukLibur();jadwalLiburLoaded=true;}gambarKalenderLibur();});[bulanLibur,tahunLibur].forEach(el=>el.addEventListener("change",muatJadwalLibur));karyawanLibur.addEventListener("change",muatJadwalLibur);document.getElementById("btnMuatJadwalLibur").addEventListener("click",muatJadwalLibur);document.getElementById("btnSimpanJadwalLibur").addEventListener("click",simpanJadwalLibur);}
-
   // LOAD AWAL
   // ==========================================
 
