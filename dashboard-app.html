@@ -990,7 +990,30 @@
       .filter-box select { min-width:140px; }
     }
 
-  </style>
+  
+    /* Kartu ID karyawan — hanya ditampilkan saat diminta admin */
+    .employee-card-overlay { position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; padding:18px; background:rgba(20,35,52,.62); }
+    .employee-card-dialog { width:min(100%,440px); max-height:95vh; overflow:auto; background:#fff; border-radius:18px; padding:18px; box-shadow:0 16px 48px #0003; }
+    .employee-card-actions { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+    .employee-card-actions button { border:0; border-radius:9px; padding:10px 14px; cursor:pointer; font-weight:700; }
+    .employee-card-print { background:#e98b38; color:#fff; }
+    .employee-card-close { background:#e8edf3; color:#26364b; }
+    .nahyez-id-card { width:85.6mm; min-height:54mm; margin:0 auto; padding:5mm; border:1px solid #c9d8e6; border-radius:4mm; background:linear-gradient(145deg,#f7fbff,#e9f1f9); color:#24384e; display:flex; gap:4mm; align-items:center; font-family:Arial,sans-serif; }
+    .nahyez-id-info { min-width:0; flex:1; }
+    .nahyez-id-brand { font-size:11pt; font-weight:800; color:#b43b3b; line-height:1.1; }
+    .nahyez-id-sub { font-size:6.8pt; color:#26724d; margin:1mm 0 4mm; }
+    .nahyez-id-label { font-size:6.5pt; color:#65758b; text-transform:uppercase; letter-spacing:.4px; margin-top:2mm; }
+    .nahyez-id-name { font-size:11pt; font-weight:700; overflow-wrap:anywhere; }
+    .nahyez-id-number { font-size:8pt; font-weight:700; overflow-wrap:anywhere; }
+    .nahyez-id-outlet { font-size:8pt; overflow-wrap:anywhere; }
+    .nahyez-id-qr-wrap { width:28mm; flex:0 0 28mm; text-align:center; }
+    #employeeCardQr { min-height:28mm; display:flex; align-items:center; justify-content:center; }
+    #employeeCardQr img, #employeeCardQr canvas { width:28mm !important; height:28mm !important; image-rendering:pixelated; }
+    .nahyez-id-qr-caption { font-size:6pt; font-weight:700; margin-top:1mm; }
+    .employee-card-status { font-size:8pt; margin-top:2mm; font-weight:700; }
+    @media print { body * { visibility:hidden !important; } #employeeCardPrintArea, #employeeCardPrintArea * { visibility:visible !important; } #employeeCardPrintArea { position:fixed; left:0; top:0; width:100%; } .employee-card-overlay { position:static; display:block; padding:0; background:#fff; } .employee-card-dialog { width:auto; max-height:none; overflow:visible; padding:0; box-shadow:none; } .employee-card-actions, #employeeCardHelp { display:none !important; } .nahyez-id-card { margin:0; print-color-adjust:exact; -webkit-print-color-adjust:exact; } @page { size:auto; margin:8mm; } }
+
+</style>
 </head>
 
 
@@ -2640,7 +2663,7 @@ batasJamMasukSudahDimuat = true;
     employeeHeading.textContent = '👥 Pengaturan Karyawan';
     const employeeIntro = document.createElement('p');
     employeeIntro.className = 'outlet-note';
-    employeeIntro.textContent = 'Tambahkan karyawan baru. ID karyawan dan QR Token dibuat otomatis; token tidak ditampilkan di dashboard.';
+    employeeIntro.textContent = 'Kelola karyawan dan cetak kartu ID berisi QR pribadi. Token QR hanya diambil saat admin memilih kartu karyawan tertentu.';
     const employeeActions = document.createElement('div');
     employeeActions.className = 'outlet-actions';
     employeeActions.innerHTML = '<button type="button" class="btn-outlet-add" id="btnBukaFormKaryawan">＋ Tambah Karyawan</button> <button type="button" class="btn-outlet-cancel" id="btnRefreshKaryawan">↻ Muat Ulang</button>';
@@ -2653,7 +2676,7 @@ batasJamMasukSudahDimuat = true;
     employeeLoading.className = 'loading'; employeeLoading.id = 'employeeLoading'; employeeLoading.textContent = 'Memuat daftar karyawan...';
     const employeeError = document.createElement('div'); employeeError.className = 'error'; employeeError.id = 'employeeError';
     const employeeTableWrap = document.createElement('div'); employeeTableWrap.className = 'outlet-table-wrap'; employeeTableWrap.id = 'employeeTableWrap'; employeeTableWrap.style.display = 'none';
-    employeeTableWrap.innerHTML = '<table class="outlet-table"><thead><tr><th>ID Karyawan</th><th>Nama</th><th>Outlet</th><th>QR Token</th><th>Status</th></tr></thead><tbody id="employeeTableBody"></tbody></table>';
+    employeeTableWrap.innerHTML = '<table class="outlet-table"><thead><tr><th>ID Karyawan</th><th>Nama</th><th>Outlet</th><th>QR Token</th><th>Status</th><th>Kartu ID</th></tr></thead><tbody id="employeeTableBody"></tbody></table>';
     const employeeCount = document.createElement('p'); employeeCount.className = 'outlet-count'; employeeCount.id = 'employeeCount'; employeeCount.style.display = 'none';
     employeePage.appendChild(employeeHeading); employeePage.appendChild(employeeIntro); employeePage.appendChild(employeeActions); employeePage.appendChild(employeeFormPanel); employeePage.appendChild(employeeError); employeePage.appendChild(employeeLoading); employeePage.appendChild(employeeTableWrap); employeePage.appendChild(employeeCount);
 
@@ -3019,12 +3042,57 @@ batasJamMasukSudahDimuat = true;
         const row = document.createElement('tr');
         [item.id, item.nama, item.outlet].forEach(v => { const td = document.createElement('td'); td.textContent = v == null ? '-' : String(v); row.appendChild(td); });
         const tokenCell = document.createElement('td'); const tokenBadge = document.createElement('span'); tokenBadge.className = 'outlet-status' + (item.qrTokenTersedia ? '' : ' nonaktif'); tokenBadge.textContent = item.qrTokenTersedia ? 'Tersedia' : 'Belum ada'; tokenCell.appendChild(tokenBadge); row.appendChild(tokenCell);
-        const statusCell = document.createElement('td'); const badge = document.createElement('span'); badge.className = 'outlet-status' + (String(item.status).toLowerCase() === 'aktif' ? '' : ' nonaktif'); badge.textContent = String(item.status || 'Tidak diketahui'); statusCell.appendChild(badge); row.appendChild(statusCell); tbody.appendChild(row);
+        const statusCell = document.createElement('td'); const badge = document.createElement('span'); badge.className = 'outlet-status' + (String(item.status).toLowerCase() === 'aktif' ? '' : ' nonaktif'); badge.textContent = String(item.status || 'Tidak diketahui'); statusCell.appendChild(badge); row.appendChild(statusCell); const actionCell = document.createElement('td'); const cardButton = document.createElement('button'); cardButton.type = 'button'; cardButton.className = 'btn-outlet-add'; cardButton.textContent = '🪪 Kartu ID'; cardButton.disabled = !item.qrTokenTersedia; cardButton.title = item.qrTokenTersedia ? 'Lihat dan cetak kartu ID' : 'QR Token belum tersedia'; cardButton.addEventListener('click', () => bukaKartuKaryawan(item.id)); actionCell.appendChild(cardButton); row.appendChild(actionCell); tbody.appendChild(row);
       });
       loading.style.display = hasil.karyawan.length ? 'none' : 'block'; if (!hasil.karyawan.length) loading.textContent = 'Belum ada data karyawan.'; else wrap.style.display = 'block';
       count.textContent = 'Total karyawan: ' + hasil.karyawan.length; count.style.display = 'block'; daftarKaryawanSudahDimuat = true;
     } catch (err) { loading.style.display = 'none'; error.textContent = err.message || 'Terjadi kesalahan saat memuat karyawan.'; error.style.display = 'block'; daftarKaryawanSudahDimuat = false; }
   }
+  let qrcodeLibraryPromise = null;
+  function muatLibraryQr() {
+    if (window.QRCode) return Promise.resolve();
+    if (qrcodeLibraryPromise) return qrcodeLibraryPromise;
+    qrcodeLibraryPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+      script.async = true;
+      script.onload = () => window.QRCode ? resolve() : reject(new Error('Library QR tidak tersedia.'));
+      script.onerror = () => reject(new Error('Library QR gagal dimuat. Periksa koneksi internet lalu coba lagi.'));
+      document.head.appendChild(script);
+    });
+    return qrcodeLibraryPromise;
+  }
+  function tutupKartuKaryawan() { document.getElementById('employeeCardOverlay')?.remove(); }
+  async function bukaKartuKaryawan(id) {
+    if (!/^K\d{3,}$/.test(String(id || ''))) return;
+    tutupKartuKaryawan();
+    const overlay = document.createElement('div'); overlay.className = 'employee-card-overlay'; overlay.id = 'employeeCardOverlay';
+    overlay.innerHTML = '<section class="employee-card-dialog" role="dialog" aria-modal="true" aria-label="Kartu ID karyawan"><div class="employee-card-actions"><button type="button" class="employee-card-print" id="employeeCardPrintBtn">🖨️ Cetak Kartu</button><button type="button" class="employee-card-close" id="employeeCardCloseBtn">Tutup</button></div><p id="employeeCardHelp" role="status" aria-live="polite">Mengambil data kartu dari server...</p><div id="employeeCardPrintArea" hidden><div class="nahyez-id-card"><div class="nahyez-id-info"><div class="nahyez-id-brand">NAHYEZ BABY MEAL</div><div class="nahyez-id-sub">Mesin Absensi Karyawan</div><div class="nahyez-id-label">Nama Karyawan</div><div class="nahyez-id-name" id="employeeCardName"></div><div class="nahyez-id-label">ID Karyawan</div><div class="nahyez-id-number" id="employeeCardId"></div><div class="nahyez-id-label">Outlet</div><div class="nahyez-id-outlet" id="employeeCardOutlet"></div><div class="employee-card-status" id="employeeCardStatus"></div></div><div class="nahyez-id-qr-wrap"><div id="employeeCardQr"></div><div class="nahyez-id-qr-caption">SCAN UNTUK ABSENSI</div></div></div></div></section>';
+    document.body.appendChild(overlay);
+    document.getElementById('employeeCardCloseBtn').addEventListener('click', tutupKartuKaryawan);
+    document.getElementById('employeeCardPrintBtn').addEventListener('click', () => { if (!document.getElementById('employeeCardPrintArea').hidden) window.print(); });
+    overlay.addEventListener('click', event => { if (event.target === overlay) tutupKartuKaryawan(); });
+    try {
+      const response = await fetch('/api/employee-card?id=' + encodeURIComponent(id), { method: 'GET', credentials: 'same-origin', cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+      if (response.status === 401) throw new Error('Sesi admin tidak valid. Silakan login kembali.');
+      const hasil = await response.json();
+      if (!response.ok || hasil?.success !== true || !hasil.karyawan || !hasil.karyawan.qrToken) throw new Error(hasil?.message || 'Data kartu tidak dapat dibaca.');
+      const k = hasil.karyawan;
+      document.getElementById('employeeCardName').textContent = k.nama || '-';
+      document.getElementById('employeeCardId').textContent = k.id || '-';
+      document.getElementById('employeeCardOutlet').textContent = k.outlet || k.outletId || '-';
+      document.getElementById('employeeCardStatus').textContent = String(k.status || '').toUpperCase();
+      await muatLibraryQr();
+      const qrNode = document.getElementById('employeeCardQr'); qrNode.textContent = '';
+      new QRCode(qrNode, { text: k.qrToken, width: 300, height: 300, colorDark: '#14253a', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+      document.getElementById('employeeCardPrintArea').hidden = false;
+      document.getElementById('employeeCardHelp').textContent = 'Kartu siap dicetak. Simpan QR ini hanya untuk karyawan yang bersangkutan.';
+    } catch (err) {
+      document.getElementById('employeeCardHelp').textContent = err.message || 'Kartu gagal dimuat.';
+      document.getElementById('employeeCardPrintBtn').disabled = true;
+    }
+  }
+
   (function siapkanFormTambahKaryawan() {
     const buka = document.getElementById('btnBukaFormKaryawan'); const panel = document.getElementById('employeeFormPanel'); const form = document.getElementById('formTambahKaryawan'); const batal = document.getElementById('btnBatalKaryawan'); const statusBox = document.getElementById('employeeFormStatus'); const save = document.getElementById('btnSimpanKaryawan');
     if (!buka || !panel || !form) return;
