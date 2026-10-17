@@ -1013,7 +1013,21 @@
     .employee-card-status { font-size:8pt; margin-top:2mm; font-weight:700; }
     @media print { body * { visibility:hidden !important; } #employeeCardPrintArea, #employeeCardPrintArea * { visibility:visible !important; } #employeeCardPrintArea { position:fixed; left:0; top:0; width:100%; } .employee-card-overlay { position:static; display:block; padding:0; background:#fff; } .employee-card-dialog { width:auto; max-height:none; overflow:visible; padding:0; box-shadow:none; } .employee-card-actions, #employeeCardHelp { display:none !important; } .nahyez-id-card { margin:0; print-color-adjust:exact; -webkit-print-color-adjust:exact; } @page { size:auto; margin:8mm; } }
 
-</style>
+
+    .holiday-panel { margin-top:22px; padding-top:20px; border-top:1px solid #e8edf4; }
+    .holiday-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; align-items:end; }
+    .holiday-field label { display:block; margin-bottom:6px; color:#334155; font-size:13px; font-weight:700; }
+    .holiday-field input,.holiday-field select { width:100%; min-height:44px; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; color:#1e293b; font:inherit; }
+    .holiday-status { display:none; margin-top:12px; padding:10px 12px; border-radius:9px; font-size:13px; line-height:1.5; }
+    .holiday-table-wrap { margin-top:14px; overflow-x:auto; border:1px solid #e8edf4; border-radius:12px; }
+    .holiday-table { min-width:560px; width:100%; border-collapse:collapse; }
+    .holiday-table th,.holiday-table td { padding:11px 12px; border-bottom:1px solid #edf0f4; text-align:left; font-size:13px; white-space:nowrap; }
+    .holiday-table th { background:#f5f7fa; color:#687386; font-size:12px; }
+    .holiday-table tr:last-child td { border-bottom:0; }
+    .holiday-delete { border:0; border-radius:8px; padding:7px 10px; background:#fdecec; color:#b42318; font-weight:700; cursor:pointer; }
+    @media(max-width:700px) { .holiday-grid { grid-template-columns:1fr; } }
+
+  </style>
 </head>
 
 
@@ -1069,54 +1083,13 @@
   overflow: hidden;
 ">
 
-  <!-- TOMBOL BUKA-TUTUP -->
-  <button
-    type="button"
-    id="togglePengaturanAbsensi"
-    aria-expanded="false"
-    aria-controls="isiPengaturanAbsensi"
-    style="
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      width: 100%;
-      min-height: 64px;
-      padding: 18px;
-      border: none;
-      background: transparent;
-      color: #334155;
-      text-align: left;
-      cursor: pointer;
-      font-family: inherit;
-    "
-  >
-
-    <span style="
-      font-size: 17px;
-      font-weight: 700;
-    ">
-      ⚙️ Pengaturan Absensi
-    </span>
-
-    <span
-      id="ikonPengaturanAbsensi"
-      aria-hidden="true"
-      style="
-        font-size: 20px;
-        transition: transform 0.2s ease;
-      "
-    >
-      ▼
-    </span>
-
-  </button>
+  <div style="padding:18px 18px 0;">
+    <h2 style="margin:0;font-size:19px;font-weight:700;color:#334155;">⚙️ Pengaturan Absensi</h2>
+  </div>
 
   <!-- ISI PENGATURAN -->
   <div
     id="isiPengaturanAbsensi"
-    hidden
     style="
       padding: 0 18px 18px;
     "
@@ -1210,6 +1183,25 @@
         line-height: 1.5;
       "
     ></div>
+
+    <section class="holiday-panel" aria-labelledby="judulJadwalLibur">
+      <h3 id="judulJadwalLibur" style="margin:0 0 8px;font-size:17px;color:#334155;">📅 Jadwal Libur Karyawan</h3>
+      <p style="margin:0 0 15px;color:#64748b;font-size:13px;line-height:1.6;">Pilih bulan yang ingin dijadwalkan. Admin dapat menyiapkan jadwal bulan berikutnya lebih awal dan jumlah hari libur tidak dibatasi tujuh hari.</p>
+      <div class="holiday-grid">
+        <div class="holiday-field"><label for="jadwalBulan">Bulan Jadwal</label><input type="month" id="jadwalBulan" required></div>
+        <div class="holiday-field"><label for="jadwalKaryawan">Nama Karyawan</label><select id="jadwalKaryawan" required><option value="">Pilih karyawan</option></select></div>
+        <div class="holiday-field"><label for="jadwalTanggal">Tanggal Libur</label><input type="date" id="jadwalTanggal" required></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+        <button type="button" id="btnTambahHariLibur" class="btn-refresh" style="min-height:44px;">＋ Tambahkan Hari Libur</button>
+        <button type="button" id="btnMuatJadwalLibur" class="btn-outlet-cancel" style="min-height:44px;">↻ Muat Jadwal</button>
+      </div>
+      <div id="statusJadwalLibur" class="holiday-status" role="status" aria-live="polite"></div>
+      <p id="ringkasanJadwalLibur" style="margin:14px 0 0;color:#64748b;font-size:13px;"></p>
+      <div class="holiday-table-wrap">
+        <table class="holiday-table"><thead><tr><th>Tanggal</th><th>ID Karyawan</th><th>Nama Karyawan</th><th>Aksi</th></tr></thead><tbody id="jadwalLiburBody"><tr><td colspan="4" style="color:#64748b;text-align:center;">Pilih bulan untuk memuat jadwal.</td></tr></tbody></table>
+      </div>
+    </section>
 
   </div>
 
@@ -2351,45 +2343,6 @@ btnLogout.addEventListener(
   // ==========================================
 
   // ========================================
-// TOGGLE PENGATURAN ABSENSI
-// ========================================
-
-const togglePengaturanAbsensi =
-  document.getElementById("togglePengaturanAbsensi");
-
-const isiPengaturanAbsensi =
-  document.getElementById("isiPengaturanAbsensi");
-
-const ikonPengaturanAbsensi =
-  document.getElementById("ikonPengaturanAbsensi");
-
-if (
-  togglePengaturanAbsensi &&
-  isiPengaturanAbsensi &&
-  ikonPengaturanAbsensi
-) {
-  togglePengaturanAbsensi.addEventListener("click", function() {
-    const sedangTerbuka =
-      togglePengaturanAbsensi.getAttribute("aria-expanded") === "true";
-
-    togglePengaturanAbsensi.setAttribute(
-      "aria-expanded",
-      String(!sedangTerbuka)
-    );
-
-    isiPengaturanAbsensi.hidden = sedangTerbuka;
-
-    if (!sedangTerbuka) {
-      muatBatasJamMasuk();
-    }
-
-    ikonPengaturanAbsensi.style.transform = sedangTerbuka
-      ? "rotate(0deg)"
-      : "rotate(180deg)";
-  });
-}
-
-  // ========================================
 // PENGATURAN BATAS JAM MASUK
 // ========================================
 
@@ -2516,6 +2469,101 @@ batasJamMasukSudahDimuat = true;
 }
 
 
+// ========================================
+// JADWAL LIBUR KARYAWAN
+// ========================================
+const inputBulanJadwal = document.getElementById('jadwalBulan');
+const selectKaryawanJadwal = document.getElementById('jadwalKaryawan');
+const inputTanggalLibur = document.getElementById('jadwalTanggal');
+const statusJadwalLibur = document.getElementById('statusJadwalLibur');
+const bodyJadwalLibur = document.getElementById('jadwalLiburBody');
+const ringkasanJadwalLibur = document.getElementById('ringkasanJadwalLibur');
+let dataJadwalLiburSaatIni = [];
+let daftarKaryawanJadwal = [];
+function tampilkanStatusJadwalLibur(pesan, berhasil) {
+  statusJadwalLibur.textContent = pesan;
+  statusJadwalLibur.style.display = 'block';
+  statusJadwalLibur.style.background = berhasil ? '#dcfce7' : '#fee2e2';
+  statusJadwalLibur.style.color = berhasil ? '#166534' : '#991b1b';
+}
+function escapeHtmlJadwal(value) {
+  return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function nilaiBulanTerpilih() {
+  const value = inputBulanJadwal.value;
+  const match = value.match(/^(\d{4})-(\d{2})$/);
+  if (!match) throw new Error('Pilih bulan dan tahun jadwal terlebih dahulu.');
+  return {tahun:match[1],bulan:String(Number(match[2]))};
+}
+async function panggilAPIJadwalLibur(body) {
+  const response = await fetch('/api/schedule/holidays', {
+    method:'POST', credentials:'same-origin', cache:'no-store',
+    headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+  });
+  if (response.status === 401) throw new Error('Sesi admin berakhir. Silakan login kembali.');
+  let hasil;
+  try { hasil = await response.json(); } catch { throw new Error('Respons server jadwal tidak valid.'); }
+  if (!response.ok || !hasil.success) throw new Error(hasil.message || 'Permintaan jadwal libur gagal.');
+  return hasil;
+}
+async function muatJadwalLibur() {
+  try {
+    const periode = nilaiBulanTerpilih();
+    bodyJadwalLibur.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#64748b;">Memuat jadwal...</td></tr>';
+    const hasil = await panggilAPIJadwalLibur({operation:'list',...periode});
+    dataJadwalLiburSaatIni = Array.isArray(hasil.jadwal) ? hasil.jadwal : [];
+    daftarKaryawanJadwal = Array.isArray(hasil.karyawan) ? hasil.karyawan : [];
+    const pilihanLama = selectKaryawanJadwal.value;
+    selectKaryawanJadwal.innerHTML = '<option value="">Pilih karyawan</option>' + daftarKaryawanJadwal.map(k => '<option value="'+escapeHtmlJadwal(k.id)+'">'+escapeHtmlJadwal(k.nama)+' ('+escapeHtmlJadwal(k.id)+')</option>').join('');
+    if (daftarKaryawanJadwal.some(k => k.id === pilihanLama)) selectKaryawanJadwal.value = pilihanLama;
+    const libur = dataJadwalLiburSaatIni.filter(x => x.statusHari === 'LIBUR').sort((a,b)=>a.tanggal.localeCompare(b.tanggal)||a.nama.localeCompare(b.nama));
+    ringkasanJadwalLibur.textContent = 'Bulan '+periode.bulan+'/'+periode.tahun+' · '+daftarKaryawanJadwal.length+' karyawan · '+libur.length+' jadwal libur tersimpan.';
+    if (!libur.length) {
+      bodyJadwalLibur.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#64748b;">Belum ada hari libur yang diatur pada bulan ini.</td></tr>';
+    } else {
+      bodyJadwalLibur.innerHTML = libur.map(x => '<tr><td>'+escapeHtmlJadwal(x.tanggal)+'</td><td>'+escapeHtmlJadwal(x.idKaryawan)+'</td><td>'+escapeHtmlJadwal(x.nama)+'</td><td><button type="button" class="holiday-delete" data-tanggal="'+escapeHtmlJadwal(x.tanggal)+'" data-id="'+escapeHtmlJadwal(x.idKaryawan)+'">Hapus Libur</button></td></tr>').join('');
+    }
+    tampilkanStatusJadwalLibur('Jadwal bulan '+periode.bulan+'/'+periode.tahun+' berhasil dimuat. Kamu bisa mengatur jadwal bulan berikutnya kapan saja.',true);
+  } catch (error) {
+    bodyJadwalLibur.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#b42318;">'+escapeHtmlJadwal(error.message)+'</td></tr>';
+    tampilkanStatusJadwalLibur(error.message || 'Gagal memuat jadwal.',false);
+  }
+}
+async function tambahHariLibur() {
+  try {
+    const periode = nilaiBulanTerpilih();
+    const idKaryawan = selectKaryawanJadwal.value;
+    const tanggal = inputTanggalLibur.value;
+    if (!idKaryawan) throw new Error('Pilih karyawan terlebih dahulu.');
+    if (!tanggal) throw new Error('Pilih tanggal libur terlebih dahulu.');
+    if (!tanggal.startsWith(periode.tahun+'-'+String(periode.bulan).padStart(2,'0')+'-')) throw new Error('Tanggal libur harus berada pada bulan yang dipilih.');
+    const nama = selectKaryawanJadwal.options[selectKaryawanJadwal.selectedIndex].text;
+    if (!confirm('Tetapkan '+tanggal+' sebagai hari LIBUR untuk '+nama+'?')) return;
+    document.getElementById('btnTambahHariLibur').disabled = true;
+    const hasil = await panggilAPIJadwalLibur({operation:'set',idKaryawan,tanggal});
+    tampilkanStatusJadwalLibur(hasil.message || 'Hari libur berhasil disimpan.',true);
+    await muatJadwalLibur();
+  } catch (error) { tampilkanStatusJadwalLibur(error.message || 'Gagal menyimpan hari libur.',false); }
+  finally { document.getElementById('btnTambahHariLibur').disabled = false; }
+}
+bodyJadwalLibur?.addEventListener('click', async event => {
+  const btn = event.target.closest('[data-tanggal][data-id]');
+  if (!btn) return;
+  if (!confirm('Hapus jadwal libur '+btn.dataset.tanggal+' untuk '+btn.dataset.id+'? Status akan dikembalikan menjadi KERJA.')) return;
+  btn.disabled = true;
+  try {
+    const hasil = await panggilAPIJadwalLibur({operation:'delete',idKaryawan:btn.dataset.id,tanggal:btn.dataset.tanggal});
+    tampilkanStatusJadwalLibur(hasil.message || 'Jadwal libur dihapus.',true);
+    await muatJadwalLibur();
+  } catch(error) { tampilkanStatusJadwalLibur(error.message || 'Gagal menghapus hari libur.',false); btn.disabled = false; }
+});
+document.getElementById('btnTambahHariLibur')?.addEventListener('click',tambahHariLibur);
+document.getElementById('btnMuatJadwalLibur')?.addEventListener('click',muatJadwalLibur);
+inputBulanJadwal?.addEventListener('change',muatJadwalLibur);
+const nowJadwal = new Date();
+if (inputBulanJadwal) inputBulanJadwal.value = nowJadwal.getFullYear()+'-'+String(nowJadwal.getMonth()+1).padStart(2,'0');
+if (inputTanggalLibur) inputTanggalLibur.value = nowJadwal.getFullYear()+'-'+String(nowJadwal.getMonth()+1).padStart(2,'0')+'-'+String(nowJadwal.getDate()).padStart(2,'0');
+
   // ==========================================
   // NAVIGASI SIDEBAR - TAHAP 3
   // Menambahkan submenu Pengaturan dan daftar outlet.
@@ -2526,7 +2574,7 @@ batasJamMasukSudahDimuat = true;
 
     const header = container.querySelector('.header');
     const filter = container.querySelector('.filter-box');
-    const settings = document.getElementById('togglePengaturanAbsensi')?.closest('.filter-box');
+    const settings = document.getElementById('isiPengaturanAbsensi')?.closest('.filter-box');
     const error = document.getElementById('errorBox');
     const stats = container.querySelector('.stats-grid');
     const sections = container.querySelectorAll('.section');
@@ -2730,7 +2778,7 @@ batasJamMasukSudahDimuat = true;
         button.classList.toggle('active', button.dataset.page === page);
       });
       if (page === 'outlets') muatDaftarOutlet();
-      if (page === 'attendance') muatBatasJamMasuk();
+      if (page === 'attendance') { muatBatasJamMasuk(); muatJadwalLibur(); }
       mobileToggle.textContent = '☰  Menu';
       sidebar.classList.remove('open');
       main.classList.remove('nav-open');
