@@ -1028,6 +1028,37 @@
     @media(max-width:700px) { .holiday-grid { grid-template-columns:1fr; } }
 
   </style>
+
+<style>
+.performance-report-controls{background:#fff;border:1px solid #e7edf4;border-radius:16px;padding:18px;margin:0 0 18px;box-shadow:0 4px 16px #00000008}
+.performance-report-grid{display:grid;grid-template-columns:2fr 1fr auto;gap:12px;align-items:end}
+.performance-report-controls label{display:block;font-size:13px;font-weight:700;color:#475569;margin-bottom:6px}
+.performance-report-controls select,.performance-report-controls input{width:100%;min-height:42px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:9px;background:white;font:inherit}
+.performance-report-controls button{border:0;border-radius:9px;padding:12px 15px;background:#0b625b;color:white;font-weight:700;cursor:pointer}
+.performance-report-controls button:disabled{opacity:.6;cursor:wait}
+.performance-report-status{display:none;margin-top:12px;padding:10px;border-radius:8px;font-size:13px}
+.performance-report-paper{display:none;background:#fff;color:#172033;padding:24px;border:1px solid #e2e8f0;border-radius:12px}
+.performance-report-paper h2{text-align:center;margin:0 0 4px;font-size:21px}.performance-report-paper .report-subtitle{text-align:center;margin:0 0 20px;color:#475569}
+.report-identity{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin:14px 0;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px}
+.report-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0 18px}
+.report-summary div{padding:10px;border:1px solid #dbe4ee;border-radius:8px;text-align:center}.report-summary strong{display:block;font-size:20px}.report-summary span{font-size:11px;color:#475569}
+.report-detail-table{width:100%;min-width:0;border-collapse:collapse}.report-detail-table th,.report-detail-table td{border:1px solid #cbd5e1;padding:7px 8px;font-size:11px;white-space:normal}.report-detail-table th{background:#f1f5f9;color:#172033}
+.report-evaluation{margin-top:18px}.report-evaluation label{display:block;font-weight:700;margin-bottom:7px}.report-evaluation textarea{width:100%;min-height:85px;border:1px solid #cbd5e1;border-radius:8px;padding:10px;font:inherit;resize:vertical}
+.report-paper-footer{margin-top:20px;padding-top:8px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;gap:8px;font-size:10px;color:#64748b}
+.report-print-actions{display:flex;gap:10px;justify-content:flex-end;margin:12px 0}.report-print-actions button{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}.report-print-btn{background:#fc8a51;color:#fff}.report-hide-btn{background:#e2e8f0;color:#334155}
+@media(max-width:700px){.performance-report-grid{grid-template-columns:1fr}.report-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.report-identity{grid-template-columns:1fr}.performance-report-paper{padding:12px}}
+@media print{
+ @page{size:A4 portrait;margin:10mm}
+ body *{visibility:hidden!important}
+ #performanceReportPaper,#performanceReportPaper *{visibility:visible!important}
+ #performanceReportPaper{display:block!important;position:absolute;left:0;top:0;width:100%;padding:0;border:0;border-radius:0;box-shadow:none}
+ #performanceReportPaper .report-evaluation textarea{border:1px solid #777;min-height:65px}
+ .report-print-actions,.performance-report-controls{display:none!important}
+ .report-summary div,.report-identity,.report-detail-table th{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ .report-detail-table tr{break-inside:avoid}
+}
+</style>
+
 </head>
 
 
@@ -2731,7 +2762,23 @@ if (inputTanggalLibur) inputTanggalLibur.value = nowJadwal.getFullYear()+'-'+Str
     const performanceHeading = document.createElement('h2');
     performanceHeading.className = 'page-heading';
     performanceHeading.textContent = '📊 Kinerja Karyawan';
+
     performancePage.appendChild(performanceHeading);
+    const reportControls = document.createElement('div');
+    reportControls.className = 'performance-report-controls';
+    reportControls.innerHTML = `<h3 style="margin:0 0 6px;color:#263d59">🧾 Laporan Bulanan Per Karyawan</h3>
+      <p style="margin:0 0 14px;color:#64748b;font-size:13px">Pilih satu karyawan dan periode. Laporan dapat dicetak tanpa foto absensi.</p>
+      <div class="performance-report-grid">
+        <div><label for="performanceReportEmployee">Karyawan</label><select id="performanceReportEmployee"><option value="">Memuat daftar karyawan...</option></select></div>
+        <div><label for="performanceReportMonth">Bulan laporan</label><input type="month" id="performanceReportMonth"></div>
+        <button type="button" id="performanceReportLoad">📄 Buat Laporan</button>
+      </div><div id="performanceReportStatus" class="performance-report-status" role="status" aria-live="polite"></div>`;
+    const reportPaper = document.createElement('div');
+    reportPaper.id = 'performanceReportPaper';
+    reportPaper.className = 'performance-report-paper';
+    performancePage.appendChild(reportControls);
+    performancePage.appendChild(reportPaper);
+
 
     // Pertahankan header dan pesan error sebagai elemen global.
     container.parentNode.insertBefore(layout, container);
@@ -3205,6 +3252,65 @@ if (inputTanggalLibur) inputTanggalLibur.value = nowJadwal.getFullYear()+'-'+Str
       finally { save.disabled = false; save.textContent = karyawanSedangDiedit ? '💾 Simpan Perubahan' : '💾 Simpan Karyawan'; }
     });
   })();
+
+
+// ==========================================
+// LAPORAN KINERJA BULANAN - PER KARYAWAN
+// ==========================================
+(function setupPerformanceReport(){
+  const select=document.getElementById('performanceReportEmployee');
+  const monthInput=document.getElementById('performanceReportMonth');
+  const loadBtn=document.getElementById('performanceReportLoad');
+  const statusBox=document.getElementById('performanceReportStatus');
+  const paper=document.getElementById('performanceReportPaper');
+  if(!select||!monthInput||!loadBtn||!paper)return;
+  const now=new Date();
+  monthInput.value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function showStatus(message,ok){statusBox.textContent=message;statusBox.style.display='block';statusBox.style.background=ok?'#dcfce7':'#fee2e2';statusBox.style.color=ok?'#166534':'#991b1b';}
+  async function loadEmployees(){
+    try{
+      const r=await fetch('/api/employees',{credentials:'same-origin',cache:'no-store'});
+      const d=await r.json();if(!r.ok||!d.success)throw new Error(d.message||'Gagal memuat daftar karyawan.');
+      const list=d.data||d.karyawan||d.employees||[];
+      select.innerHTML='<option value="">Pilih karyawan...</option>'+list.map(x=>{
+        const id=x.id||x.ID||x.idKaryawan||'';const name=x.nama||x.Nama||x.name||id;
+        return id?`<option value="${esc(id)}">${esc(name)} — ${esc(id)}</option>`:'';
+      }).join('');
+    }catch(e){select.innerHTML='<option value="">Daftar karyawan gagal dimuat</option>';showStatus(e.message||'Gagal memuat karyawan.',false);}
+  }
+  function renderReport(d){
+    const monthNames=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    const k=d.karyawan||{},r=d.rekap||{},month=monthNames[Number(d.bulan)-1]+' '+d.tahun;
+    const details=(d.detail||[]).map(x=>`<tr><td>${esc(x.tanggal.split('-').reverse().join('-'))}</td><td>${esc(x.hari)}</td><td>${esc(x.jamMasuk)}</td><td>${esc(x.status)}</td><td>${esc(x.jamPulang)}</td></tr>`).join('');
+    paper.innerHTML=`<div class="report-print-actions"><button class="report-print-btn" type="button" id="printPerformanceReport">🖨️ Cetak / Simpan PDF</button><button class="report-hide-btn" type="button" id="hidePerformanceReport">Tutup Laporan</button></div>
+      <h2>LAPORAN KINERJA KARYAWAN</h2><p class="report-subtitle">NAHYEZ BABY MEAL · Periode ${esc(month)}</p>
+      <h3 style="font-size:14px;margin:0 0 8px">A. Identitas Karyawan</h3>
+      <div class="report-identity"><div><b>Nama:</b> ${esc(k.nama)}</div><div><b>ID Karyawan:</b> ${esc(k.id)}</div><div><b>Outlet:</b> ${esc(k.outlet)}</div><div><b>Status Karyawan:</b> ${esc(k.status)}</div><div><b>Periode:</b> ${esc(month)}</div><div><b>Batas jam masuk:</b> ${esc(d.batasJamMasuk||'-')}</div></div>
+      <h3 style="font-size:14px;margin:0 0 8px">B. Ringkasan Kinerja Bulanan</h3>
+      <div class="report-summary"><div><strong>${Number(r.hadir)||0}</strong><span>Hari hadir</span></div><div><strong>${Number(r.tepatWaktu)||0}</strong><span>Tepat waktu</span></div><div><strong>${Number(r.terlambat)||0}</strong><span>Terlambat</span></div><div><strong>${Number(r.tidakAbsen)||0}</strong><span>Tidak absen</span></div><div><strong>${Number(r.libur)||0}</strong><span>Libur / non-kerja</span></div><div><strong>${Number(r.tanpaPulang)||0}</strong><span>Belum absen pulang</span></div><div><strong>${(d.detail||[]).length}</strong><span>Total tanggal</span></div><div><strong>${(Number(r.tepatWaktu||0)+Number(r.terlambat||0))?Math.round(Number(r.tepatWaktu||0)/(Number(r.tepatWaktu||0)+Number(r.terlambat||0))*100):0}%</strong><span>Ketepatan waktu dari kehadiran</span></div></div>
+      <h3 style="font-size:14px;margin:0 0 8px">C. Detail Harian</h3>
+      <table class="report-detail-table"><thead><tr><th>Tanggal</th><th>Hari</th><th>Jam Masuk</th><th>Keterangan</th><th>Jam Pulang</th></tr></thead><tbody>${details}</tbody></table>
+      <div class="report-evaluation"><label for="performanceEvaluation">D. Catatan Evaluasi Karyawan</label><textarea id="performanceEvaluation" placeholder="Tuliskan catatan evaluasi, apresiasi, atau hal yang perlu diperbaiki..."></textarea></div>
+      <div class="report-paper-footer"><span>Tanggal cetak: ${esc(d.tanggalCetak||new Date().toLocaleString('id-ID'))}</span><span>(c)2026 Nahyez BabyMeal</span></div>`;
+    paper.style.display='block';
+    document.getElementById('printPerformanceReport').addEventListener('click',()=>window.print());
+    document.getElementById('hidePerformanceReport').addEventListener('click',()=>{paper.style.display='none';});
+  }
+  loadBtn.addEventListener('click',async()=>{
+    const id=select.value,period=monthInput.value;
+    if(!id){showStatus('Pilih satu karyawan terlebih dahulu.',false);return;}
+    if(!/^\d{4}-\d{2}$/.test(period)){showStatus('Pilih bulan laporan yang valid.',false);return;}
+    const [year,month]=period.split('-');loadBtn.disabled=true;loadBtn.textContent='⏳ Membuat laporan...';paper.style.display='none';
+    try{const url='/api/performance/report?id='+encodeURIComponent(id)+'&tahun='+year+'&bulan='+Number(month);
+      const response=await fetch(url,{credentials:'same-origin',cache:'no-store'});const data=await response.json();
+      if(!response.ok||!data.success)throw new Error(data.message||'Laporan gagal dibuat.');
+      renderReport(data);showStatus('Laporan berhasil dibuat. Periksa detail lalu cetak atau simpan sebagai PDF.',true);
+    }catch(e){showStatus(e.message||'Terjadi kesalahan saat membuat laporan.',false);}
+    finally{loadBtn.disabled=false;loadBtn.textContent='📄 Buat Laporan';}
+  });
+  loadEmployees();
+})();
 
 </script>
 
