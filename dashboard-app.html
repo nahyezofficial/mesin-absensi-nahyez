@@ -1480,6 +1480,10 @@
               </th>
 
               <th>
+                Izin
+              </th>
+
+              <th>
                 Persentase
               </th>
 
@@ -2164,7 +2168,7 @@ absensi.data.forEach(function(item) {
 
         tbody.innerHTML =
           '<tr>' +
-          '<td colspan="7" ' +
+          '<td colspan="8" ' +
           'style="text-align:center;">' +
           'Tidak ada data karyawan.' +
           '</td>' +
@@ -2267,6 +2271,15 @@ absensi.data.forEach(function(item) {
 
               '</td>' +
 
+              '<td>' +
+
+                '<span class="badge badge-orange">' +
+
+                  (item.izin || 0) +
+
+                '</span>' +
+
+              '</td>' +
 
               '<td>' +
 
@@ -2764,6 +2777,22 @@ if (inputTanggalLibur) inputTanggalLibur.value = nowJadwal.getFullYear()+'-'+Str
     performanceHeading.textContent = '📊 Kinerja Karyawan';
 
     performancePage.appendChild(performanceHeading);
+    const leaveControls = document.createElement('div');
+    leaveControls.className = 'performance-report-controls employee-leave-controls';
+    leaveControls.innerHTML = `<h3 style="margin:0 0 6px;color:#263d59">📝 Pencatatan Izin Karyawan</h3>
+      <p style="margin:0 0 14px;color:#64748b;font-size:13px">Izin tetap masuk dalam hari kerja, tetapi tidak dihitung sebagai hadir tepat waktu. Izin tidak dapat dicatat pada hari libur atau tanggal yang sudah memiliki absensi.</p>
+      <div class="performance-report-grid" style="grid-template-columns:1.4fr 1fr 1.4fr auto">
+        <div><label for="employeeLeaveEmployee">Karyawan</label><select id="employeeLeaveEmployee"><option value="">Memuat daftar karyawan...</option></select></div>
+        <div><label for="employeeLeaveDate">Tanggal izin</label><input type="date" id="employeeLeaveDate"></div>
+        <div><label for="employeeLeaveNote">Keterangan</label><input type="text" id="employeeLeaveNote" maxlength="300" placeholder="Contoh: keperluan keluarga"></div>
+        <button type="button" id="employeeLeaveSave">💾 Simpan Izin</button>
+      </div>
+      <div class="performance-report-grid" style="grid-template-columns:1fr auto;margin-top:12px">
+        <div><label for="employeeLeaveMonth">Daftar izin bulan</label><input type="month" id="employeeLeaveMonth"></div>
+        <button type="button" id="employeeLeaveRefresh">↻ Muat Daftar</button>
+      </div>
+      <div id="employeeLeaveStatus" class="performance-report-status" role="status" aria-live="polite"></div>
+      <div style="overflow-x:auto;margin-top:12px"><table class="report-detail-table"><thead><tr><th>Tanggal</th><th>ID</th><th>Nama</th><th>Keterangan</th><th>Aksi</th></tr></thead><tbody id="employeeLeaveRows"><tr><td colspan="5">Memuat daftar izin...</td></tr></tbody></table></div>`;
     const reportControls = document.createElement('div');
     reportControls.className = 'performance-report-controls';
     reportControls.innerHTML = `<h3 style="margin:0 0 6px;color:#263d59">🧾 Laporan Bulanan Per Karyawan</h3>
@@ -2776,6 +2805,7 @@ if (inputTanggalLibur) inputTanggalLibur.value = nowJadwal.getFullYear()+'-'+Str
     const reportPaper = document.createElement('div');
     reportPaper.id = 'performanceReportPaper';
     reportPaper.className = 'performance-report-paper';
+    performancePage.appendChild(leaveControls);
     performancePage.appendChild(reportControls);
     performancePage.appendChild(reportPaper);
 
@@ -3255,6 +3285,31 @@ if (inputTanggalLibur) inputTanggalLibur.value = nowJadwal.getFullYear()+'-'+Str
 
 
 // ==========================================
+// PENCATATAN IZIN KARYAWAN
+// ==========================================
+(function setupEmployeeLeave(){
+  const employee=document.getElementById('employeeLeaveEmployee');
+  const dateInput=document.getElementById('employeeLeaveDate');
+  const note=document.getElementById('employeeLeaveNote');
+  const month=document.getElementById('employeeLeaveMonth');
+  const save=document.getElementById('employeeLeaveSave');
+  const refresh=document.getElementById('employeeLeaveRefresh');
+  const status=document.getElementById('employeeLeaveStatus');
+  const rows=document.getElementById('employeeLeaveRows');
+  if(!employee||!dateInput||!note||!month||!save||!refresh||!status||!rows)return;
+  const now=new Date(); const monthValue=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'); month.value=monthValue;
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function message(text,ok){status.textContent=text;status.style.display='block';status.style.background=ok?'#dcfce7':'#fee2e2';status.style.color=ok?'#166534':'#991b1b';}
+  async function api(body){const res=await fetch('/api/employee-leaves',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});let data;try{data=await res.json()}catch{throw new Error('Respons server izin tidak valid.')}if(res.status===401)throw new Error('Sesi admin berakhir. Silakan login kembali.');if(!res.ok||!data.success)throw new Error(data.message||'Permintaan izin gagal.');return data;}
+  async function loadEmployees(){const res=await fetch('/api/employees',{credentials:'same-origin',cache:'no-store'});const data=await res.json();if(!res.ok||!data.success)throw new Error(data.message||'Gagal memuat daftar karyawan.');const list=data.data||data.karyawan||data.employees||[];const prior=employee.value;employee.innerHTML='<option value="">Pilih karyawan...</option>'+list.map(x=>{const id=x.id||x.ID||x.idKaryawan||'',name=x.nama||x.Nama||x.name||id;return id?`<option value="${esc(id)}">${esc(name)} — ${esc(id)}</option>`:''}).join('');if(list.some(x=>String(x.id||x.ID||x.idKaryawan||'')===prior))employee.value=prior;}
+  async function loadLeaves(){const m=month.value.match(/^(\d{4})-(\d{2})$/);if(!m){message('Pilih bulan daftar izin.',false);return;}rows.innerHTML='<tr><td colspan="5">Memuat daftar izin...</td></tr>';try{const data=await api({operation:'list',tahun:m[1],bulan:String(Number(m[2]))});const list=data.izin||[];if(!list.length){rows.innerHTML='<tr><td colspan="5" style="text-align:center;color:#64748b">Belum ada izin pada bulan ini.</td></tr>';return;}rows.innerHTML=list.map(x=>`<tr><td>${esc(x.tanggal)}</td><td>${esc(x.idKaryawan)}</td><td>${esc(x.nama)}</td><td>${esc(x.keterangan||'-')}</td><td><button type="button" data-leave-delete="1" data-id="${esc(x.idKaryawan)}" data-date="${esc(x.tanggal)}" style="border:0;border-radius:6px;padding:6px 8px;background:#fee2e2;color:#991b1b;cursor:pointer">Hapus</button></td></tr>`).join('');}catch(e){rows.innerHTML=`<tr><td colspan="5" style="color:#b91c1c">${esc(e.message)}</td></tr>`;message(e.message,false);}}
+  save.addEventListener('click',async()=>{const id=employee.value,date=dateInput.value,keterangan=note.value.trim();if(!id){message('Pilih karyawan terlebih dahulu.',false);return;}if(!date){message('Pilih tanggal izin.',false);return;}if(date.slice(0,7)!==month.value){month.value=date.slice(0,7);}if(!confirm('Simpan izin untuk '+employee.options[employee.selectedIndex].text+' pada '+date+'?'))return;save.disabled=true;try{const data=await api({operation:'set',idKaryawan:id,tanggal:date,keterangan});message(data.message||'Izin tersimpan.',true);note.value='';await loadLeaves();}catch(e){message(e.message,false);}finally{save.disabled=false;}});
+  refresh.addEventListener('click',loadLeaves);month.addEventListener('change',loadLeaves);
+  rows.addEventListener('click',async e=>{const btn=e.target.closest('[data-leave-delete]');if(!btn)return;if(!confirm('Hapus catatan izin '+btn.dataset.id+' tanggal '+btn.dataset.date+'?'))return;btn.disabled=true;try{const data=await api({operation:'delete',idKaryawan:btn.dataset.id,tanggal:btn.dataset.date});message(data.message||'Izin dihapus.',true);await loadLeaves();}catch(err){message(err.message,false);btn.disabled=false;}});
+  (async()=>{try{await loadEmployees();await loadLeaves();}catch(e){message(e.message,false);rows.innerHTML=`<tr><td colspan="5">${esc(e.message)}</td></tr>`;}})();
+})();
+
+// ==========================================
 // LAPORAN KINERJA BULANAN - PER KARYAWAN
 // ==========================================
 (function setupPerformanceReport(){
@@ -3288,7 +3343,7 @@ if (inputTanggalLibur) inputTanggalLibur.value = nowJadwal.getFullYear()+'-'+Str
       <h3 style="font-size:14px;margin:0 0 8px">A. Identitas Karyawan</h3>
       <div class="report-identity"><div><b>Nama:</b> ${esc(k.nama)}</div><div><b>ID Karyawan:</b> ${esc(k.id)}</div><div><b>Outlet:</b> ${esc(k.outlet)}</div><div><b>Status Karyawan:</b> ${esc(k.status)}</div><div><b>Periode:</b> ${esc(month)}</div><div><b>Batas jam masuk:</b> ${esc(d.batasJamMasuk||'-')}</div></div>
       <h3 style="font-size:14px;margin:0 0 8px">B. Ringkasan Kinerja Bulanan</h3>
-      <div class="report-summary"><div><strong>${Number(r.hadir)||0}</strong><span>Hari hadir</span></div><div><strong>${Number(r.tepatWaktu)||0}</strong><span>Tepat waktu</span></div><div><strong>${Number(r.terlambat)||0}</strong><span>Terlambat</span></div><div><strong>${Number(r.tidakAbsen)||0}</strong><span>Tidak absen</span></div><div><strong>${Number(r.libur)||0}</strong><span>Libur / non-kerja</span></div><div><strong>${Number(r.tanpaPulang)||0}</strong><span>Belum absen pulang</span></div><div><strong>${(d.detail||[]).length}</strong><span>Total tanggal</span></div><div><strong>${(Number(r.tepatWaktu||0)+Number(r.terlambat||0))?Math.round(Number(r.tepatWaktu||0)/(Number(r.tepatWaktu||0)+Number(r.terlambat||0))*100):0}%</strong><span>Ketepatan waktu dari kehadiran</span></div></div>
+      <div class="report-summary"><div><strong>${Number(r.hadir)||0}</strong><span>Hari hadir</span></div><div><strong>${Number(r.tepatWaktu)||0}</strong><span>Tepat waktu</span></div><div><strong>${Number(r.terlambat)||0}</strong><span>Terlambat</span></div><div><strong>${Number(r.izin)||0}</strong><span>Izin</span></div><div><strong>${Number(r.tidakAbsen)||0}</strong><span>Tidak absen</span></div><div><strong>${Number(r.libur)||0}</strong><span>Libur</span></div><div><strong>${Number(r.tanpaPulang)||0}</strong><span>Belum absen pulang</span></div><div><strong>${Number(r.belumBerjalan)||0}</strong><span>Belum berjalan</span></div><div><strong>${(d.detail||[]).length}</strong><span>Total tanggal kalender</span></div><div><strong>${Number(r.hariKerjaDinilai||0)?Math.round(Number(r.tepatWaktu||0)/Number(r.hariKerjaDinilai)*100):0}%</strong><span>Ketepatan waktu dari hari kerja</span></div></div>
       <h3 style="font-size:14px;margin:0 0 8px">C. Detail Harian</h3>
       <table class="report-detail-table"><thead><tr><th>Tanggal</th><th>Hari</th><th>Jam Masuk</th><th>Keterangan</th><th>Jam Pulang</th></tr></thead><tbody>${details}</tbody></table>
       <div class="report-evaluation"><label for="performanceEvaluation">D. Catatan Evaluasi Karyawan</label><textarea id="performanceEvaluation" placeholder="Tuliskan catatan evaluasi, apresiasi, atau hal yang perlu diperbaiki..."></textarea></div>
