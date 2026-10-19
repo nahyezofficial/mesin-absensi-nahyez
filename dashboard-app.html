@@ -50,7 +50,7 @@
         #ace3e0
       );
 
-      color: white;
+      color: #F3FF74;
 
       padding: 22px;
 
@@ -74,6 +74,14 @@
       justify-content: space-between;
       gap: 16px;
       width: 100%;
+    }
+
+    .header-logo {
+      width: 50px;
+      height: 44px;
+      object-fit: contain;
+      flex: 0 0 auto;
+      display: block;
     }
 
     .header-brand {
@@ -1109,20 +1117,23 @@
     <!-- HEADER -->
 
     <div class="header">
-      <div class="header-content">
-        <div class="header-brand">
-          <h1>Dashboard Admin</h1>
-          <p>NAHYEZ BABY MEAL</p>
-        </div>
-        <img
-          src="https://raw.githubusercontent.com/nahyezofficial/mesin-absensi-nahyez/main/logo-nahyez.png"
-          alt="Logo Nahyez Baby Meal"
-          class="header-logo"
-          width="50"
-          height="44"
-          loading="eager"
-          decoding="async"
-        >
+  <div class="header-content">
+
+    <div class="header-brand">
+      <h1>Dashboard Admin</h1>
+      <p>NAHYEZ BABY MEAL</p>
+    </div>
+
+    <img
+      src="https://raw.githubusercontent.com/nahyezofficial/mesin-absensi-nahyez/main/logo-nahyez.png"
+      alt="Logo Nahyez Baby Meal"
+      class="header-logo"
+      width="50"
+      height="44"
+    >
+
+  </div>
+</div>
       </div>
     </div>
 
@@ -3393,7 +3404,7 @@ if (inputTanggalLibur) inputTanggalLibur.value = nowJadwal.getFullYear()+'-'+Str
       <h3 style="font-size:14px;margin:0 0 8px">C. Detail Harian</h3>
       <table class="report-detail-table"><thead><tr><th>Tanggal</th><th>Hari</th><th>Jam Masuk</th><th>Keterangan</th><th>Jam Pulang</th></tr></thead><tbody>${details}</tbody></table>
       <div class="report-evaluation"><label for="performanceEvaluation">D. Catatan Evaluasi Karyawan</label><textarea id="performanceEvaluation" placeholder="Tuliskan catatan evaluasi, apresiasi, atau hal yang perlu diperbaiki..."></textarea></div>
-      <div class="report-paper-footer"><span>Tanggal cetak: ${esc(d.tanggalCetak||new Date().toLocaleString('id-ID'))}</span><span>(c)2026 Nahyez BabyMeal</span></div>`;
+      <div class="report-paper-footer"><span>Tanggal cetak: ${esc(d.tanggalCetak||new Date().toLocaleString('id-ID'))}</span><span>© 2026 NahyezBabyMeal</span></div>`;
     paper.style.display='block';
     document.getElementById('printPerformanceReport').addEventListener('click',()=>window.print());
     document.getElementById('hidePerformanceReport').addEventListener('click',()=>{paper.style.display='none';});
