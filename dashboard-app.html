@@ -67,6 +67,28 @@
         );
     }
 
+    /* Header brand and logo stay on one row without affecting navigation. */
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+    }
+
+        .header-logo {
+      width: 50px;
+      height: 44px;
+      object-fit: contain;
+      flex: 0 0 auto;
+      display: block;
+    }
+
+    .header-brand {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
 
     .header h1 {
       margin: 0;
@@ -1079,17 +1101,24 @@
 
     <!-- HEADER -->
 
-    <div class="header">
+<div class="header">
+  <div class="header-content">
 
-      <h1>
-        Dashboard Admin
-      </h1>
-
-      <p>
-        NAHYEZ BABY MEAL
-      </p>
-
+    <div class="header-brand">
+      <h1>Dashboard Admin</h1>
+      <p>NAHYEZ BABY MEAL</p>
     </div>
+
+    <img
+      src="https://raw.githubusercontent.com/nahyezofficial/mesin-absensi-nahyez/main/logo-nahyez.png"
+      alt="Logo Nahyez Baby Meal"
+      class="header-logo"
+      width="50"
+      height="44"
+    >
+
+  </div>
+</div>
 
 
     <!-- FILTER -->
