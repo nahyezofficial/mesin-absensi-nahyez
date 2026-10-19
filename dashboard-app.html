@@ -717,6 +717,10 @@
   }
 
   .kinerja-table tbody td:nth-child(7)::before {
+    content: "Izin";
+  }
+
+  .kinerja-table tbody td:nth-child(8)::before {
     content: "Persentase";
   }
 
@@ -742,7 +746,8 @@
   .kinerja-table tbody td:nth-child(4),
   .kinerja-table tbody td:nth-child(5),
   .kinerja-table tbody td:nth-child(6),
-  .kinerja-table tbody td:nth-child(7) {
+  .kinerja-table tbody td:nth-child(7),
+  .kinerja-table tbody td:nth-child(8) {
 
     border-radius: 10px;
 
@@ -799,9 +804,15 @@
   }
 
 
-  /* PERSENTASE */
+  /* IZIN */
 
   .kinerja-table tbody td:nth-child(7) {
+    background: #fff1df;
+  }
+
+  /* PERSENTASE */
+
+  .kinerja-table tbody td:nth-child(8) {
     background: #fdecef;
   }
 
@@ -3347,7 +3358,7 @@ if (inputTanggalLibur) inputTanggalLibur.value = nowJadwal.getFullYear()+'-'+Str
       <h3 style="font-size:14px;margin:0 0 8px">C. Detail Harian</h3>
       <table class="report-detail-table"><thead><tr><th>Tanggal</th><th>Hari</th><th>Jam Masuk</th><th>Keterangan</th><th>Jam Pulang</th></tr></thead><tbody>${details}</tbody></table>
       <div class="report-evaluation"><label for="performanceEvaluation">D. Catatan Evaluasi Karyawan</label><textarea id="performanceEvaluation" placeholder="Tuliskan catatan evaluasi, apresiasi, atau hal yang perlu diperbaiki..."></textarea></div>
-      <div class="report-paper-footer"><span>Tanggal cetak: ${esc(d.tanggalCetak||new Date().toLocaleString('id-ID'))}</span><span>© 2026 NahyezBabyMeal</span></div>`;
+      <div class="report-paper-footer"><span>Tanggal cetak: ${esc(d.tanggalCetak||new Date().toLocaleString('id-ID'))}</span><span>(c)2026 Nahyez BabyMeal</span></div>`;
     paper.style.display='block';
     document.getElementById('printPerformanceReport').addEventListener('click',()=>window.print());
     document.getElementById('hidePerformanceReport').addEventListener('click',()=>{paper.style.display='none';});
