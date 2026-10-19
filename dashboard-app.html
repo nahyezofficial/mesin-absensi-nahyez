@@ -67,6 +67,27 @@
         );
     }
 
+    /* Header brand and logo stay on one row without affecting navigation. */
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .header-brand {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .header-logo {
+      width: 50px;
+      height: 44px;
+      object-fit: contain;
+      flex: 0 0 auto;
+      display: block;
+    }
 
     .header h1 {
       margin: 0;
@@ -553,8 +574,16 @@
 
 
       .header h1 {
-
         font-size: 21px;
+      }
+
+      .header-content {
+        gap: 10px;
+      }
+
+      .header-logo {
+        width: 44px;
+        height: 38px;
       }
 
 
@@ -1080,15 +1109,21 @@
     <!-- HEADER -->
 
     <div class="header">
-
-      <h1>
-        Dashboard Admin
-      </h1>
-
-      <p>
-        NAHYEZ BABY MEAL
-      </p>
-
+      <div class="header-content">
+        <div class="header-brand">
+          <h1>Dashboard Admin</h1>
+          <p>NAHYEZ BABY MEAL</p>
+        </div>
+        <img
+          src="./logo-nahyez.png"
+          alt="Logo Nahyez Baby Meal"
+          class="header-logo"
+          width="50"
+          height="44"
+          loading="eager"
+          decoding="async"
+        >
+      </div>
     </div>
 
 
