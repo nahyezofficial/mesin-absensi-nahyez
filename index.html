@@ -928,6 +928,31 @@ const API_URL =
 
 
 // ==================================================
+// AUTO SCROLL KE AREA VERIFIKASI ABSENSI
+// ==================================================
+
+function scrollKeProsesAbsensi() {
+  const target = document.getElementById("status");
+
+  if (!target) return;
+
+  // Beri kesempatan browser memperbarui tampilan status/result
+  // sebelum melakukan scroll, terutama pada browser Android.
+  requestAnimationFrame(function () {
+    setTimeout(function () {
+      const posisi =
+        target.getBoundingClientRect().top + window.pageYOffset - 16;
+
+      window.scrollTo({
+        top: Math.max(0, posisi),
+        behavior: "smooth"
+      });
+    }, 120);
+  });
+}
+
+
+// ==================================================
 // QR BERHASIL DIBACA
 // ==================================================
 
@@ -949,6 +974,9 @@ function onScanSuccess(decodedText, decodedResult) {
 
   document.getElementById("result").style.display =
     "block";
+
+  // Otomatis geser layar dari kamera ke status verifikasi QR/GPS.
+  scrollKeProsesAbsensi();
 
   cekKaryawan(decodedText);
 }
@@ -1061,6 +1089,10 @@ function cekKaryawan(token) {
     // ==============================================
     // MULAI CEK GPS
     // ==============================================
+
+    // Konten hasil verifikasi bertambah; rapikan posisi layar agar
+    // informasi karyawan dan proses GPS tetap terlihat.
+    scrollKeProsesAbsensi();
 
     cekGPS(token);
 
